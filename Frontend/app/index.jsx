@@ -1,8 +1,12 @@
 import {Text,View,StyleSheet,Image, TouchableOpacity} from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native';
-
+import {useRouter} from 'expo-router';
 export default function Index(){
+    const router = useRouter();
+    const handleLogin = () => {
+        router.push('/Signin');
+    };
     return(
         <SafeAreaView style={styles.container}>
         <View>
@@ -15,7 +19,7 @@ export default function Index(){
                 <Text style={styles.logoText}>Fuel<Text style={styles.subText}>Mate</Text></Text>
                 <Text>Your Fuel, Delivered Anywhere, Anytime</Text>
 
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Get Started</Text>
             </TouchableOpacity>
             </View>

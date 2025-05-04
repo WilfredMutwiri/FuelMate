@@ -9,6 +9,10 @@ export default function RootLayout() {
           headerShown: false,
           title: 'Landing',
         }}/>
+        <Stack.Screen name="Signin" options={{
+          headerShown:false,
+          title: 'Sign In',
+        }}/>
       </Stack>
   );
 }
