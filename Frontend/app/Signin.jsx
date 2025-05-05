@@ -26,14 +26,6 @@ export default function Signin(){
 
             {/* bottom text */}
             <View style={styles.adminLinksContainer}>
-  <Text style={styles.adminPrompt}>Are you an admin?</Text>
-  <TouchableOpacity onPress={() => {"/* navigate to FuelMate Admin login */}}>"}}>
-    <Text style={styles.linkText}>Login as FuelMate Admin</Text>
-  </TouchableOpacity>
-  <TouchableOpacity onPress={() => {"/* navigate to Fuel Station Admin login */"}}>
-    <Text style={styles.linkText}>Login as Fuel Station Admin</Text>
-  </TouchableOpacity>
-  
 <Text style={styles.termsText}></Text><Text style={styles.termsText}> By signing in, you agree to our{' '} 
     <TouchableOpacity style={styles.linkInline}>
         <Text style={styles.linkInline}>Terms of Service</Text>
@@ -118,23 +110,6 @@ const styles = StyleSheet.create({
         textAlign:'center',
     },
     // bottom text
-    adminLinksContainer: {
-        marginTop: 20,
-        alignItems: 'center',
-        paddingHorizontal: 20,
-      },
-      adminPrompt: {
-        fontSize: 16,
-        marginBottom: 8,
-        textAlign: 'center',
-      },
-      linkText: {
-        color: '#05367C',
-        fontWeight: 'semibold',
-        textDecorationLine: 'none',
-        marginBottom: 5,
-        fontSize: 14,
-      },
       termsText: {
         fontSize: 12,
         color: '#555',
@@ -146,7 +121,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
         textDecorationLine: 'underline',
-        paddingTop:2
+        paddingTop:2,
       },
       
 })
