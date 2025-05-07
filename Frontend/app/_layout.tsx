@@ -18,15 +18,19 @@ export default function RootLayout() {
       >
         <Stack.Screen name="index" options={{
           headerShown: false,
-          title: 'Landing',
+          title: 'index',
         }}/>
         <Stack.Screen name="Confirm" options={{
           headerShown: false,
           title: 'Confirmation',
         }}/>
-        <Stack.Screen name="Signin" options={{
+        <Stack.Screen name="Landing" options={{
           headerShown:false,
-          title: 'Sign In',
+          title: 'Landing',
+        }}/>
+          <Stack.Screen name="Signin" options={{
+          headerShown:false,
+          title: 'Signin',
         }}/>
       </Stack>
   );

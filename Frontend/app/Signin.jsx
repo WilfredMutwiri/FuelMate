@@ -1,43 +1,91 @@
-import {Text,View,StyleSheet,Image, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    TextInput,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    ScrollView,
+    Keyboard,
+    Platform,
+
+} from 'react-native';
+import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
-
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 export default function Signin(){
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    }
     return(
-        <SafeAreaView style={styles.container}>
-        <View>
-            <View style={styles.LogoContainer}>
-                <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
-                <Text style={styles.logoText}>Your Fuel, Delivered Anywhere, Anytime</Text>
+        <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                contentContainerStyle={{flexGrow:1}}
+                keyboardShouldPersistTaps="handled"
+                >
+                    <SafeAreaView style={styles.container}>
+                        <View style={styles.LogoContainer}>
+                            <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
+                        <Text style={styles.logoText}>Glad you are <Text style={styles.logoSubText}>here!</Text></Text>
+                        </View>
+                        {/* second container */}
+                        <View style={styles.secondContainer}>
+                            {/* email button */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Email</Text>
+                                <TextInput 
+                                style={styles.inputText}
+                                placeholder='Enter your email'
+                                />
+                            </View>
 
-                {/* google btn */}
-            <TouchableOpacity style={styles.googleContainer}>
-                <Image source={require('../assets/images/googleIcon.png')} style={styles.googleIcon}/>
-                <Text style={styles.googleText}>Continue with Google</Text>
-            </TouchableOpacity>
-            {/* login btn */}
-            <TouchableOpacity style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            {/* signup btn */}
-            <TouchableOpacity style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>Create New Account</Text>
-            </TouchableOpacity>
+            {/* password btn */}
+            <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <View style={styles.passwordContainer}>
+            <TextInput   
+                placeholder='Enter your password'
+                secureTextEntry={!passwordVisible}
+                />
+            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+            {
+                passwordVisible ? (
+                    <FontAwesome6 name="eye" size={18} color="black"/>
+                ) : (
+                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
+                )
+            }
+            </TouchableOpacity >
+            </View>
 
-            {/* bottom text */}
-            <View style={styles.adminLinksContainer}>
-<Text style={styles.termsText}></Text><Text style={styles.termsText}> By signing in, you agree to our{' '} 
-    <TouchableOpacity style={styles.linkInline}>
-        <Text style={styles.linkInline}>Terms of Service</Text>
-    </TouchableOpacity> and{' '}
-    <TouchableOpacity style={styles.linkInline}>
-        <Text style={styles.linkInline}>Privacy Policy</Text>
-    </TouchableOpacity>.
-  </Text>
-</View>
-</View>
-</View>
+            <TouchableOpacity>
+            <Text style={styles.forgotPasswordTxt}>Forgot Password</Text>
+            </TouchableOpacity>
+            </View>
+            
+            {/* sign in button */}
+            <View style={styles.inputContainer}>
+            <TouchableOpacity style={styles.buttonContainer}>
+                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Sign In</Text>
+            </TouchableOpacity>
+            </View>
+
+            {/* signup text */}
+            <View style={styles.BottomContainer}>
+            <Text>Don't have an account?</Text>
+            <TouchableOpacity>
+                <Text style={{color:'#05367C', fontSize:14, fontWeight:'semibold'}}>Sign up</Text>
+            </TouchableOpacity>
+            </View>
+            </View>
 </SafeAreaView>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }
 
@@ -48,18 +96,18 @@ const styles = StyleSheet.create({
         padding:10,
     },
     LogoContainer:{
+        flexDirection:'row',
         width:"100%",
-        height:200,
+        height:"auto",
         backgroundColor:'#ffff',
-        justifyContent:'center',
         alignItems:'center',
         borderRadius:100,
-        position:'absolute',
-        marginTop:"70%",
+        paddingTop:40,
     },
     logo:{
-        width:"80%",
-        height:"80%",
+        marginTop:20,
+        width:100,
+        height:100,
         resizeMode:'contain',
     },
     logoText:{
@@ -68,32 +116,79 @@ const styles = StyleSheet.create({
         textAlign:'center',
         marginTop:10,
     },
-
-    // buttons
-    googleContainer:{
-        width:"85%",
-        height:50,
-        backgroundColor:'#fff',
-        justifyContent:'center',
-        alignItems:'center',
-        borderRadius:50,
-        marginTop:"10%",
-        borderWidth:1,
-        borderColor:'#05367C',
-    },
-    googleText:{
-        fontSize:16,
+    logoSubText:{
+        fontSize:24,
         fontWeight:'semibold',
         textAlign:'center',
-    },
-    googleIcon:{
-        width:20,
-        height:20,
-        resizeMode:'contain',
-        position:'absolute',
-        left:20,
+        color:'#05367C',
     },
 
+    // buttons
+    secondContainer:{
+        flex:1,
+        flexDirection:'column',
+        gap:25,
+        justifyContent:'center',
+        width:"100%",
+        marginTop:10,
+    },
+    inputContainer:{
+        flexDirection:'column',
+        gap:10,
+        width:"100%",
+        alignSelf:'center',
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+    },
+// input text
+inputLabel:{
+        fontSize:16,
+        fontWeight:'semibold',
+        marginBottom:5,
+        left:45,
+        alignSelf:'flex-start',
+    },
+inputText:{
+        height:50,
+        width:"85%",
+        borderWidth:1,
+        borderColor:'#05367C',
+        fontSize:16,
+        borderRadius:50,
+        fontWeight:'semibold',
+        justifyContent:'center',
+        alignItems:'center',
+        paddingLeft:25,
+    },
+    forgotPasswordTxt:{
+        fontSize:14,
+        fontWeight:'semibold',
+        color:'#05367C',
+        marginTop:5,
+        left:90,
+        // alignSelf:'flex-end',
+    },
+    passwordContainer:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        width:"85%",
+        borderWidth:1,
+        borderColor:'#05367C',
+        borderRadius:50,
+        paddingLeft:25,
+        height:50,
+    },
+    eyeIcon:{
+        position:'absolute',
+        right:20,
+        top:10,
+        alignItems:'center',
+        justifyContent:'center',    
+        height:30,
+        width:30,
+    },  
     buttonContainer:{
         width:"85%",
         height:50,
@@ -101,27 +196,12 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         borderRadius:50,
-        marginTop:"15%",
     },
-    buttonText:{
-        color:'#fff',
-        fontSize:16,
-        fontWeight:'semibold',
-        textAlign:'center',
+    BottomContainer:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        gap:5,
+        marginTop:20,
     },
-    // bottom text
-      termsText: {
-        fontSize: 12,
-        color: '#555',
-        textAlign: 'center',
-        marginTop: 10,
-      },
-      linkInline: {
-        color: '#05367C',
-        fontSize: 12,
-        textAlign: 'center',
-        textDecorationLine: 'underline',
-        paddingTop:2,
-      },
-      
 })

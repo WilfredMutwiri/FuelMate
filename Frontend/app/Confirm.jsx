@@ -5,7 +5,7 @@ import {useRouter} from 'expo-router';
 export default function Signin(){
     const router = useRouter();
     const handleLogin = () => {
-        router.push('/Signin');
+        router.push('/Landing');
     };
 
     return(
