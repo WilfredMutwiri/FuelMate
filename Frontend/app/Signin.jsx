@@ -16,18 +16,54 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
+import {SERVER_URI} from '../constants/SERVER_URI.jsx';
+import axios from 'axios'
+import ToastComponent from "../components/Toast";
+
 export default function Signin(){
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [success,setSuccess]=useState(false);
+    const [formData,setFormData]=useState({
+        username:'',
+        password:''
+    });
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
 
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            [name]:value
+        })
+    }
+
+    console.log(formData)
+
+    const handleSignin=async()=>{
+        try {
+            const response = await axios.post(`${SERVER_URI}/api/v1/signin`,formData)
+            console.log('response data', response.data);
+            const result=response.data;
+            if (result.success){
+                ToastComponent("success",`Welcome back! ${formData.username}`);  
+                router.push('/Signup');
+            }
+        } catch (error) {
+            console.log(error);
+            if(error.response && error.response.data){
+                ToastComponent("error",`${error.response.data.message}`);  
+            }
+        }
+    }
     const handleRecovery = () => {
         router.push('/Recovery');
     }
 
     const handleSignup = () => {
+
         router.push('/Signup');
     }
     return(
@@ -49,10 +85,12 @@ export default function Signin(){
                         <View style={styles.secondContainer}>
                             {/* email button */}
                             <View style={styles.inputContainer}>
-                                <Text style={styles.inputLabel}>Email</Text>
+                                <Text style={styles.inputLabel}>Username</Text>
                                 <TextInput 
                                 style={styles.inputText}
-                                placeholder='Enter your email'
+                                value={formData.username}
+                                onChangeText={(text)=>handleInputChange('username',text)}
+                                placeholder='Enter your username'
                                 />
                             </View>
 
@@ -62,6 +100,8 @@ export default function Signin(){
             <View style={styles.passwordContainer}>
             <TextInput   
                 placeholder='Enter your password'
+                value={formData.password}
+                onChangeText={(text)=>handleInputChange('password',text)}
                 secureTextEntry={!passwordVisible}
                 />
             <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
@@ -82,7 +122,7 @@ export default function Signin(){
             
             {/* sign in button */}
             <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSignin}>
                 <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Sign In</Text>
             </TouchableOpacity>
             </View>

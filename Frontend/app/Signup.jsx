@@ -16,11 +16,54 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
+import axios from 'axios';
+import { SERVER_URI } from '../constants/SERVER_URI';
+import ToastComponent from "../components/Toast";
+
 export default function Signup(){
     const router=useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [formData,setFormData]=useState({
+        username:'',
+        email:'',
+        password:'',
+        confirmPassword:''
+    })
+
+
+    console.log(formData)
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            [name]:value
+        })
+    }
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
+    }
+
+    const handleSignUp=async()=>{
+    try {
+    // confirm password
+    if(formData.password !== formData.confirmPassword){
+        return ToastComponent("error","Passwords don't match")
+
+    }
+    const response=await axios.post(`${SERVER_URI}/api/v1/signup`, formData)
+    console.log(response.data)
+    if(response.data.success){
+        ToastComponent("success","Account created successfully!")
+        router.push('/Signin')
+    }
+    } catch (error) {
+         console.log(error) 
+         if(error.response && error.response.data){
+            ToastComponent("error",error.response.data.message || "An error occurred")  
+         }else{
+            ToastComponent("error",`An error occured ${error.message}`)  
+         }
+    }
     }
     const handleLogin = () => {
         router.push('/Signin');
@@ -46,6 +89,8 @@ export default function Signup(){
                                 <Text style={styles.inputLabel}>Username</Text>
                                 <TextInput 
                                 style={styles.inputText}
+                                value={formData.username}
+                                onChangeText={(text)=>handleInputChange('username',text)}
                                 placeholder='Enter your username'
                                 />
                             </View>
@@ -53,6 +98,8 @@ export default function Signup(){
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Email</Text>
                                 <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
                                 style={styles.inputText}
                                 placeholder='Enter your email'
                                 />
@@ -64,6 +111,8 @@ export default function Signup(){
             <View style={styles.passwordContainer}>
             <TextInput   
                 placeholder='Enter your password'
+                value={formData.password}
+                onChangeText={(text)=>handleInputChange('password',text)}
                 secureTextEntry={!passwordVisible}
                 />
             <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
@@ -82,6 +131,8 @@ export default function Signup(){
             <View style={styles.passwordContainer}>
             <TextInput   
                 placeholder='Confirm your password'
+                value={formData.confirmPassword}
+                onChangeText={(text)=>handleInputChange("confirmPassword",text)}
                 secureTextEntry={!passwordVisible}
                 />
             <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
@@ -97,9 +148,9 @@ export default function Signup(){
 
             </View>
             
-            {/* sign in button */}
+            {/* sign up button */}
             <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSignUp}>
                 <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Create Account</Text>
             </TouchableOpacity>
             </View>
