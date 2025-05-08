@@ -5,12 +5,7 @@ const User=require("../../models/auth/userSignupModel");
 const userSignin=async(req,res)=>{
 
     try {
-
         let {username,password}=req.body;
-
-        username=username.trim();
-        password=password.trim();
-    
         if(!username ||!password){
             return res.status(400).json({message:"Username and Password are required!"})
         }
@@ -29,7 +24,7 @@ const userSignin=async(req,res)=>{
         //token generation
         const token=jwt.sign({
             userId:user._id,
-            email:user.username
+            username:user.username
         },
         process.env.JWT_SECRET,
         {expiresIn:"1h"}
@@ -37,6 +32,7 @@ const userSignin=async(req,res)=>{
     
         return res.status(200).json({
             message:"Login successfull!",
+            success:true,
             token,
             user:{
                 id:user._id,

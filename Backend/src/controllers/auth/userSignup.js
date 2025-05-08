@@ -5,10 +5,6 @@ const User=require('../../models/auth/userSignupModel');
 const userSignup=async(req,res)=>{
     try {
         let {email,username,password}=req.body;
-        username=username.trim();
-        email=email.trim();
-        password=password.trim();
-
         if(!(username && email && password)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
@@ -36,7 +32,8 @@ const userSignup=async(req,res)=>{
 
         return res.status(200).json({
             message:"Account created successfully!",
-            user:createdUser
+            user:createdUser,
+            success:true
         })
     } catch (error) {
         return res.status(500).json({message:error.message})
