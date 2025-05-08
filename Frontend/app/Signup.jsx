@@ -16,20 +16,15 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
-export default function Signin(){
-    const router = useRouter();
+export default function Signup(){
+    const router=useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
-
-    const handleRecovery = () => {
-        router.push('/Recovery');
-    }
-
-    const handleSignup = () => {
-        router.push('/Signup');
-    }
+    const handleLogin = () => {
+        router.push('/Signin');
+    };
     return(
         <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -37,16 +32,23 @@ export default function Signin(){
                 contentContainerStyle={{flexGrow:1}}
                 keyboardShouldPersistTaps="handled"
                 >
-                    <SafeAreaView
-                    style={styles.container}
-                    keyboardShouldPersistTaps='always'
-                    >
+                    <SafeAreaView style={styles.container}>
                         <View style={styles.LogoContainer}>
                             <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
                         <Text style={styles.logoText}>Glad you are <Text style={styles.logoSubText}>here!</Text></Text>
                         </View>
+                        <Text style={styles.welcomeTxt}>Create your account to continue ...</Text>
+
                         {/* second container */}
                         <View style={styles.secondContainer}>
+                            {/* username button */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Username</Text>
+                                <TextInput 
+                                style={styles.inputText}
+                                placeholder='Enter your username'
+                                />
+                            </View>
                             {/* email button */}
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Email</Text>
@@ -72,26 +74,41 @@ export default function Signin(){
                     <FontAwesome6 name="eye-slash" size={18} color="black"/>
                 )
             }
-            </TouchableOpacity >
+            </TouchableOpacity >            
             </View>
 
-            <TouchableOpacity onPress={handleRecovery}>
-            <Text style={styles.forgotPasswordTxt}>Forgot Password?</Text>
-            </TouchableOpacity>
+            {/* confirm password */}
+            <Text style={styles.inputLabel}>Confirm Password</Text>
+            <View style={styles.passwordContainer}>
+            <TextInput   
+                placeholder='Confirm your password'
+                secureTextEntry={!passwordVisible}
+                />
+            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+            {
+                passwordVisible ? (
+                    <FontAwesome6 name="eye" size={18} color="black"/>
+                ) : (
+                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
+                )
+            }
+            </TouchableOpacity >            
+            </View>
+
             </View>
             
             {/* sign in button */}
             <View style={styles.inputContainer}>
             <TouchableOpacity style={styles.buttonContainer}>
-                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Sign In</Text>
+                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Create Account</Text>
             </TouchableOpacity>
             </View>
 
             {/* signup text */}
             <View style={styles.BottomContainer}>
-            <Text>Don't have an account?</Text>
-            <TouchableOpacity onPress={handleSignup}>
-                <Text style={{color:'#05367C', fontSize:14, fontWeight:'semibold'}}>Sign up</Text>
+            <Text>Already have an account?</Text>
+            <TouchableOpacity onPress={handleLogin}>
+                <Text style={{color:'#05367C', fontSize:14, fontWeight:'semibold'}}>Sign in</Text>
             </TouchableOpacity>
             </View>
             </View>
@@ -106,15 +123,15 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:'#fff',
-        paddingBottom:30,
+        paddingBottom:30
     },
     LogoContainer:{
-        flexDirection:'column',
+        flexDirection:'row',
         width:"100%",
         height:"auto",
         backgroundColor:'#ffff',
         alignItems:'center',
-        borderRadius:100,
+        paddingTop:15,
     },
     logo:{
         marginTop:20,
@@ -134,27 +151,28 @@ const styles = StyleSheet.create({
         textAlign:'center',
         color:'#05367C',
     },
-
+    welcomeTxt:{
+        fontSize:16,
+        textAlign:"center"
+    },
     // buttons
     secondContainer:{
         flex:1,
         flexDirection:'column',
-        gap:25,
         justifyContent:'center',
         width:"100%",
-        marginTop:10,
     },
     inputContainer:{
+        marginTop:10,
         flexDirection:'column',
-        gap:10,
         width:"100%",
         alignSelf:'center',
         justifyContent:'center',
         alignItems:'center',
-        marginTop:10,
     },
 // input text
 inputLabel:{
+        marginTop:10,
         fontSize:16,
         fontWeight:'semibold',
         marginBottom:5,
@@ -173,22 +191,25 @@ inputText:{
         alignItems:'center',
         paddingLeft:25,
     },
+    forgotPasswordTxt:{
+        fontSize:14,
+        fontWeight:'semibold',
+        color:'#05367C',
+        marginTop:5,
+        left:90,
+        // alignSelf:'flex-end',
+    },
     passwordContainer:{
         flexDirection:'row',
         justifyContent:'space-between',
+        alignItems:'center',
         width:"85%",
         borderWidth:1,
         borderColor:'#05367C',
         borderRadius:50,
         paddingLeft:25,
         height:50,
-    },
-        forgotPasswordTxt:{
-        fontSize:14,
-        fontWeight:'semibold',
-        color:'#05367C',
-        marginTop:5,
-        textAlign:'right'
+        marginBottom:15
     },
     eyeIcon:{
         position:'absolute',
@@ -212,6 +233,6 @@ inputText:{
         justifyContent:'center',
         alignItems:'center',
         gap:5,
-        marginTop:20,
+        marginTop:15,
     },
 })

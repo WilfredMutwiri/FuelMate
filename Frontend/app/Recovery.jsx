@@ -16,20 +16,16 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
-export default function Signin(){
+export default function Recovery(){
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
 
-    const handleRecovery = () => {
-        router.push('/Recovery');
-    }
-
-    const handleSignup = () => {
-        router.push('/Signup');
-    }
+    const handleSubmit = () => {
+        router.push('/Recovery2');
+    };
     return(
         <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -37,13 +33,14 @@ export default function Signin(){
                 contentContainerStyle={{flexGrow:1}}
                 keyboardShouldPersistTaps="handled"
                 >
-                    <SafeAreaView
-                    style={styles.container}
-                    keyboardShouldPersistTaps='always'
-                    >
+                    <SafeAreaView style={styles.container}>
                         <View style={styles.LogoContainer}>
                             <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
-                        <Text style={styles.logoText}>Glad you are <Text style={styles.logoSubText}>here!</Text></Text>
+                        <Text style={styles.logoText}>Account<Text style={styles.logoSubText}> Recovery!</Text></Text>
+                        <Text style={styles.IntroTxt}>
+                        If you have an existing account, you will receive
+                        an email to reset your password.
+                        </Text>
                         </View>
                         {/* second container */}
                         <View style={styles.secondContainer}>
@@ -55,43 +52,11 @@ export default function Signin(){
                                 placeholder='Enter your email'
                                 />
                             </View>
-
-            {/* password btn */}
-            <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <View style={styles.passwordContainer}>
-            <TextInput   
-                placeholder='Enter your password'
-                secureTextEntry={!passwordVisible}
-                />
-            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
-            {
-                passwordVisible ? (
-                    <FontAwesome6 name="eye" size={18} color="black"/>
-                ) : (
-                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
-                )
-            }
-            </TouchableOpacity >
-            </View>
-
-            <TouchableOpacity onPress={handleRecovery}>
-            <Text style={styles.forgotPasswordTxt}>Forgot Password?</Text>
-            </TouchableOpacity>
-            </View>
             
             {/* sign in button */}
             <View style={styles.inputContainer}>
-            <TouchableOpacity style={styles.buttonContainer}>
-                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Sign In</Text>
-            </TouchableOpacity>
-            </View>
-
-            {/* signup text */}
-            <View style={styles.BottomContainer}>
-            <Text>Don't have an account?</Text>
-            <TouchableOpacity onPress={handleSignup}>
-                <Text style={{color:'#05367C', fontSize:14, fontWeight:'semibold'}}>Sign up</Text>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSubmit}>
+                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Submit</Text>
             </TouchableOpacity>
             </View>
             </View>
@@ -106,7 +71,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:'#fff',
-        paddingBottom:30,
+        padding:10,
     },
     LogoContainer:{
         flexDirection:'column',
@@ -137,12 +102,10 @@ const styles = StyleSheet.create({
 
     // buttons
     secondContainer:{
-        flex:1,
         flexDirection:'column',
         gap:25,
         justifyContent:'center',
         width:"100%",
-        marginTop:10,
     },
     inputContainer:{
         flexDirection:'column',
@@ -173,32 +136,13 @@ inputText:{
         alignItems:'center',
         paddingLeft:25,
     },
-    passwordContainer:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        width:"85%",
-        borderWidth:1,
-        borderColor:'#05367C',
-        borderRadius:50,
-        paddingLeft:25,
-        height:50,
-    },
-        forgotPasswordTxt:{
-        fontSize:14,
+    IntroTxt:{
+        fontSize:16,
         fontWeight:'semibold',
-        color:'#05367C',
-        marginTop:5,
-        textAlign:'right'
+        padding:25,
+        textAlign:"center"
     },
-    eyeIcon:{
-        position:'absolute',
-        right:20,
-        top:10,
-        alignItems:'center',
-        justifyContent:'center',    
-        height:30,
-        width:30,
-    },  
+
     buttonContainer:{
         width:"85%",
         height:50,
@@ -206,12 +150,5 @@ inputText:{
         justifyContent:'center',
         alignItems:'center',
         borderRadius:50,
-    },
-    BottomContainer:{
-        flexDirection:'row',
-        justifyContent:'center',
-        alignItems:'center',
-        gap:5,
-        marginTop:20,
     },
 })

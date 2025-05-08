@@ -7,13 +7,15 @@ export default function RootLayout() {
       <Stack
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#f4511e',
+          backgroundColor: '#fff',
+          
         },
-        headerTintColor: '#fff',
+        headerTintColor: 'black',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
         headerTitleAlign: 'center',
+        headerShadowVisible:false
       }}
       >
         <Stack.Screen name="index" options={{
@@ -25,12 +27,24 @@ export default function RootLayout() {
           title: 'Confirmation',
         }}/>
         <Stack.Screen name="Landing" options={{
-          headerShown:false,
-          title: 'Landing',
+          headerShown:true,
+          title: '',
         }}/>
           <Stack.Screen name="Signin" options={{
-          headerShown:false,
-          title: 'Signin',
+          headerShown:true,
+          title: '',
+        }}/>
+        <Stack.Screen name="Signup" options={{
+          headerShown:true,
+          title: ' ',
+        }}/>
+        <Stack.Screen name="Recovery" options={{
+          headerShown:true,
+          title: '',
+        }}/>
+        <Stack.Screen name="Recovery2" options={{
+          headerShown:true,
+          title: '',
         }}/>
       </Stack>
   );

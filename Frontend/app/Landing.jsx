@@ -7,6 +7,9 @@ export default function Landing(){
     const handleLogin = () => {
         router.push('/Signin');
     };
+    const handleSignup = () => {
+        router.push('/Signup');
+    };
     return(
         <SafeAreaView style={styles.container}>
         <View>
@@ -24,7 +27,7 @@ export default function Landing(){
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
             {/* signup btn */}
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSignup}>
                 <Text style={styles.buttonText}>Create New Account</Text>
             </TouchableOpacity>
 
