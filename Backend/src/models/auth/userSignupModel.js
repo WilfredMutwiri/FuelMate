@@ -14,6 +14,14 @@ username:{
 password:{
     type:String,
     required:true
+},
+resetOtp:{
+    type:Number,
+    required:false
+},
+otpExpires:{
+    type:Date,
+    required:false
 }
 })
 
