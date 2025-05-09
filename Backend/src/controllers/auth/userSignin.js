@@ -30,13 +30,13 @@ const userSignin=async(req,res)=>{
         {expiresIn:"1h"}
         );
     
-        return res.status(200).json({
+        return res.status(200).cookie('access_token',token,{httpOnly:true}).json({
             message:"Login successfull!",
             success:true,
             token,
             user:{
                 id:user._id,
-                email:user.username
+                username:user.username
             }
         })
         
@@ -46,6 +46,15 @@ const userSignin=async(req,res)=>{
    
 }
 
+const userSignout=(req,res)=>{
+    try {
+        res.clearCookie('access_token').status(200).json({message:"Signout successful!"})
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
 module.exports={
-    userSignin
+    userSignin,
+    userSignout
 }

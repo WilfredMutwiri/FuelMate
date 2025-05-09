@@ -2,7 +2,7 @@ const User=require("../../models/auth/userSignupModel");
 const crypto = require('crypto');
 const nodemailer=require('nodemailer');
 
-const requestPasswordReset=async(req,res)=>{
+const requestOTP=async(req,res)=>{
     const {email}=req.body;
     try {
         const user=await User.findOne({email});
@@ -35,12 +35,12 @@ const requestPasswordReset=async(req,res)=>{
             </p>`
         })
 
-        res.status(200).json({message:"OTP sent successfully!"})
+        res.status(200).json({success:true,message:"OTP sent successfully!"})
     } catch (error) {
         res.status(500).json({message:error.message})
     }
 }
 
 module.exports={
-    requestPasswordReset
+    requestOTP
 }
