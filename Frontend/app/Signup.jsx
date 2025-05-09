@@ -19,8 +19,12 @@ import {useRouter} from 'expo-router';
 import axios from 'axios';
 import { SERVER_URI } from '../constants/SERVER_URI';
 import ToastComponent from "../components/Toast";
+import useAuthStore from '../zustand/store.jsx';
+
 
 export default function Signup(){
+    const {signup}=useAuthStore();
+    const {user}=useAuthStore();
     const router=useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [formData,setFormData]=useState({
@@ -29,9 +33,6 @@ export default function Signup(){
         password:'',
         confirmPassword:''
     })
-
-
-    console.log(formData)
     const handleInputChange=(name,value)=>{
         setFormData({
             ...formData,
@@ -51,13 +52,14 @@ export default function Signup(){
 
     }
     const response=await axios.post(`${SERVER_URI}/api/v1/signup`, formData)
-    console.log(response.data)
+    const result=response.data
     if(response.data.success){
+        await signup(result.user.email,result.user.username)
         ToastComponent("success","Account created successfully!")
+        console.log(user)
         router.push('/Signin')
     }
     } catch (error) {
-         console.log(error) 
          if(error.response && error.response.data){
             ToastComponent("error",error.response.data.message || "An error occurred")  
          }else{

@@ -16,15 +16,53 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
+import useAuthStore from '../zustand/store.jsx';
+import axios from 'axios';
+import { SERVER_URI } from '../constants/SERVER_URI';
+import ToastComponent from "../components/Toast";
+
 export default function Recovery(){
+    const {user}=useAuthStore();
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [formData,setFormData]=useState({
+        email:user.email,
+        newPassword:'',
+        otp:'',
+        confirmPassword:''
+    })
+
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            [name]:value
+        })
+    }
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
 
-    const handleSubmit = () => {
-        router.push('/Signin');
+    const handleSubmit =async() => {
+        if(formData.newPassword !== formData.confirmPassword){
+            return ToastComponent("error","Passwords do not match!");
+        }
+
+        try {
+            const response=await axios.post(`${SERVER_URI}/api/v1/resetPassword`,formData)
+            console.log(response)
+            if(response.data.success){
+                ToastComponent("success","Password reset successfully!");
+                router.push('/Signin');                
+            }
+        } catch (error) {
+            if(error.response && error.response.data && error.response.data.message){
+                ToastComponent("error",error.response.data.message);
+            }else{
+                ToastComponent("error","Something went wrong. Try again!");
+            }
+            console.log(error.response.data.message)
+        }
     };
     return(
         <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -38,17 +76,18 @@ export default function Recovery(){
                         <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
                     <Text style={styles.logoText}>Account<Text style={styles.logoSubText}> Recovery!</Text></Text>
                     <Text style={styles.IntroTxt}>
-                    We’ve sent an OTP to <Text style={styles.userMail}>{`wilfred@gmail.com`}</Text> . Enter the OTP code to reset your password below.
+                    We’ve sent an OTP to <Text style={styles.userMail}>{`${user.email}`}</Text> . Enter the OTP code to reset your password below.
                     </Text>
                 </View>
                 {/* second container */}
                 <View style={styles.secondContainer}>
                     <Text style={styles.inputLabel}>Enter OTP Code</Text>
             <View style={styles.passwordContainer}>
-            <TextInput   
+            <TextInput 
                 placeholder='Enter OTP'
-                secureTextEntry={!passwordVisible}
                 keyboardType='numeric'
+                value={formData.otp}
+                onChangeText={(text)=>handleInputChange('otp',text)}
                 />        
             </View>
 
@@ -58,6 +97,8 @@ export default function Recovery(){
             <TextInput   
                 placeholder='Enter new password'
                 secureTextEntry={!passwordVisible}
+                value={formData.newPassword}
+                onChangeText={(text)=>handleInputChange('newPassword',text)}
                 />
             <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
             {
@@ -76,6 +117,8 @@ export default function Recovery(){
             <TextInput   
                 placeholder='Confirm your password'
                 secureTextEntry={!passwordVisible}
+                value={formData.confirmPassword}
+                onChangeText={(text)=>handleInputChange('confirmPassword',text)}
                 />
             <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
             {

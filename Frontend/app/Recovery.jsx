@@ -16,15 +16,41 @@ import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
+import {SERVER_URI} from '../constants/SERVER_URI.jsx';
+import axios from 'axios'
+import ToastComponent from "../components/Toast";
+import useAuthStore from '../zustand/store.jsx';
+
 export default function Recovery(){
+    const {user}=useAuthStore();
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [formData,setFormData]=useState({
+        email:''
+    })
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
 
-    const handleSubmit = () => {
-        router.push('/Recovery2');
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            [name]:value
+        })
+    }
+    const handleSubmit = async() => {
+        try {
+            const response=await axios.post(`${SERVER_URI}/api/v1/requestOTP`,formData)
+            if(response.data.success){
+                ToastComponent("success","OTP sent successfully!");
+                router.push('/Recovery2');  
+            }else{
+                ToastComponent("error",response.data.message || "An error occurred. Please try again.");
+            }
+        } catch (error) {
+            ToastComponent("eror",error.respose?.data?.message ||"Something went wrong. Please try again.");
+            return res.status(500).json({message:error.message})
+        }
     };
     return(
         <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
@@ -48,8 +74,10 @@ export default function Recovery(){
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Email</Text>
                                 <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
                                 style={styles.inputText}
-                                placeholder='Enter your email'
+                                placeholder={`${user.email} `|| "Enter your email"}
                                 />
                             </View>
             

@@ -19,8 +19,10 @@ import {useRouter} from 'expo-router';
 import {SERVER_URI} from '../constants/SERVER_URI.jsx';
 import axios from 'axios'
 import ToastComponent from "../components/Toast";
+import useAuthStore from '../zustand/store.jsx';
 
 export default function Signin(){
+    const {login}=useAuthStore()
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [success,setSuccess]=useState(false);
@@ -40,16 +42,15 @@ export default function Signin(){
         })
     }
 
-    console.log(formData)
-
     const handleSignin=async()=>{
         try {
             const response = await axios.post(`${SERVER_URI}/api/v1/signin`,formData)
-            console.log('response data', response.data);
             const result=response.data;
+            console.log(result.user.username)
             if (result.success){
+                await login(result.user.username,result.token)
                 ToastComponent("success",`Welcome back! ${formData.username}`);  
-                router.push('/Signup');
+                // router.push('/Signup');
             }
         } catch (error) {
             console.log(error);
