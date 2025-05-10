@@ -2,19 +2,17 @@ import { Tabs } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import {View} from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider,useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function TabsLayout() {
 
   return (
-    <SafeAreaProvider style={{flex:1}}>
     <View style={{flex:1,backgroundColor:'#fff'}}>
     <Tabs
       screenOptions={{
         headerStyle: {
           backgroundColor: '#02223B',
-          
         },
         headerTintColor: '#EBF6FE',
         headerTitleStyle: {
@@ -26,7 +24,8 @@ export default function TabsLayout() {
           backgroundColor:'#EBF5FF'
         },
         tabBarActiveTintColor:'#00478F',
-        tabBarInactiveTintColor:'#02223B'
+        tabBarInactiveTintColor:'#02223B',
+        tabBarShowLabel:false
       }}
       >
         <Tabs.Screen name="Home" options={
@@ -34,7 +33,7 @@ export default function TabsLayout() {
             headerShown:true,
             title: 'Home',
             tabBarIcon: ({ color,focused}) => (
-              <FontAwesome6 name="house" size={ focused?24:16} color={color} />
+              <FontAwesome6 name="house" size={ focused?25:18} color={color} />
             ),
           }
         }/>
@@ -46,7 +45,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size=10,focused }) => (
               <FontAwesome6 
               name="cart-shopping" 
-              size={focused ? 24:16} 
+              size={focused ? 25:18} 
               color={color} />
             ),
           }
@@ -59,7 +58,7 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size=10,focused }) => (
               <FontAwesome6 
               name="triangle-exclamation" 
-              size={focused ? 24:16} 
+              size={focused ? 25:18} 
               color={color} />
             ),
           }
@@ -72,7 +71,20 @@ export default function TabsLayout() {
             tabBarIcon: ({ color, size=10,focused }) => (
               <FontAwesome6 
               name="gear" 
-              size={focused ? 24:16} 
+              size={focused ? 24:18} 
+              color={color} />
+            ),
+          }
+        }/>
+
+<Tabs.Screen name="Profile" options={
+          {
+            headerShown:true,
+            title: 'Profile',
+            tabBarIcon: ({ color, size=10,focused }) => (
+              <FontAwesome6 
+              name="user" 
+              size={focused ? 24:18} 
               color={color} />
             ),
           }
@@ -81,6 +93,5 @@ export default function TabsLayout() {
       </Tabs>
       <Toast/>
     </View>
-    </SafeAreaProvider>
   );
 }

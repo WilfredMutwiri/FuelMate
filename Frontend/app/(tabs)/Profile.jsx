@@ -1,16 +1,15 @@
 import {View,Text,StyleSheet, ScrollView} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-export default function Home(){
-
+export default function Profile(){
     return(
-        <SafeAreaView style={{flexGrow:1}}>
+        <SafeAreaView style={{flex:1}}>
             <ScrollView 
             style={{flex:1}}
             contentContainerStyle={{flexGrow:1}}
             >
-            <View>
-                <Text>Welcome home</Text>
+            <View style={styles.container}>
+                <Text>Welcome to emergency</Text>
             </View>
             </ScrollView>
         </SafeAreaView>
@@ -19,7 +18,6 @@ export default function Home(){
 
 const styles=StyleSheet.create({
     container:{
-        flexGrow:1,
-
+        flexGrow:1
     }
 })
