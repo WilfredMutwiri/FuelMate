@@ -1,14 +1,15 @@
 import { Tabs } from 'expo-router';
 import Toast from 'react-native-toast-message';
-import {View} from 'react-native'
+import {TouchableOpacity, View} from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { SafeAreaProvider,useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider,SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
 export default function TabsLayout() {
 
   return (
-    <View style={{flex:1,backgroundColor:'#fff'}}>
+    <SafeAreaProvider>
+      <View style={{flex:1,backgroundColor:'#fff'}}>
     <Tabs
       screenOptions={{
         headerStyle: {
@@ -35,6 +36,28 @@ export default function TabsLayout() {
             tabBarIcon: ({ color,focused}) => (
               <FontAwesome6 name="house" size={ focused?25:18} color={color} />
             ),
+            headerLeft: () => (
+              <TouchableOpacity
+              style={{marginLeft:20}}
+              >
+                <FontAwesome6 
+                  name="bell" 
+                  size={20} 
+                  color="#EBF6FE" 
+                />
+              </TouchableOpacity>
+            ),
+            headerRight: () => (
+              <TouchableOpacity
+              style={{marginRight:20}}
+              >
+                <FontAwesome6 
+                  name="user-circle" 
+                  size={20} 
+                  color="#EBF6FE" 
+                />
+              </TouchableOpacity>
+            )
           }
         }/>
 
@@ -93,5 +116,6 @@ export default function TabsLayout() {
       </Tabs>
       <Toast/>
     </View>
+    </SafeAreaProvider>
   );
 }
