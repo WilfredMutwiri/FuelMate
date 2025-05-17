@@ -1,8 +1,8 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
-const User=require("../../models/auth/userSignupModel");
+const Station=require("../../models/auth/stationSignup");
 
-const userSignin=async(req,res)=>{
+const stationSignin=async(req,res)=>{
 
     try {
 
@@ -15,21 +15,21 @@ const userSignin=async(req,res)=>{
             return res.status(400).json({message:"Username and Password are required!"})
         }
     
-        const user=await User.findOne({username});
+        const station=await Station.findOne({username});
     
-        if(!user){
-            return res.status(400).json({message:"User does not exist!"})
+        if(!station){
+            return res.status(400).json({message:"Station does not exist!"})
         }
     
-        const isMatch=await bcrypt.compare(password,user.password);
+        const isMatch=await bcrypt.compare(password,station.password);
         if(!isMatch){
             return res.status(400).json({message:"Invalid Password"})
         }
     
         //token generation
         const token=jwt.sign({
-            userId:user._id,
-            email:user.username
+            stationId:station._id,
+            username:station.username
         },
         process.env.JWT_SECRET,
         {expiresIn:"1h"}
@@ -39,8 +39,8 @@ const userSignin=async(req,res)=>{
             message:"Login successfull!",
             token,
             user:{
-                id:user._id,
-                email:user.username
+                id:station._id,
+                username:station.username
             }
         })
         
@@ -51,5 +51,5 @@ const userSignin=async(req,res)=>{
 }
 
 module.exports={
-    userSignin
+    stationSignin
 }

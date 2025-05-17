@@ -6,6 +6,11 @@ email:{
     required:true,
     unique:true
 },
+phoneNo:{
+    type:Number,
+    required:true,
+    unique:true
+},
 username:{
     type:String,
     required:true,
@@ -18,6 +23,18 @@ password:{
 location:{
     type:String,
     required:true
+},
+fuel:{
+    type:Array,
+    required:true
+},
+services:{
+    type:Array,
+    required:false
+},
+rating:{
+    type:Number,
+    required:false
 }
 })
 
