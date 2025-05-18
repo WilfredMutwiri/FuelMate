@@ -2,49 +2,53 @@ import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
 
 import map from '../../assets/images/map.jpg';
 import station1 from '../../assets/images/station1.jpg'
-import station2 from '../../assets/images/station2.jpg'
-import station3 from '../../assets/images/station3.jpg'
-import station4 from '../../assets/images/station4.jpg'
 
+
+import axios from 'axios';
+import ToastComponent from '../../components/Toast.jsx';
+import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
 export default function Home(){
 const router=useRouter();
-    const stationsData=[
-        {
-            id:1,
-            name:"Shell_Maiden",
-            rating:"4.9",
-            petrol:"200/Ltr",
-            diesel:"230/Ltr",
-            image:station1
-        },
-        {
-            id:2,
-            name:"Shell_Nairobi",
-            rating:"4.5",
-            petrol:"200/Ltr",
-            diesel:"230/Ltr",
-            image:station2
-        },
-        {
-            id:3,
-            name:"Rubis",
-            rating:"4.0",
-            petrol:"200/Ltr",
-            diesel:"230/Ltr",
-            image:station3
-        },
-        {
-            id:4,
-            name:"Shell_Dragola",
-            rating:"4.4",
-            petrol:"200/Ltr",
-            diesel:"230/Ltr",
-            image:station4
+
+const [stations,setStations]=useState([]);
+const [loading,setLoading]=useState(false);
+const [error,setError]=useState(null);
+const [success,setSuccess]=useState(null);
+const [message,setMessage]=useState(null);
+
+useEffect(() => {
+    const getAStations = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/station/all`);
+            const result = response.data;
+            console.log(result);
+            if (result.stations) {
+                setStations(result.stations);
+                setSuccess(true);
+                setMessage(result.message);
+            } else {
+                setError(true);
+                setMessage(result.message);
+            }
         }
-    ]
+        catch (error) {
+            setError(true);
+            setMessage("An error occurred");
+        }
+        setLoading(false);
+    };
+    getAStations();
+    console.log("stations", stations);
+
+}, []);
+
+
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView 
@@ -83,18 +87,21 @@ const router=useRouter();
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={styles.stationContainer}>
                             {
-                                stationsData.map((station)=>(
-                                    <TouchableOpacity key={station.id} onPress={()=>router.push(`/(stationInfo)/${station.id}`)}>
-                                        <Image source={station.image} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                stations.map((station)=>(
+                                    <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
+                                        <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View >
-                                                <Text>{station.name}</Text>
+                                                <Text>{station.username}</Text>
                                                 <Text>Rating:{station.rating}</Text>
                                             </View>
 
                                             <View>
-                                                <Text>Petrol : 200/Ltr</Text>
-                                                <Text>Diesel : 230/Ltr</Text>
+                                                {
+                                                    station.fuel.map((fuelType, index) => (
+                                                        <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                    ))
+                                                }
                                             </View>
                                         </View>
                                     </TouchableOpacity>
@@ -113,18 +120,20 @@ const router=useRouter();
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={styles.stationContainer}>
                             {
-                                stationsData.map((station)=>(
-                                    <TouchableOpacity key={station.id}>
-                                        <Image source={station.image} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                stations.map((station)=>(
+                                    <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
+                                        <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View >
-                                                <Text>{station.name}</Text>
+                                                <Text>{station.username}</Text>
                                                 <Text>Rating:{station.rating}</Text>
                                             </View>
-
                                             <View>
-                                                <Text>Petrol : 200/Ltr</Text>
-                                                <Text>Diesel : 230/Ltr</Text>
+                                                {
+                                                    station.fuel.map((fuelType, index) => (
+                                                        <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                    ))
+                                                }
                                             </View>
                                         </View>
                                     </TouchableOpacity>
@@ -138,6 +147,7 @@ const router=useRouter();
         </SafeAreaView>
     )
 }
+
 
 const styles=StyleSheet.create({
     container:{
