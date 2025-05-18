@@ -8,12 +8,12 @@ import { SafeAreaProvider,SafeAreaView,useSafeAreaInsets } from 'react-native-sa
 export default function TabsLayout() {
 
   return (
-    <SafeAreaProvider>
-      <View style={{flex:1,backgroundColor:'#fff'}}>
+<View style={{flex:1}}>
     <Tabs
       screenOptions={{
         headerStyle: {
           backgroundColor: '#02223B',
+          shadowColor: 'transparent',
         },
         headerTintColor: '#EBF6FE',
         headerTitleStyle: {
@@ -115,7 +115,6 @@ export default function TabsLayout() {
 
       </Tabs>
       <Toast/>
-    </View>
-    </SafeAreaProvider>
+      </View>
   );
 }

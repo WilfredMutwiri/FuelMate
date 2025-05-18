@@ -28,6 +28,8 @@ export default function RootLayout() {
         <Stack.Screen name="Recovery" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="Recovery2" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="(tabs)" options={{headerShown:false,title: '',}}/>
+        <Stack.Screen name="(stationInfo)" options={{headerShown:false,title: '',}}/>
+
       </Stack>
       <Toast/>
     </View>

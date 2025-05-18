@@ -1,6 +1,7 @@
 import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useRouter } from 'expo-router';
 
 import map from '../../assets/images/map.jpg';
 import station1 from '../../assets/images/station1.jpg'
@@ -9,7 +10,7 @@ import station3 from '../../assets/images/station3.jpg'
 import station4 from '../../assets/images/station4.jpg'
 
 export default function Home(){
-
+const router=useRouter();
     const stationsData=[
         {
             id:1,
@@ -45,7 +46,7 @@ export default function Home(){
         }
     ]
     return(
-        <SafeAreaView style={{flexGrow:1}}>
+        <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView 
             style={{flex:1}}
             contentContainerStyle={{flexGrow:1}}
@@ -83,7 +84,7 @@ export default function Home(){
                         <View style={styles.stationContainer}>
                             {
                                 stationsData.map((station)=>(
-                                    <View key={station.id}>
+                                    <TouchableOpacity key={station.id} onPress={()=>router.push(`/(stationInfo)/${station.id}`)}>
                                         <Image source={station.image} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View >
@@ -96,7 +97,7 @@ export default function Home(){
                                                 <Text>Diesel : 230/Ltr</Text>
                                             </View>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 ))
                             }
                         </View>
@@ -113,7 +114,7 @@ export default function Home(){
                         <View style={styles.stationContainer}>
                             {
                                 stationsData.map((station)=>(
-                                    <View key={station.id}>
+                                    <TouchableOpacity key={station.id}>
                                         <Image source={station.image} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View >
@@ -126,7 +127,7 @@ export default function Home(){
                                                 <Text>Diesel : 230/Ltr</Text>
                                             </View>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 ))
                             }
                         </View>
@@ -140,8 +141,7 @@ export default function Home(){
 
 const styles=StyleSheet.create({
     container:{
-        flexGrow:1,
-
+        flex:1,
     },
     IntroContainer:{
         flexDirection:"row",
@@ -150,11 +150,11 @@ const styles=StyleSheet.create({
         width:"100%",
         alignSelf:"center",
         position:"absolute",
-        zIndex:100,
         paddingTop:6,
         paddingBottom:6,
         paddingLeft:10,
         paddingRight:10,
+        zIndex:100,
     },
     locationContainer:{
         flexDirection:"row",
@@ -168,6 +168,7 @@ const styles=StyleSheet.create({
         height:260,
         width:"100%",
         position:"relative",
+        backgroundColor:"#ffff",
     },
     SearchContainer:{
         position:"absolute",
@@ -210,7 +211,7 @@ const styles=StyleSheet.create({
         paddingTop:2
     },
     stationContainer:{
-        paddingTop:15,
+        paddingTop:10,
         paddingBottom:15,
         flexDirection:"row",
         gap:15,
