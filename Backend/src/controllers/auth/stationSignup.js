@@ -58,6 +58,75 @@ const stationSignup=async(req,res)=>{
 }
 
 
+// get all stations
+const getAllStations=async(req,res)=>{
+    try {
+        const stations=await Station.find();
+        return res.status(200).json({
+            message:"Stations fetched successfully",
+            stations
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+// get station by id
+const getStationById=async(req,res)=>{
+    try {
+        const {id}=req.params;
+        const station=await Station.findById(id);
+        if(!station){
+            return res.status(404).json({message:"Station not found"});
+        }
+        return res.status(200).json({
+            message:"Station fetched successfully",
+            station
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+
+// update station
+const updateStation=async(req,res)=>{
+    try {
+        const {id}=req.params;
+        const station=await Station.findById(id);
+        if(!station){
+            return res.status(404).json({message:"Station not found"});
+        }
+        const updatedStation=await Station.findByIdAndUpdate(id,req.body,{new:true});
+        return res.status(200).json({
+            message:"Station updated successfully",
+            station:updatedStation
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+// delete station
+const deleteStation=async(req,res)=>{
+    try {
+        const {id}=req.params;
+        const station=await Station.findById(id);
+        if(!station){
+            return res.status(404).json({message:"Station not found"});
+        }
+        await Station.findByIdAndDelete(id);
+        return res.status(200).json({
+            message:"Station deleted successfully"
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
 module.exports={
-    stationSignup
+    stationSignup,
+    getAllStations,
+    getStationById,
+    updateStation,
+    deleteStation
 }
