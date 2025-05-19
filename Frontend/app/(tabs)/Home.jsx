@@ -1,4 +1,4 @@
-import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity,ActivityIndicator} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
@@ -6,10 +6,9 @@ import React, { useState, useEffect } from 'react';
 
 import map from '../../assets/images/map.jpg';
 import station1 from '../../assets/images/station1.jpg'
-
+import Loader from '../../components/loader.jsx';
 
 import axios from 'axios';
-import ToastComponent from '../../components/Toast.jsx';
 import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
 export default function Home(){
 const router=useRouter();
@@ -30,9 +29,11 @@ useEffect(() => {
             if (result.stations) {
                 setStations(result.stations);
                 setSuccess(true);
+                setLoading(false);
                 setMessage(result.message);
             } else {
                 setError(true);
+                setLoading(false);
                 setMessage(result.message);
             }
         }
@@ -87,6 +88,11 @@ useEffect(() => {
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={styles.stationContainer}>
                             {
+                                loading?(
+                                    <Loader/>
+                                ):error?(
+                                    <Text>{message}</Text>
+                                ):(
                                 stations.map((station)=>(
                                     <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
                                         <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
@@ -106,6 +112,7 @@ useEffect(() => {
                                         </View>
                                     </TouchableOpacity>
                                 ))
+                            )
                             }
                         </View>
                     </ScrollView>
@@ -120,24 +127,30 @@ useEffect(() => {
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={styles.stationContainer}>
                             {
-                                stations.map((station)=>(
-                                    <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
-                                        <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
-                                        <View style={styles.stationInfoContainer}>
-                                            <View >
-                                                <Text>{station.username}</Text>
-                                                <Text>Rating:{station.rating}</Text>
+                                loading?(
+                                    <Loader/>
+                                ):error?(
+                                    <Text>{message}</Text>
+                                ):(
+                                    stations.map((station)=>(
+                                        <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
+                                            <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                            <View style={styles.stationInfoContainer}>
+                                                <View >
+                                                    <Text>{station.username}</Text>
+                                                    <Text>Rating:{station.rating}</Text>
+                                                </View>
+                                                <View>
+                                                    {
+                                                        station.fuel.map((fuelType, index) => (
+                                                            <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                        ))
+                                                    }
+                                                </View>
                                             </View>
-                                            <View>
-                                                {
-                                                    station.fuel.map((fuelType, index) => (
-                                                        <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
-                                                    ))
-                                                }
-                                            </View>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))
+                                        </TouchableOpacity>
+                                    ))
+                                )
                             }
                         </View>
                     </ScrollView>
