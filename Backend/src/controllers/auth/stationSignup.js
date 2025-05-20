@@ -12,15 +12,15 @@ const stationSignup=async(req,res)=>{
             fuel,
             services,
             rating,
-            phoneNo
+            phoneNo,
+            latitude,
+            longitude
         }=req.body;
 
         if(!(username && email && password && location && fuel && phoneNo)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             return res.status(400).json({message: 'Invalid email'});
-          }else if(!/^[a-zA-Z\s]*$/.test(username)){
-            return res.status(400).json({message: 'Name must contain only letters'});
           }else if(phoneNo.toString().length>14 || phoneNo.toString().length<10){
             return res.status(400).json({message:"Invalid phone number"})
           }
@@ -42,7 +42,9 @@ const stationSignup=async(req,res)=>{
             fuel,
             services,
             rating,
-            phoneNo
+            phoneNo,
+            latitude,
+            longitude
         })
 
         const createdStation=await newStation.save();
