@@ -1,18 +1,22 @@
-import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity,ActivityIndicator} from 'react-native';
+import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity,Alert} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-
 import map from '../../assets/images/map.jpg';
 import station1 from '../../assets/images/station1.jpg'
 import Loader from '../../components/loader.jsx';
-
 import axios from 'axios';
 import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
+import FuelMap from '../../components/fuelMap.jsx';
+import * as Location from 'expo-location';
+
+
 export default function Home(){
 const router=useRouter();
 
+const [location,setLocation]=useState(null);
+const [locationName,setLocationName]=useState(null)
 const [stations,setStations]=useState([]);
 const [loading,setLoading]=useState(false);
 const [error,setError]=useState(null);
@@ -48,6 +52,28 @@ useEffect(() => {
 
 }, []);
 
+// get user's current location
+useEffect(()=>{
+    setLoading(true);
+    (
+        async () =>{
+        let {status}=await Location.requestForegroundPermissionsAsync();
+        if(status!='granted'){
+            Alert.alert("permission denied","Location is required to show your current location");
+            return
+        }
+
+        let currentLocation=await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation.coords);
+
+        let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+        if(addressArray.length>0){
+            const address=addressArray[0];
+            setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+        }
+    })();
+    setLoading(false)
+},[])
 
 
     return(
@@ -65,10 +91,22 @@ useEffect(() => {
                             <View>
                             <FontAwesome6 name="location-dot" size={18} color="#ff6d1f"/>
                             </View>
-                            <Text>Nairobi - CBD</Text>
+                            <Text>
+                                {
+                                    loading?(
+                                        <Loader/>
+                                    ):(
+                                        locationName
+                                    )
+                                }
+                            </Text>
                         </View>
                     </View>
-                    <Image source={map} style={{height:"100%",width:"100%",resizeMode:"cover"}}/>
+                    {/* map section */}
+                    <View style={{flex:1}}>
+                        <FuelMap/>
+                    </View>
+                    {/* <Image source={map} style={{height:"100%",width:"100%",resizeMode:"cover"}}/> */}
                     <View style={styles.SearchContainer}>
                         <TextInput
                         placeholder='Search'
@@ -178,13 +216,13 @@ const styles=StyleSheet.create({
         paddingLeft:10,
         paddingRight:10,
         zIndex:100,
+        alignItems:"center",
     },
     locationContainer:{
         flexDirection:"row",
         gap:10,
         alignItems:"center",
         padding:5,
-        borderRadius:50,
         marginRight:10,
     },
     mapContainer:{
