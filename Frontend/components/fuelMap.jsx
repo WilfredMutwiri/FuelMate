@@ -1,40 +1,64 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import {SERVER_URI} from '../constants/SERVER_URI.jsx';
+import axios from 'axios';
 
 const FuelMap= () => {
-  const stations = [
-      {
-    id: '1',
-    name: 'Kapsabet Central Station',
-    latitude: 0.2033,
-    longitude: 35.1055,
-  },
-  {
-    id: '2',
-    name: 'Nandi Hills Station',
-    latitude: 0.1147,
-    longitude: 35.1759,
-  },
-  {
-    id: '3',
-    name: 'Chepsonoi Fuel Stop',
-    latitude: 0.2469,
-    longitude: 35.0672,
-  },
-  {
-    id: '4',
-    name: 'Kaptumo Station',
-    latitude: 0.1045,
-    longitude: 35.0253,
-  },
-  {
-    id: '5',
-    name: 'Kabiyet Service Station',
-    latitude: 0.3402,
-    longitude: 35.1168,
-  },
-  ];
+const [location,setLocation]=useState(null);
+const [locationName,setLocationName]=useState(null)
+const [stations,setStations]=useState([]);
+const [loading,setLoading]=useState(false);
+const [error,setError]=useState(null);
+const [message,setMessage]=useState(null);
+
+useEffect(() => {
+    const getAStations = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/station/all`);
+            const result = response.data;
+            if (result.stations) {
+                console.log("Stations fetched successfully");
+                setStations(result.stations);
+                setLoading(false);
+                setMessage(result.message);
+            }
+        }
+        catch (error) {
+            setError(true);
+            setMessage("An error occurred");
+        }
+        setLoading(false);
+    };
+    getAStations();
+
+}, []);
+
+// get user's current location
+useEffect(()=>{
+    setLoading(true);
+    (
+        async () =>{
+        let {status}=await Location.requestForegroundPermissionsAsync();
+        if(status!='granted'){
+            Alert.alert("permission denied","Location is required to show your current location");
+            setLocationName("Location unavailabe (Permission denied).")
+            return
+        }
+
+        let currentLocation=await Location.getCurrentPositionAsync({});
+        setLocation(currentLocation.coords);
+
+        let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+        if(addressArray.length>0){
+            const address=addressArray[0];
+            setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+        }
+    })();
+    setLoading(false)
+},[])
+
 
   return (
     <View style={styles.container}>
@@ -47,15 +71,16 @@ const FuelMap= () => {
             longitudeDelta: 0.3,
         }}
       >
-        {stations.map((station) => (
+        {
+        stations.map((station) => (
           <Marker
-            key={station.id}
+            key={station._id}
             coordinate={{
-              latitude: station.latitude,
-              longitude: station.longitude,
+              latitude:Number(station.latitude),
+              longitude:Number(station.longitude),
             }}
-            title={station.name}
-            description={`${station.name} Fuel Station`}
+            title={station.username}
+            description={`${station.username} Fuel Station`}
             pinColor='red'
           />
         ))}

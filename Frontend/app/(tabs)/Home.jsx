@@ -29,7 +29,6 @@ useEffect(() => {
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/station/all`);
             const result = response.data;
-            console.log(result);
             if (result.stations) {
                 setStations(result.stations);
                 setSuccess(true);
