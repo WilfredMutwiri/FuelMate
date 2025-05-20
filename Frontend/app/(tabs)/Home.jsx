@@ -48,7 +48,6 @@ useEffect(() => {
         setLoading(false);
     };
     getAStations();
-    console.log("stations", stations);
 
 }, []);
 
@@ -60,6 +59,7 @@ useEffect(()=>{
         let {status}=await Location.requestForegroundPermissionsAsync();
         if(status!='granted'){
             Alert.alert("permission denied","Location is required to show your current location");
+            setLocationName("Location unavailabe (Permission denied).")
             return
         }
 
@@ -106,7 +106,6 @@ useEffect(()=>{
                     <View style={{flex:1}}>
                         <FuelMap/>
                     </View>
-                    {/* <Image source={map} style={{height:"100%",width:"100%",resizeMode:"cover"}}/> */}
                     <View style={styles.SearchContainer}>
                         <TextInput
                         placeholder='Search'
@@ -135,16 +134,18 @@ useEffect(()=>{
                                     <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
                                         <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
-                                            <View >
+                                            <View  style={styles.ratingContainer}>
                                                 <Text>{station.username}</Text>
-                                                <Text>Rating:{station.rating}</Text>
+                                                <View style={styles.ratingContainer}>
+                                                    <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
+                                                    <Text>{station.rating}</Text>
+                                                </View>
                                             </View>
-
                                             <View>
                                                 {
                                                     station.fuel.map((fuelType, index) => (
-                                                        <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
-                                                    ))
+                                                    <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                ))
                                                 }
                                             </View>
                                         </View>
@@ -174,10 +175,13 @@ useEffect(()=>{
                                         <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
                                             <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
                                             <View style={styles.stationInfoContainer}>
-                                                <View >
-                                                    <Text>{station.username}</Text>
-                                                    <Text>Rating:{station.rating}</Text>
+                                            <View  style={styles.ratingContainer}>
+                                                <Text>{station.username}</Text>
+                                                <View style={styles.ratingContainer}>
+                                                    <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
+                                                    <Text>{station.rating}</Text>
                                                 </View>
+                                            </View>
                                                 <View>
                                                     {
                                                         station.fuel.map((fuelType, index) => (
@@ -278,11 +282,16 @@ const styles=StyleSheet.create({
         gap:15,
     },
     stationInfoContainer:{
-        flexDirection:"row",
+        flexDirection:"column",
         backgroundColor:"#EBF5FF",
-        gap:10,
+        gap:5,
         width:"100%",
         marginTop:-45,
         padding:4
-    }
+    },
+    ratingContainer:{
+        flexDirection:"row",
+        gap:5,
+        alignItems:"center",
+    },
 })
