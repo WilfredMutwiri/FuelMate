@@ -1,0 +1,367 @@
+import {
+    Text,
+    View,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    TextInput,
+    KeyboardAvoidingView,
+    TouchableWithoutFeedback,
+    ScrollView,
+    Keyboard,
+    Platform,
+
+} from 'react-native';
+import React,{useState} from 'react';
+import { SafeAreaView } from 'react-native';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import {useRouter} from 'expo-router';
+import axios from 'axios';
+import { SERVER_URI } from '../constants/SERVER_URI';
+import ToastComponent from "../components/Toast";
+import useAuthStore from '../zustand/store.jsx';
+
+
+export default function StationSignup(){
+    const {signup}=useAuthStore();
+    const {user}=useAuthStore();
+    const router=useRouter();
+    const [passwordVisible, setPasswordVisible] = useState(false);
+    const [formData,setFormData]=useState({
+        username:'',
+        email:'',
+        password:'',
+        confirmPassword:''
+    })
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            [name]:value
+        })
+    }
+
+    const togglePasswordVisibility = () => {
+        setPasswordVisible(!passwordVisible);
+    }
+
+    const handleSignUp=async()=>{
+    try {
+    // confirm password
+    if(formData.password !== formData.confirmPassword){
+        return ToastComponent("error","Passwords don't match")
+
+    }
+    const response=await axios.post(`${SERVER_URI}/api/v1/signup`, formData)
+    const result=response.data
+    if(response.data.success){
+        await signup(result.user.email,result.user.username)
+        ToastComponent("success","Account created successfully!")
+        console.log(user)
+        router.push('/Signin')
+    }
+    } catch (error) {
+         if(error.response && error.response.data){
+            ToastComponent("error",error.response.data.message || "An error occurred")  
+         }else{
+            ToastComponent("error",`An error occured ${error.message}`)  
+         }
+    }
+    }
+    const handleLogin = () => {
+        router.push('/StationSignin');
+    };
+    return(
+        <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                contentContainerStyle={{flexGrow:1}}
+                keyboardShouldPersistTaps="handled"
+                >
+                    <SafeAreaView style={styles.container}>
+                        <View style={styles.LogoContainer}>
+                            <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
+                            <Text style={styles.logoText}>Glad you are here <Text style={styles.logoSubText}>Admin!</Text></Text>
+                        </View>
+                        <Text style={styles.welcomeTxt}>Register your fuel station to continue</Text>
+
+                        {/* second container */}
+                        <View style={styles.secondContainer}>
+                            {/* username button */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Station Name</Text>
+                                <TextInput 
+                                style={styles.inputText}
+                                value={formData.username}
+                                onChangeText={(text)=>handleInputChange('username',text)}
+                                placeholder='Enter your station name'
+                                />
+                            </View>
+                            {/* email button */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Business Registration Number</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='Enter business registration number'
+                                />
+                            </View>
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Physical Address</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='Enter your Address'
+                                />
+                            </View>
+                            {/* city_postal_container */}
+                            <View style={styles.flex_Container}>
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.inputLabel2}>City</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='Eldoret'
+                                />
+                            </View>
+
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.inputLabel2}>Postal Code</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='476 - Eldoret'
+                                />
+                            </View>
+                            </View>
+
+                            {/* username_phone_container */}
+                            <View style={styles.flex_Container}>
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.inputLabel2}>Username</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='B/S Username'
+                                />
+                            </View>
+
+                            <View style={styles.inputContainer2}>
+                                <Text style={styles.inputLabel2}>Phone No.</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='B/S Phone'
+                                />
+                            </View>
+                            </View>
+                            {/* email container */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Email Address</Text>
+                                <TextInput 
+                                value={formData.email}
+                                onChangeText={(text)=>handleInputChange('email',text)}
+                                style={styles.inputText}
+                                placeholder='Enter your business Email'
+                                />
+                            </View>
+
+            {/* password btn */}
+            <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Password</Text>
+            <View style={styles.passwordContainer}>
+            <TextInput   
+                placeholder='Enter your password'
+                value={formData.password}
+                onChangeText={(text)=>handleInputChange('password',text)}
+                secureTextEntry={!passwordVisible}
+                />
+            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+            {
+                passwordVisible ? (
+                    <FontAwesome6 name="eye" size={18} color="black"/>
+                ) : (
+                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
+                )
+            }
+            </TouchableOpacity >            
+            </View>
+
+            {/* confirm password */}
+            <Text style={styles.inputLabel}>Confirm Password</Text>
+            <View style={styles.passwordContainer}>
+            <TextInput   
+                placeholder='Confirm your password'
+                value={formData.confirmPassword}
+                onChangeText={(text)=>handleInputChange("confirmPassword",text)}
+                secureTextEntry={!passwordVisible}
+                />
+            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+            {
+                passwordVisible ? (
+                    <FontAwesome6 name="eye" size={18} color="black"/>
+                ) : (
+                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
+                )
+            }
+            </TouchableOpacity >            
+            </View>
+
+            </View>
+            
+            {/* sign up button */}
+            <View style={styles.inputContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleSignUp}>
+                <Text style={{color:'#fff', fontSize:16, fontWeight:'semibold'}}>Create Account</Text>
+            </TouchableOpacity>
+            </View>
+
+            {/* signup text */}
+            <View style={styles.BottomContainer}>
+            <Text>Already have an account?</Text>
+            <TouchableOpacity onPress={handleLogin}>
+                <Text style={{color:'#05367C', fontSize:14, fontWeight:'semibold'}}>Sign in</Text>
+            </TouchableOpacity>
+            </View>
+            </View>
+</SafeAreaView>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
+    )
+}
+
+const styles = StyleSheet.create({
+    container:{
+        flex:1,
+        backgroundColor:'#fff',
+        paddingBottom:100
+    },
+    LogoContainer:{
+        flexDirection:'column',
+        width:"100%",
+        backgroundColor:'#ffff',
+        alignItems:'center',
+    },
+    logo:{
+        width:100,
+        height:100,
+        resizeMode:'contain',
+    },
+    logoText:{
+        fontSize:24,
+        fontWeight:'semibold',
+        textAlign:'center',
+    },
+    logoSubText:{
+        fontSize:24,
+        fontWeight:'semibold',
+        textAlign:'center',
+        color:'#05367C',
+    },
+    welcomeTxt:{
+        fontSize:15,
+        textAlign:"center",
+        paddingTop:10
+    },
+    // buttons
+    secondContainer:{
+        flex:1,
+        flexDirection:'column',
+        justifyContent:'center',
+        width:"100%",
+    },
+    inputContainer:{
+        marginTop:10,
+        flexDirection:'column',
+        width:"100%",
+        alignSelf:'center',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+// input text
+inputLabel:{
+        marginTop:10,
+        fontSize:16,
+        fontWeight:'semibold',
+        marginBottom:5,
+        left:45,
+        alignSelf:'flex-start',
+    },
+inputText:{
+        height:50,
+        width:"85%",
+        borderWidth:1,
+        borderColor:'#05367C',
+        fontSize:16,
+        borderRadius:50,
+        fontWeight:'semibold',
+        justifyContent:'center',
+        alignItems:'center',
+        paddingLeft:25,
+    },
+    forgotPasswordTxt:{
+        fontSize:14,
+        fontWeight:'semibold',
+        color:'#05367C',
+        marginTop:5,
+        left:90,
+        // alignSelf:'flex-end',
+    },
+    passwordContainer:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        width:"85%",
+        borderWidth:1,
+        borderColor:'#05367C',
+        borderRadius:50,
+        paddingLeft:25,
+        height:50,
+        marginBottom:15
+    },
+    eyeIcon:{
+        position:'absolute',
+        right:20,
+        top:10,
+        alignItems:'center',
+        justifyContent:'center',    
+        height:30,
+        width:30,
+    },  
+    buttonContainer:{
+        width:"85%",
+        height:50,
+        backgroundColor:'#05367C',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:50,
+    },
+    BottomContainer:{
+        flexDirection:'row',
+        justifyContent:'center',
+        alignItems:'center',
+        gap:5,
+        marginTop:15,
+    },
+    flex_Container:{
+        flexDirection:'row',
+        width:'85%',
+        alignSelf:'center',
+        marginTop:15,
+        justifyContent:'space-between',
+        alignContent:'center'
+    },
+    inputContainer2:{
+        width:'54%'
+    },
+    inputLabel2:{
+        paddingBottom:5,
+        paddingLeft:15
+    }
+})

@@ -8,6 +8,9 @@ export default function Signin(){
         router.push('/Landing');
     };
 
+    const handleStationAdmin=()=>{
+        router.push('/StationSignin')
+    }
     return(
         <SafeAreaView style={styles.container}>
         <View>
@@ -26,7 +29,7 @@ export default function Signin(){
                 <Text style={styles.buttonText}>I am looking for Fuel</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.buttonContainer} onPress={handleStationAdmin}>
                 <Text style={styles.buttonText}>I want to manage my Fuel station</Text>
             </TouchableOpacity>
             </View>

@@ -30,6 +30,12 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{headerShown:false,title: '',}}/>
         <Stack.Screen name="(stationInfo)" options={{headerShown:false,title: '',}}/>
 
+        {/* fuel station */}
+        <Stack.Screen name="(stationAdmin)" options={{headerShown:false,title: '',}}/>
+        <Stack.Screen name="StationRecovery" options={{headerShown:true,title: '',}}/>
+        <Stack.Screen name="StationRecovery2" options={{headerShown:true,title: '',}}/>
+        <Stack.Screen name="StationSignup" options={{headerShown:true,title: ' ',}}/>
+        <Stack.Screen name="StationSignin" options={{headerShown:true,title: ' ',}}/>
       </Stack>
       <Toast/>
     </View>
