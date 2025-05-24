@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 // import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 // import Loader from '../../components/loader.jsx';
 
-export default function StationInfoScreen() {
+export default function StationOrders() {
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -15,7 +15,7 @@ export default function StationInfoScreen() {
         contentContainerStyle={{paddingBottom:50}}
         >
             <View>
-                <Text>Welcome back <Text>Kilimambogo Station</Text></Text>
+                <Text>Orders</Text>
             </View>
         </ScrollView>
     </SafeAreaView>

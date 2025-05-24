@@ -23,18 +23,77 @@ const {id}=useLocalSearchParams();
         headerShadowVisible:false,
         tabBarStyle:{
           backgroundColor:'#EBF5FF',
-          display:'none'
         },
         tabBarActiveTintColor:'#00478F',
         tabBarInactiveTintColor:'#02223B',
-        
-        tabBarShowLabel:false,
+        tabBarShowLabel:false
       }}
       >
         <Tabs.Screen name="Dashboard" options={
           {
             headerShown:true,
             title: `Dashboard`,
+            tabBarIcon: ({ color,focused}) => (
+              <FontAwesome6 name="grip" size={ focused?25:18} color={color} />
+            ),
+            headerLeft: () => (
+              <TouchableOpacity
+              style={{marginLeft:20}}
+              >
+                <FontAwesome6 
+                  name="bell" 
+                  size={20} 
+                  color="#EBF6FE" 
+                />
+              </TouchableOpacity>
+            ),
+            headerRight: () => (
+              <TouchableOpacity
+              style={{marginRight:20}}
+              >
+                <FontAwesome6 
+                  name="user-circle" 
+                  size={20} 
+                  color="#EBF6FE" 
+                />
+              </TouchableOpacity>
+            )
+          }
+        }/>
+        <Tabs.Screen name="Orders" options={
+          {
+            headerShown:true,
+            title: 'Orders',
+            tabBarIcon: ({ color, size=10,focused }) => (
+              <FontAwesome6 
+              name="cart-shopping" 
+              size={focused ? 25:18} 
+              color={color} />
+            ),
+          }
+        }/>
+        <Tabs.Screen name="Analytics" options={
+          {
+            headerShown:true,
+            title: 'Analytics',
+            tabBarIcon: ({ color, size=10,focused }) => (
+              <FontAwesome6 
+              name="chart-line" 
+              size={focused ? 25:18} 
+              color={color} />
+            ),
+          }
+        }/>
+        <Tabs.Screen name="Profile" options={
+          {
+            headerShown:true,
+            title: 'Station Profile',
+            tabBarIcon: ({ color, size=10,focused }) => (
+              <FontAwesome6 
+              name="user" 
+              size={focused ? 25:18} 
+              color={color} />
+            ),
           }
         }/>
       </Tabs>
