@@ -87,18 +87,6 @@ export default function TabsLayout() {
           }
         }/>
 
-<Tabs.Screen name="settings" options={
-          {
-            headerShown:true,
-            title: 'Settings',
-            tabBarIcon: ({ color, size=10,focused }) => (
-              <FontAwesome6 
-              name="gear" 
-              size={focused ? 24:18} 
-              color={color} />
-            ),
-          }
-        }/>
 
 <Tabs.Screen name="Profile" options={
           {

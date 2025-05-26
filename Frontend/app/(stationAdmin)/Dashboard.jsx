@@ -4,18 +4,109 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import graphImg from '../../assets/images/graph.png'
 // import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 // import Loader from '../../components/loader.jsx';
 
 export default function StationInfoScreen() {
+
+    const ordersData=[
+        {
+            id:1,
+            location:'Kilimambogo area',
+            amount:'20L',
+            fuelType:'Petrol',
+            status:'Confirmed',
+            price:'20,000'
+        },
+        {
+            id:2,
+            location:'Malishoni area',
+            amount:'10L',
+            fuelType:'Diesel',
+            status:'Delivered',
+            price:'8,000'
+
+        },
+        {
+            id:3,
+            location:'Tea Mall area',
+            amount:'22L',
+            fuelType:'Petrol',
+            status:'Delivered',
+            price:'15,000'
+
+        },
+        {
+            id:4,
+            location:'Kapsabet',
+            amount:'15L',
+            fuelType:'Diesel',
+            status:'Delivered',
+            price:'12,000'
+        }
+    
+    ]
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
         <ScrollView
         contentContainerStyle={{paddingBottom:50}}
         >
-            <View>
-                <Text>Welcome back <Text>Kilimambogo Station</Text></Text>
+        <Text style={styles.titleTxt}>Welcome back <Text style={styles.subTxt}>Kilimambogo Station!</Text></Text>
+            <View style={styles.TopContainer1}>
+                <View style={styles.Tcontainer101}>
+                    <Text style={styles.TopTxt}>Total Sales</Text>
+                    <Text style={styles.TopSubTxt}>Ksh 20,000.00</Text>
+                </View>
+                <View style={styles.Tcontainer102}>
+                    <Text style={styles.TopTxt}>Pending Orders</Text>
+                    <Text style={styles.TopSubTxt}>7</Text>
+                </View>
+            </View>
+            {/* container 2 */}
+            <View style={styles.TopContainer2}>
+                <View style={styles.Tcontainer201}>
+                    <Text style={styles.TopTxt}>Delivered Fuel</Text>
+                    <Text style={styles.TopSubTxt}>320 L</Text>
+                </View>
+                <View style={styles.Tcontainer202}>
+                    <Text style={styles.TopTxt}>Active Customers</Text>
+                    <Text style={styles.TopSubTxt}>34</Text>
+                </View>
+            </View>
+
+            {/* analytics section */}
+            <View style={styles.analyticsContainer}>
+                <Text style={styles.titleTxt}>Revenue Overview</Text>
+                {/* graph */}
+                <Image source={graphImg} style={{width:310,alignSelf:'center',resizeMode:'cover'}}/>
+            </View>
+
+            {/* history section */}
+            <View style={styles.historyContainer}>
+                <View style={styles.historyTopC}>
+                    <Text>Recent Orders</Text>
+                    <Text style={styles.subTxt}>View All</Text>
+                </View>
+                <View style={{gap:10,}}>
+                    {
+                        ordersData.map((order,index)=>(
+                            <View key={index} style={styles.orderContainer}>
+                                <Text>Order: {order.id}</Text>
+                                <View style={{flexDirection:'row',justifyContent:'space-between'}}>
+                                    <Text>{order.location}</Text>
+                                    <Text style={styles.subTxt}>{order.status}</Text>
+                                </View>
+                                <View>
+                                    <Text>Fuel Type: {order.fuelType}</Text>
+                                    <Text>Fuel Amount: {order.amount}</Text>
+                                    <Text>Amount Charged : {order.price}</Text>
+                                </View>
+                            </View>
+                        ))
+                    }
+                </View>
             </View>
         </ScrollView>
     </SafeAreaView>
@@ -26,96 +117,96 @@ const styles=StyleSheet.create({
     container:{
         flex:1,
     },
-    ImageContainer:{
-        width:"100%",
-        height:250,
+    titleTxt:{
+        textAlign:'center',
+        paddingTop:15,
+        paddingBottom:15,
+        fontSize:16,
+        fontWeight:'semibold',
     },
-    stationImg:{
-        width:"100%",
-        height:"100%",
-        resizeMode:"cover"
+    subTxt:{
+        color:'#077E8C'
     },
-    Stationinfo:{
-        padding:15,
+    TopContainer1:{
+        flexDirection:'row',
+        width:'90%',
+        alignSelf:'center',
         gap:20
     },
-    topInfo:{
+        TopContainer2:{
         flexDirection:'row',
-        justifyContent:'space-between',
-        alignItems:'center'
-    },
-    ratingContainer:{
-        flexDirection:'row',
-        gap:10,
-        paddingTop:5
-    },
-    ratingTxt:{
-        fontSize:16
-    },
-    stationName:{
-        fontWeight:'semibold',
-        fontSize:20,
-        color:"#00478F"
-    },
-    likesContainer:{
-        flexDirection:'row',
-        gap:30
-    },
-    locationContainer:{
-        flexDirection:'column',
-        gap:10
-    },
-    headingTxt:{
-        fontWeight:'semibold',
-        fontSize:18,
-        color:'#525151'
-    },
-    MetaConatiner:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-    },
-    MetaInfo:{
-        flexDirection:'row',
+        width:'90%',
+        alignSelf:'center',
         gap:20,
-        backgroundColor:'#E3E2E2',
-        padding:10,
-        width:'43%',
-        borderRadius:10
+        marginTop:15
     },
-    gasContainer:{
-        flexDirection:'row',
-        paddingTop:10,
-        gap:40
+    Tcontainer101:{
+        backgroundColor:'#222222',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
     },
-    gas:{
-    backgroundColor:'#E3E2E2',
-    padding:5,
-    width:"25%",
-    alignItems:'center',
-    borderRadius:10
+        Tcontainer201:{
+        backgroundColor:'#077E8C',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
     },
-    lowerInfoContainer:{
-        paddingBottom:20
+        Tcontainer102:{
+        backgroundColor:'#F29339',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
     },
-    priceContainer:{
+        Tcontainer202:{
+        backgroundColor:'#D9512C',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
+    },
+    TopTxt:{
+        color:'#ffff',
+        fontSize:16,
+        textAlign:'center'
+    },
+    TopSubTxt:{
+        color:'#ffff',
+        paddingTop:2,
+        textAlign:'center',
+        fontSize:20
+    },
+    // analytics
+    analyticsContainer:{
+        width:'90%',
+        alignSelf:'center',
+        borderColor:'#2F2C2C',
+        borderWidth:1,
+        borderRadius:10,
+        marginTop:20
+    },
+    // history section
+    historyContainer:{
+        marginTop:20,
+        width:'90%',
+        alignSelf:'center',
+        borderColor:'#2F2C2C',
+        borderWidth:1,
+        borderRadius:10,
+        padding:10
+    },
+    historyTopC:{
         flexDirection:'row',
         justifyContent:'space-between',
-        paddingTop:10,
-        paddingBottom:20
+        paddingBottom:10
     },
-    price:{
-        fontWeight:'semibold',
-        fontSize:24,
-        color:"#ff6d1f"
-    },
-    orderBtn:{
-        backgroundColor:"#00478F",
+    orderContainer:{
+        flexDirection:'column',
+        backgroundColor:'#D9D9D9',
         padding:10,
-        justifyContent:'center',
-        alignItems:'center',
         borderRadius:10
-    },
-    orderTxt:{
-        color:"#fff"
     }
 })

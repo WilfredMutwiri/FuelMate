@@ -3,7 +3,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import map from '../../assets/images/map.jpg';
 import station1 from '../../assets/images/station1.jpg'
 import Loader from '../../components/loader.jsx';
 import axios from 'axios';
