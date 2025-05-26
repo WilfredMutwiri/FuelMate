@@ -1,6 +1,7 @@
 import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import alertImg from '../../assets/images/alert.png';
+import userImg from '../../assets/images/user.jpg';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 export default function Profile(){
     return(
@@ -10,21 +11,46 @@ export default function Profile(){
             contentContainerStyle={{flexGrow:1}}
             >
                 <View style={styles.profileCont}>
-                    {/* form section */}
-                    <View style={styles.formContainer}>
-                        <View>
-                            <Text style={styles.label}>Enter Fuel Type</Text>
-                            <TextInput
-                                placeholder='Enter the fuel type'
-                                style={styles.textInput}
-                            />
+                    {/* header section */}
+                        <View style={styles.header}>
+                            <Image source={userImg} style={styles.profileImg}/>
+                            <View>
+                                <Text style={styles.label}>John Kamau</Text>
+                                <Text style={styles.subTitle}>Eldoret Town Center</Text>
+                            </View>
                         </View>
 
-                        {/* submit btn */}
-                        <TouchableOpacity style={styles.submitBtn}>
-                            <Text style={styles.btnTxt}>Order Now!</Text>
+                        {/* data section */}
+                        <View>
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Username</Text>
+                                <Text style={styles.subTitle}>J_Kamau</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Phone Number</Text>
+                                <Text style={styles.subTitle}>0721234356</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Email Address</Text>
+                                <Text style={styles.subTitle}>johnkamau@gmail.com</Text>
+                            </View>
+                        </View>
+
+                        {/* buttons */}
+                        <View style={styles.BTNsContainer}>
+                        <TouchableOpacity style={styles.signoutBtn}>
+                            <Text style={styles.btnTxt}>Signout</Text>
+                            <FontAwesome6 name="right-from-bracket" size={18} color="#ffff"/>
                         </TouchableOpacity>
-                    </View>
+
+                        <TouchableOpacity style={styles.updateBtn}>
+                            <Text style={styles.btnTxt}>Update Profile</Text>
+                            <FontAwesome6 name="pen" size={18} color="#ffff"/>
+                        </TouchableOpacity>
+
+                        </View>
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -41,28 +67,66 @@ const styles=StyleSheet.create({
         paddingTop:25,
         paddingBottom:50
     },
-    alertImg:{
-        width:100,
-        height:100,
-        resizeMode:'cover',
-        alignSelf:'center'
-    },
-    textInput:{
-        borderRadius:10,
+    header:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'flex-start',
+        marginBottom:20,
+        gap:25,
         borderWidth:1,
-        borderColor:'#D9D9D9',
+        borderColor:'#E19540',
+        borderRadius:10,
+        padding:10  
+    },
+    profileImg:{
+        width:50,
+        height:50,
+        resizeMode:'cover',
+        alignSelf:'center',
+        borderRadius:50,
+    },
+    dataContainer:{
+        borderWidth:1,
+        borderColor:'#E19540',
+        borderRadius:10,
+        padding:10,
         marginTop:10
     },
     label:{
-        paddingLeft:4
+        fontSize:16,
+        color:'#000',
+        fontWeight:'500'
     },
-    submitBtn:{
-        backgroundColor:'#10AB10',
-        width:'85%',
+    subTitle:{
+        color:"#05367C",
+    },
+    BTNsContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:20,
+        justifyContent:'space-between',
+        marginTop:"50%"
+    },
+    signoutBtn:{
+        backgroundColor:'#E42629',
+        width:'45%',
         alignSelf:'center',
-        padding:10,
+        padding:13,
         marginTop:10,
-        borderRadius:10
+        borderRadius:10,
+        flexDirection:'row',
+        justifyContent:'space-between',
+    },
+    updateBtn:{
+        backgroundColor:'#05367C',
+        width:'45%',
+        alignSelf:'center',
+        padding:13,
+        marginTop:10,
+        borderRadius:10,
+        flexDirection:'row',
+        justifyContent:'space-between',
     },
     btnTxt:{
         textAlign:'center',
