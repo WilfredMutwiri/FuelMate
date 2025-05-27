@@ -64,7 +64,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="Orders" options={
           {
             headerShown:true,
-            title: 'Orders',
+            title: 'Order Progress',
             tabBarIcon: ({ color, size=10,focused }) => (
               <FontAwesome6 
               name="cart-shopping" 
