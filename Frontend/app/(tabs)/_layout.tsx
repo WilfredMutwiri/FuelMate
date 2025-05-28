@@ -3,11 +3,13 @@ import Toast from 'react-native-toast-message';
 import {TouchableOpacity, View} from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { SafeAreaProvider,SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
+import {useRouter} from 'expo-router';
 
 
 export default function TabsLayout() {
+const router=useRouter();
 
-  return (
+return (
 <View style={{flex:1}}>
     <Tabs
       screenOptions={{
@@ -38,6 +40,7 @@ export default function TabsLayout() {
             ),
             headerLeft: () => (
               <TouchableOpacity
+              onPress={()=>router.push('/UserNotifications')}
               style={{marginLeft:20}}
               >
                 <FontAwesome6 
@@ -49,6 +52,7 @@ export default function TabsLayout() {
             ),
             headerRight: () => (
               <TouchableOpacity
+              onPress={()=>router.push('/Profile')}
               style={{marginRight:20}}
               >
                 <FontAwesome6 

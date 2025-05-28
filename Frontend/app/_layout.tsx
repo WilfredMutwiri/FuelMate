@@ -29,6 +29,15 @@ export default function RootLayout() {
         <Stack.Screen name="Recovery2" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="(tabs)" options={{headerShown:false,title: '',}}/>
         <Stack.Screen name="(stationInfo)" options={{headerShown:false,title: '',}}/>
+        <Stack.Screen name="UserNotifications" options={
+          {
+            headerShown:true,
+            title: 'Notifications',
+            headerStyle: {backgroundColor: '#02223B'},
+            headerTintColor: '#EBF6FE',
+        }
+        
+        }/>
 
         {/* fuel station */}
         <Stack.Screen name="(stationAdmin)" options={{headerShown:false,title: '',}}/>
