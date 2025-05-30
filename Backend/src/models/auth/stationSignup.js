@@ -20,13 +20,13 @@ password:{
     type:String,
     required:true
 },
-location:{
+town:{
     type:String,
     required:true
 },
 fuel:{
     type:Array,
-    required:true
+    required:false
 },
 services:{
     type:Array,
@@ -36,13 +36,33 @@ rating:{
     type:Number,
     required:false
 },
-latitude:{
+// latitude:{
+//     type:Number,
+//     required:false
+// },
+// longitude:{
+//     type:Number,
+//     required:false
+// },
+RegNo:{
     type:Number,
     required:true
 },
-longitude:{
-    type:Number,
+physicalAddress:{
+    type:String,
     required:true
+},
+county:{
+    type:String,
+    required:true
+},
+profileImg:{
+    type:String,
+    required:true
+},
+stationName:{
+    type:String,
+    require:true
 }
 })
 

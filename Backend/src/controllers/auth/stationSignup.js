@@ -8,16 +8,22 @@ const stationSignup=async(req,res)=>{
             email,
             username,
             password,
-            location,
+            town,
             fuel,
             services,
             rating,
+            // latitude,   
+            // longitude,
+            RegNo,
+            physicalAddress,
+            county,
+            postalCode,
             phoneNo,
-            latitude,
-            longitude
+            profileImg,
+            stationName
         }=req.body;
 
-        if(!(username && email && password && location && fuel && phoneNo)){
+        if(!(username && email && password && phoneNo)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
             return res.status(400).json({message: 'Invalid email'});
@@ -38,13 +44,19 @@ const stationSignup=async(req,res)=>{
             email,
             password:hashedPassword,
             username,
-            location,
+            town,
             fuel,
             services,
             rating,
+            // latitude,
+            // longitude,
+            RegNo,
+            physicalAddress,
+            county,
+            postalCode,
             phoneNo,
-            latitude,
-            longitude
+            profileImg,
+            stationName
         })
 
         const createdStation=await newStation.save();
