@@ -5,6 +5,7 @@ const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
 const { stationSignup, getAllStations,getStationById} = require("./controllers/auth/stationSignup.js");
+const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
 //auth
@@ -19,6 +20,9 @@ router.post('/station/signin',stationSignin)
 router.post('/station/signup',stationSignup)
 router.get('/station/all',getAllStations)
 router.get('/station/:id',getStationById)
+
+// file uploads
+router.post('/upload',fileUpload);
 
 
 module.exports=router;
