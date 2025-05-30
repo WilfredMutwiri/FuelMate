@@ -1,5 +1,5 @@
-import { useLocalSearchParams } from 'expo-router';
-import { View, Text,StyleSheet,Image, ScrollView, TouchableOpacity} from 'react-native';
+import { router} from 'expo-router';
+import { View, Text,StyleSheet,Image, ScrollView, TouchableOpacity, Touchable} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import axios from 'axios';
@@ -55,25 +55,33 @@ export default function StationInfoScreen() {
         >
         <Text style={styles.titleTxt}>Welcome back <Text style={styles.subTxt}>Kilimambogo Station!</Text></Text>
             <View style={styles.TopContainer1}>
-                <View style={styles.Tcontainer101}>
+                <TouchableOpacity style={styles.Tcontainer101}
+                    onPress={()=>router.push("/Analytics")}
+                >
                     <Text style={styles.TopTxt}>Total Sales</Text>
                     <Text style={styles.TopSubTxt}>Ksh 20,000.00</Text>
-                </View>
-                <View style={styles.Tcontainer102}>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.Tcontainer102}
+                    onPress={()=>router.push("/Orders")}
+                >
                     <Text style={styles.TopTxt}>Pending Orders</Text>
                     <Text style={styles.TopSubTxt}>7</Text>
-                </View>
+                </TouchableOpacity>
             </View>
             {/* container 2 */}
             <View style={styles.TopContainer2}>
-                <View style={styles.Tcontainer201}>
+                <TouchableOpacity style={styles.Tcontainer201}
+                    onPress={()=>router.push("/Orders")}
+                >
                     <Text style={styles.TopTxt}>Delivered Fuel</Text>
                     <Text style={styles.TopSubTxt}>320 L</Text>
-                </View>
-                <View style={styles.Tcontainer202}>
-                    <Text style={styles.TopTxt}>Active Customers</Text>
-                    <Text style={styles.TopSubTxt}>34</Text>
-                </View>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.Tcontainer202}
+                    onPress={()=>router.push("/Orders")}
+                >
+                    <Text style={styles.TopTxt}>Declined Orders</Text>
+                    <Text style={styles.TopSubTxt}>0</Text>
+                </TouchableOpacity>
             </View>
 
             {/* analytics section */}
@@ -87,13 +95,17 @@ export default function StationInfoScreen() {
             <View style={styles.historyContainer}>
                 <View style={styles.historyTopC}>
                     <Text>Recent Orders</Text>
-                    <Text style={styles.subTxt}>View All</Text>
+                    <TouchableOpacity
+                    onPress={()=>router.push("/Orders")}
+                    >
+                        <Text style={styles.subTxt}>View All</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={{gap:10,}}>
                     {
                         ordersData.map((order,index)=>(
                             <View key={index} style={styles.orderContainer}>
-                                <Text>Order: {order.id}</Text>
+                                <Text style={styles.subTxt}>Order: {order.id}</Text>
                                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                                     <Text>{order.location}</Text>
                                     <Text style={styles.subTxt}>{order.status}</Text>
@@ -193,19 +205,17 @@ const styles=StyleSheet.create({
         marginTop:20,
         width:'90%',
         alignSelf:'center',
-        borderColor:'#2F2C2C',
-        borderWidth:1,
         borderRadius:10,
         padding:10
     },
     historyTopC:{
         flexDirection:'row',
         justifyContent:'space-between',
-        paddingBottom:10
+        paddingBottom:20,
     },
     orderContainer:{
         flexDirection:'column',
-        backgroundColor:'#D9D9D9',
+        backgroundColor:'#ffff',
         padding:10,
         borderRadius:10
     }

@@ -1,121 +1,161 @@
-import { useLocalSearchParams } from 'expo-router';
-import { View, Text,StyleSheet,Image, ScrollView, TouchableOpacity} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import userImg from '../../assets/images/station1.jpg';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import axios from 'axios';
-import { useEffect, useState } from 'react';
-// import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
-// import Loader from '../../components/loader.jsx';
+import { router } from 'expo-router';
+export default function Profile(){
+    return(
+        <SafeAreaView style={styles.container} edges={['left','right']}>
+            <ScrollView
+            style={{flex:1}}
+            contentContainerStyle={{flexGrow:1}}
+            >
+                <View style={styles.profileCont}>
+                    {/* header section */}
+                        <View style={styles.header}>
+                            <Image source={userImg} style={styles.profileImg}/>
+                            <View>
+                                <Text style={styles.label}>Kilimambogo Station</Text>
+                                <Text style={styles.subTitle}>Eldoret Town Center</Text>
+                            </View>
+                        </View>
 
-export default function StationProfile() {
+                        {/* status container */}
+                        <View style={styles.statusContainer}>
+                            <Text style={styles.statusTxt}>Status <Text style={styles.subTitle}>Approved</Text></Text>
+                        </View>
 
-  return (
-    <SafeAreaView style={styles.container} edges={['left','right']}>
-        <ScrollView
-        contentContainerStyle={{paddingBottom:50}}
-        >
-            <View>
-                <Text>Station Profile</Text>
-            </View>
-        </ScrollView>
-    </SafeAreaView>
-  );
+                        {/* data section */}
+                        <View>
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Phone Number</Text>
+                                <Text style={styles.subTitle}>0721234356</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Email Address</Text>
+                                <Text style={styles.subTitle}>kilimambogostation@gmail.com</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Physical Address</Text>
+                                <Text style={styles.subTitle}>321-Eldoret</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>B/S Registration Number</Text>
+                                <Text style={styles.subTitle}>100ABGJJJBUAMBKM103</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Services Offered</Text>
+                                <Text style={styles.subTitle}>Carwash, Balancing</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Fuel Types Available</Text>
+                                <Text style={styles.subTitle}>Diesel, Petrol</Text>
+                            </View>
+                        </View>
+
+                        {/* buttons */}
+                        <View style={styles.BTNsContainer}>
+                        <TouchableOpacity style={styles.signoutBtn}
+                            onPress={()=>router.push("/StationSignin")}
+                        >
+                            <Text style={styles.btnTxt}>Signout</Text>
+                            <FontAwesome6 name="right-from-bracket" size={18} color="#ffff"/>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.updateBtn}>
+                            <Text style={styles.btnTxt}>Update Profile</Text>
+                            <FontAwesome6 name="pen" size={18} color="#ffff"/>
+                        </TouchableOpacity>
+
+                        </View>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    )
 }
 
 const styles=StyleSheet.create({
     container:{
-        flex:1,
+        flex:1
     },
-    ImageContainer:{
-        width:"100%",
-        height:250,
+    profileCont:{
+        width:'90%',
+        alignSelf:'center',
+        paddingTop:25,
+        paddingBottom:50
     },
-    stationImg:{
-        width:"100%",
-        height:"100%",
-        resizeMode:"cover"
-    },
-    Stationinfo:{
-        padding:15,
-        gap:20
-    },
-    topInfo:{
+    header:{
         flexDirection:'row',
-        justifyContent:'space-between',
-        alignItems:'center'
-    },
-    ratingContainer:{
-        flexDirection:'row',
-        gap:10,
-        paddingTop:5
-    },
-    ratingTxt:{
-        fontSize:16
-    },
-    stationName:{
-        fontWeight:'semibold',
-        fontSize:20,
-        color:"#00478F"
-    },
-    likesContainer:{
-        flexDirection:'row',
-        gap:30
-    },
-    locationContainer:{
-        flexDirection:'column',
-        gap:10
-    },
-    headingTxt:{
-        fontWeight:'semibold',
-        fontSize:18,
-        color:'#525151'
-    },
-    MetaConatiner:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-    },
-    MetaInfo:{
-        flexDirection:'row',
-        gap:20,
-        backgroundColor:'#E3E2E2',
-        padding:10,
-        width:'43%',
-        borderRadius:10
-    },
-    gasContainer:{
-        flexDirection:'row',
-        paddingTop:10,
-        gap:40
-    },
-    gas:{
-    backgroundColor:'#E3E2E2',
-    padding:5,
-    width:"25%",
-    alignItems:'center',
-    borderRadius:10
-    },
-    lowerInfoContainer:{
-        paddingBottom:20
-    },
-    priceContainer:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        paddingTop:10,
-        paddingBottom:20
-    },
-    price:{
-        fontWeight:'semibold',
-        fontSize:24,
-        color:"#ff6d1f"
-    },
-    orderBtn:{
-        backgroundColor:"#00478F",
-        padding:10,
-        justifyContent:'center',
         alignItems:'center',
-        borderRadius:10
+        justifyContent:'flex-start',
+        marginBottom:20,
+        gap:25,
+        borderWidth:1,
+        borderColor:'#E19540',
+        borderRadius:10,
+        padding:10  
     },
-    orderTxt:{
-        color:"#fff"
+    profileImg:{
+        width:50,
+        height:50,
+        resizeMode:'cover',
+        alignSelf:'center',
+        borderRadius:50,
+    },
+    dataContainer:{
+        borderWidth:1,
+        borderColor:'#E19540',
+        borderRadius:10,
+        padding:10,
+        marginTop:10
+    },
+    label:{
+        fontSize:16,
+        color:'#000',
+        fontWeight:'500'
+    },
+    subTitle:{
+        color:"#05367C",
+    },
+    BTNsContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:20,
+        justifyContent:'space-between',
+        marginTop:"50%"
+    },
+    signoutBtn:{
+        backgroundColor:'#E42629',
+        width:'45%',
+        alignSelf:'center',
+        padding:13,
+        marginTop:10,
+        borderRadius:10,
+        flexDirection:'row',
+        justifyContent:'space-between',
+    },
+    updateBtn:{
+        backgroundColor:'#05367C',
+        width:'45%',
+        alignSelf:'center',
+        padding:13,
+        marginTop:10,
+        borderRadius:10,
+        flexDirection:'row',
+        justifyContent:'space-between',
+    },
+    btnTxt:{
+        textAlign:'center',
+        color:'#ffff'
+    },
+    statusContainer:{
+        alignItems:'center',
+        paddingBottom:10
     }
 })

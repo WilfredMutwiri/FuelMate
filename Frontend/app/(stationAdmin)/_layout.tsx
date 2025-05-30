@@ -1,4 +1,4 @@
-import { Tabs, useLocalSearchParams } from 'expo-router';
+import { Tabs, useLocalSearchParams,router} from 'expo-router';
 import Toast from 'react-native-toast-message';
 import {TouchableOpacity, View} from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -38,6 +38,7 @@ const {id}=useLocalSearchParams();
             ),
             headerLeft: () => (
               <TouchableOpacity
+              onPress={()=>router.push('/StationNotifications')}
               style={{marginLeft:20}}
               >
                 <FontAwesome6 
@@ -50,6 +51,7 @@ const {id}=useLocalSearchParams();
             headerRight: () => (
               <TouchableOpacity
               style={{marginRight:20}}
+              onPress={()=>router.push("/Profile")}
               >
                 <FontAwesome6 
                   name="user-circle" 

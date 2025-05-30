@@ -36,7 +36,14 @@ export default function RootLayout() {
             headerStyle: {backgroundColor: '#02223B'},
             headerTintColor: '#EBF6FE',
         }
-        
+        }/>
+        <Stack.Screen name="StationNotifications" options={
+          {
+            headerShown:true,
+            title: 'Notifications',
+            headerStyle: {backgroundColor: '#02223B'},
+            headerTintColor: '#EBF6FE',
+        }
         }/>
 
         {/* fuel station */}
