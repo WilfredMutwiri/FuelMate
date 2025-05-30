@@ -10,9 +10,9 @@ import {
     ScrollView,
     Keyboard,
     Platform,
-
 } from 'react-native';
-import React,{useState} from 'react';
+import {documentPicker} from '../components/filePicker.jsx'
+import React,{useEffect, useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import {useRouter} from 'expo-router';
@@ -27,11 +27,33 @@ export default function StationSignup(){
     const {user}=useAuthStore();
     const router=useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [uploadedFile,setUploadedFile]=useState(null);
+
+    const handleFileUpload=async()=>{
+        const result=await documentPicker();
+        if(result){
+            setUploadedFile(result)
+        }
+    }
+
+    useEffect(()=>{
+        if(uploadedFile){
+            console.log("The uploaded file is", uploadedFile)
+        }
+    },[uploadedFile])
+
     const [formData,setFormData]=useState({
         username:'',
         email:'',
         password:'',
-        confirmPassword:''
+        confirmPassword:'',
+        RegNo:'',
+        physicalAddress:'',
+        county:'',
+        town:'',
+        stationName:'',
+        phoneNo:'',
+        profileImg:uploadedFile,
     })
     const handleInputChange=(name,value)=>{
         setFormData({
@@ -51,7 +73,11 @@ export default function StationSignup(){
         return ToastComponent("error","Passwords don't match")
 
     }
-    const response=await axios.post(`${SERVER_URI}/api/v1/signup`, formData)
+    const response=await axios.post(`${SERVER_URI}/api/v1/station/signup`,{
+        ...formData,
+        RegNo:parseInt(formData.RegNo),
+    });
+
     const result=response.data
     if(response.data.success){
         await signup(result.user.email,result.user.username)
@@ -61,6 +87,7 @@ export default function StationSignup(){
     }
     } catch (error) {
          if(error.response && error.response.data){
+            console.log(error)
             ToastComponent("error",error.response.data.message || "An error occurred")  
          }else{
             ToastComponent("error",`An error occured ${error.message}`)  
@@ -91,8 +118,8 @@ export default function StationSignup(){
                                 <Text style={styles.inputLabel}>Station Name</Text>
                                 <TextInput 
                                 style={styles.inputText}
-                                value={formData.username}
-                                onChangeText={(text)=>handleInputChange('username',text)}
+                                value={formData.stationName}
+                                onChangeText={(text)=>handleInputChange('stationName',text)}
                                 placeholder='Enter your station name'
                                 />
                             </View>
@@ -100,17 +127,18 @@ export default function StationSignup(){
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Business Registration Number</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.RegNo}
+                                onChangeText={(text)=>handleInputChange('RegNo',text)}
                                 style={styles.inputText}
                                 placeholder='Enter business registration number'
+                                keyboardType='numeric'
                                 />
                             </View>
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Physical Address</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.physicalAddress}
+                                onChangeText={(text)=>handleInputChange('physicalAddress',text)}
                                 style={styles.inputText}
                                 placeholder='Enter your Address'
                                 />
@@ -118,22 +146,22 @@ export default function StationSignup(){
                             {/* city_postal_container */}
                             <View style={styles.flex_Container}>
                             <View style={styles.inputContainer2}>
-                                <Text style={styles.inputLabel2}>City</Text>
+                                <Text style={styles.inputLabel2}>County</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.city}
+                                onChangeText={(text)=>handleInputChange('county',text)}
                                 style={styles.inputText}
                                 placeholder='Eldoret'
                                 />
                             </View>
 
                             <View style={styles.inputContainer2}>
-                                <Text style={styles.inputLabel2}>Postal Code</Text>
+                                <Text style={styles.inputLabel2}>Town</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.postalCode}
+                                onChangeText={(text)=>handleInputChange('town',text)}
                                 style={styles.inputText}
-                                placeholder='476 - Eldoret'
+                                placeholder='Eldoret'
                                 />
                             </View>
                             </View>
@@ -143,8 +171,8 @@ export default function StationSignup(){
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.inputLabel2}>Username</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.username}
+                                onChangeText={(text)=>handleInputChange('username',text)}
                                 style={styles.inputText}
                                 placeholder='B/S Username'
                                 />
@@ -153,12 +181,32 @@ export default function StationSignup(){
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.inputLabel2}>Phone No.</Text>
                                 <TextInput 
-                                value={formData.email}
-                                onChangeText={(text)=>handleInputChange('email',text)}
+                                value={formData.phoneNo}
+                                onChangeText={(text)=>handleInputChange('phoneNo',text)}
                                 style={styles.inputText}
                                 placeholder='B/S Phone'
                                 />
                             </View>
+                            </View>
+                            {/* file upload section */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Profile Image</Text>
+                                <View style={styles.fileUploadCont}>
+                                    <TouchableOpacity style={styles.button}
+                                        onPress={()=>handleFileUpload()}
+                                    >
+                                    <Text style={{color:'#fff',textAlign:'center', fontSize:12, fontWeight:'semibold'}}>
+                                    {
+                                        uploadedFile?'File uploaded':' Select file'
+                                    }    
+                                    </Text>
+                                    </TouchableOpacity>
+                                    <Text>
+                                        {
+                                            uploadedFile?uploadedFile.file.originalname: 'No file uploaded'
+                                        }
+                                    </Text>
+                                </View>        
                             </View>
                             {/* email container */}
                             <View style={styles.inputContainer}>
@@ -363,5 +411,22 @@ inputText:{
     inputLabel2:{
         paddingBottom:5,
         paddingLeft:15
+    },
+    button:{
+        backgroundColor:'#05367C',
+        padding:5,
+        borderRadius:10,
+        width:100
+    },
+    fileUploadCont:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        justifyContent:'space-between',
+        borderWidth:1,
+        borderColor:'#05367C',
+        width:'82%',
+        borderRadius:10,
+        paddingRight:5
     }
 })
