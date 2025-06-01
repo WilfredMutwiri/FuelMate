@@ -5,7 +5,9 @@ const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
 const { stationSignup, getAllStations,getStationById} = require("./controllers/auth/stationSignup.js");
-const fileUpload = require("./fileUpload.js");
+const {fileUpload} = require("./controllers/auth/fileUpload.js");
+const {profileUpload,certUpload} = require("./middlewares/multer.js");
+// const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
 //auth
@@ -22,7 +24,7 @@ router.get('/station/all',getAllStations)
 router.get('/station/:id',getStationById)
 
 // file uploads
-router.post('/upload',fileUpload);
-
+router.post('/upload/images/',profileUpload.single('file'),fileUpload);
+router.post('/upload/docs/',certUpload.single('file'),fileUpload);
 
 module.exports=router;

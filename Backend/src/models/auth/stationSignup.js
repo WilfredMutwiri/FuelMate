@@ -26,11 +26,11 @@ town:{
 },
 fuel:{
     type:Array,
-    required:false
+    required:true
 },
 services:{
     type:Array,
-    required:false
+    required:true
 },
 rating:{
     type:Number,
@@ -63,6 +63,10 @@ profileImg:{
 stationName:{
     type:String,
     require:true
+},
+BusinessCert:{
+    type:String,
+    required:true
 }
 })
 

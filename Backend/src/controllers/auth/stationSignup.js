@@ -20,7 +20,8 @@ const stationSignup=async(req,res)=>{
             postalCode,
             phoneNo,
             profileImg,
-            stationName
+            stationName,
+            BusinessCert
         }=req.body;
 
         if(!(username && email && password && phoneNo)){
@@ -56,7 +57,8 @@ const stationSignup=async(req,res)=>{
             postalCode,
             phoneNo,
             profileImg,
-            stationName
+            stationName,
+            BusinessCert
         })
 
         const createdStation=await newStation.save();
