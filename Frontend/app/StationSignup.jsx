@@ -153,7 +153,7 @@ export default function StationSignup(){
         await signup(result.user.email,result.user.username)
         ToastComponent("success","Account created successfully!")
         console.log(user)
-        router.push('/Signin')
+        router.push('/StationSignin')
     }
     } catch (error) {
          if(error.response && error.response.data){

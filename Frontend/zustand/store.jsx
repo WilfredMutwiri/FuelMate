@@ -7,23 +7,25 @@ const useAuthStore=create(
     persist(
         set=>({
             user:null,
-            isAuthenticated:false,
+            isUserAuthenticated:false,
+            isStationAuthenticated:false,
+            station:null,
 
-            //login
+            //user
             login:async(username,token)=>{
                 set({user:{username,token},isAuthenticated:true})
             },
-
-            //signup
             signup:async(email,username)=>{
                 set({user:{email,username},isAuthenticated:true})
             },
-
-            //signup
             logout:async(username,email)=>{
                 set({user:null,isAuthenticated:false})
-            }
+            },
 
+            // station
+            stationLogin:async(stationData)=>{
+                set({station:{...stationData},isStationAuthenticated:true})
+            },
         }),
         {
             name:"auth-storage",

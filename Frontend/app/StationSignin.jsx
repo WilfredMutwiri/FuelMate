@@ -12,6 +12,7 @@ import {
     Platform,
 
 } from 'react-native';
+
 import React,{useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -20,13 +21,11 @@ import {SERVER_URI} from '../constants/SERVER_URI.jsx';
 import axios from 'axios'
 import ToastComponent from "../components/Toast";
 import useAuthStore from '../zustand/store.jsx';
-import { useNavigation } from 'expo-router';
+
 export default function StationSignin(){
-    const navigation=useNavigation();
-    const {login}=useAuthStore();
+    const {stationLogin}=useAuthStore();
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [success,setSuccess]=useState(false);
     const [formData,setFormData]=useState({
         username:'',
         password:''
@@ -44,24 +43,26 @@ export default function StationSignin(){
     }
 
     const handleSignin=async()=>{
-        // try {
-        //     const response = await axios.post(`${SERVER_URI}/api/v1/signin`,formData)
-        //     const result=response.data;
-        //     console.log(result.user.username)
-        //     if (result.success){
-        //         await login(result.user.username,result.token)
-        //         ToastComponent("success",`Welcome back! ${formData.username}`);  
-        //         // router.push('/Signup');
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        //     if(error.response && error.response.data){
-        //         ToastComponent("error",`${error.response.data.message}`);  
-        //     }
-        // }
+        try {
+            console.log("initiating login")
+            const response = await axios.post(`${SERVER_URI}/api/v1/station/signin/`,formData)
+            const result=response.data;
+            console.log(result)
+            if (result && result.success){
+                await stationLogin(result.user)
+                ToastComponent("success",`Welcome back! ${formData.username}`);  
+                router.push('/(stationAdmin)/Dashboard');
+            }
+        } catch (error) {
+            console.log(error);
+            if(error.response && error.response.data){
+                ToastComponent("error",`${error.response.data.message}`);  
+            }
+        }
 
-        router.push('/(stationAdmin)/Dashboard');
     }
+
+
     const handleRecovery = () => {
         router.push('/StationRecovery');
     }
@@ -70,6 +71,11 @@ export default function StationSignin(){
 
         router.push('/StationSignup');
     }
+
+    const station=useAuthStore((state)=>state.station)
+    console.log("station data", station)
+
+
     return(
         <KeyboardAvoidingView style={{flex:1}} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
