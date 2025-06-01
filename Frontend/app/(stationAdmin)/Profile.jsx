@@ -3,7 +3,53 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import userImg from '../../assets/images/station1.jpg';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { router } from 'expo-router';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import {documentPicker} from '../../components/filePicker.jsx'
+
 export default function Profile(){
+    const [fileUrl,setFileUrl]=useState(null);
+    const [uploadedFile,setUploadedFile]=useState(null);
+
+        const handleFileUpload=async()=>{
+            const result=await documentPicker();
+            if(result){
+                setUploadedFile(result);
+                const formData=new FormData();
+                formData.append('file', {
+                    uri: result.uri,
+                    type: result.type || result.mimeType || 'application/octet-stream',
+                    name: result.name || `file-${Date.now()}`,
+                });
+    
+                try {
+                    const response=await axios.post(`${SERVER_URI}/api/v1/upload`,formData,{
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        }
+                    })
+                    console.log("File uploaded successfully",response.data);
+                    setFileUrl(response.data.fileUrl);
+                } catch (error) {
+                    console.error("Error uploading file",error);
+                }
+            }
+        }
+    
+        useEffect(()=>{
+            if(uploadedFile){
+                console.log("The uploaded file is", uploadedFile)
+                console.log("File URL is", fileUrl);
+            }
+        },[uploadedFile,fileUrl])
+
+        useEffect(()=>{
+            if(fileUrl){
+                console.log("File URL is", fileUrl);
+            }
+        },[fileUrl])
+
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView
@@ -13,7 +59,12 @@ export default function Profile(){
                 <View style={styles.profileCont}>
                     {/* header section */}
                         <View style={styles.header}>
-                            <Image source={userImg} style={styles.profileImg}/>
+                            <Image source={fileUrl?{uri:fileUrl}:userImg} style={styles.profileImg}/>
+                            <TouchableOpacity onPress={handleFileUpload}
+                            style={{marginLeft:-35,marginTop:20,backgroundColor:'gray',padding:5,borderRadius:15}}
+                            >
+                                <FontAwesome6 name="pen" size={16} color="#05367C"/>
+                            </TouchableOpacity>
                             <View>
                                 <Text style={styles.label}>Kilimambogo Station</Text>
                                 <Text style={styles.subTitle}>Eldoret Town Center</Text>

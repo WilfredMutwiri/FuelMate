@@ -49,6 +49,7 @@ useEffect(() => {
 
 }, []);
 
+console.log(stations)
 // get user's current location
 useEffect(()=>{
     setLoading(true);
@@ -130,19 +131,19 @@ useEffect(()=>{
                                 ):(
                                 stations.map((station)=>(
                                     <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
-                                        <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                        <Image source={{uri:station.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station.username}</Text>
+                                                <Text>{station.stationName}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station.rating}</Text>
+                                                    <Text>{station.rating || 1.5}</Text>
                                                 </View>
                                             </View>
                                             <View>
                                                 {
                                                     station.fuel.map((fuelType, index) => (
-                                                    <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                    <Text key={index}>{fuelType}</Text>
                                                 ))
                                                 }
                                             </View>
@@ -171,19 +172,19 @@ useEffect(()=>{
                                 ):(
                                     stations.map((station)=>(
                                         <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
-                                            <Image source={station1} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                            <Image source={{uri:station.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                             <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station.username}</Text>
+                                                <Text>{station.stationName}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station.rating}</Text>
+                                                    <Text>{station.rating || 1.5}</Text>
                                                 </View>
                                             </View>
                                                 <View>
                                                     {
                                                         station.fuel.map((fuelType, index) => (
-                                                            <Text key={index}>{fuelType.name} : {fuelType.price}/Ltr</Text>
+                                                            <Text key={index}>{fuelType}</Text>
                                                         ))
                                                     }
                                                 </View>

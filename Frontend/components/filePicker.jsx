@@ -1,7 +1,7 @@
 import * as DocumentPicker  from 'expo-document-picker'
-import axios from 'axios';
-import { SERVER_URI } from '../constants/SERVER_URI';
-export const documentPicker =async()=>{
+
+// images picker
+export const imagePicker =async()=>{
     try{
         const result=await DocumentPicker.getDocumentAsync({
             copyToCacheDirectory:true,
@@ -15,24 +15,48 @@ export const documentPicker =async()=>{
         }
 
         const file=result.assets[0];
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
+        const fileExtension=file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+
+        if(!allowedExtensions.includes(fileExtension)){
+            console.log('File is not a valid image')
+            return null;
+        }
+
         console.log(file);
-
-        const formData=new FormData();
-        formData.append('file',{
-            uri:file.uri,
-            name:file.name,
-            type:file.mimeType || 'application/octet-stream'
-        });
-
-        const response=await axios.post(`${SERVER_URI}/api/v1/upload/`,formData,{
-            headers:{
-                'Content-Type':'multipart/form-data'
-            },
-        });
-        console.log("upload response",response.data)
-        return response.data;
+        return file;
     }
     catch(err){
         console.log('Error Picking Document',err)
+        return null;
+    }
+}
+
+
+// docs picker
+export const docPicker =async()=>{
+    try{
+        const result=await DocumentPicker.getDocumentAsync({
+            copyToCacheDirectory:true,
+            multiple:false,
+            type: [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ],
+        });
+
+        if(result.canceled){
+            console.log("User canceled file picker")
+            return
+        }
+
+        const file=result.assets[0];
+        console.log(file);
+        return file;
+    }
+    catch(err){
+        console.log('Error Picking Document',err)
+        return null;
     }
 }

@@ -11,7 +11,8 @@ import {
     Keyboard,
     Platform,
 } from 'react-native';
-import {documentPicker} from '../components/filePicker.jsx'
+
+import {imagePicker,docPicker} from '../components/filePicker.jsx'
 import React,{useEffect, useState} from 'react';
 import { SafeAreaView } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -27,20 +28,78 @@ export default function StationSignup(){
     const {user}=useAuthStore();
     const router=useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
-    const [uploadedFile,setUploadedFile]=useState(null);
+    const [fileUrl,setFileUrl]=useState(null);
+    const [certUrl,setCertUrl]=useState(null)
 
+    // profile Image upload
     const handleFileUpload=async()=>{
-        const result=await documentPicker();
-        if(result){
-            setUploadedFile(result)
+        const file=await imagePicker();
+        if(file){
+            const formData=new FormData();
+            formData.append('file', {
+                uri: file.uri,
+                type: file.mimeType || 'application/octet-stream',
+                name: file.name || `file-${Date.now()}`,
+            });
+
+            try {
+                console.log('initiating file upload')
+                const response=await axios.post(`${SERVER_URI}/api/v1/upload/images/`,formData,{
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+                if(response){
+                console.log("File uploaded successfully",response.data);
+                setFileUrl(response.data.fileUrl);
+                }
+            } catch (error) {
+            if (error.response) {
+                console.error("Response error:", error.response.data);
+            } else if (error.request) {
+                console.error("Request error (no response):", error.request);
+            } else {
+                console.error("Unknown axios error:", error.message);
+            }
+            }
         }
     }
 
-    useEffect(()=>{
-        if(uploadedFile){
-            console.log("The uploaded file is", uploadedFile)
+
+    // Business Certificate upload
+    const handleCertUpload=async()=>{
+        const file=await docPicker();
+        if(file){
+            const formData=new FormData();
+            formData.append('file', {
+                uri: file.uri,
+                type: file.mimeType || 'application/octet-stream',
+                name: file.name || `file-${Date.now()}`,
+            });
+
+            try {
+                console.log('initiating file upload')
+                const response=await axios.post(`${SERVER_URI}/api/v1/upload/docs/`,formData,{
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    }
+                })
+                if(response){
+                console.log("File uploaded successfully",response.data);
+                setCertUrl(response.data.fileUrl);
+                }
+            } catch (error) {
+            if (error.response) {
+                console.error("Response error:", error.response.data);
+            } else if (error.request) {
+                console.error("Request error (no response):", error.request);
+            } else {
+                console.error("Unknown axios error:", error.message);
+            }
+            }
         }
-    },[uploadedFile])
+    }
+
 
     const [formData,setFormData]=useState({
         username:'',
@@ -53,12 +112,21 @@ export default function StationSignup(){
         town:'',
         stationName:'',
         phoneNo:'',
-        profileImg:uploadedFile,
+        profileImg:'',
+        fuel:[],
+        services:[],
+        BusinessCert:''
     })
+
     const handleInputChange=(name,value)=>{
+        const updatedValue=(name==='fuel' || name==='services')
+        ?value.split(',').map(item=>item.trim())
+        :value
         setFormData({
             ...formData,
-            [name]:value
+            profileImg:fileUrl,
+            BusinessCert:certUrl,
+            [name]:updatedValue
         })
     }
 
@@ -75,6 +143,8 @@ export default function StationSignup(){
     }
     const response=await axios.post(`${SERVER_URI}/api/v1/station/signup`,{
         ...formData,
+        profileImg:fileUrl,
+        BusinessCert:certUrl,
         RegNo:parseInt(formData.RegNo),
     });
 
@@ -188,7 +258,7 @@ export default function StationSignup(){
                                 />
                             </View>
                             </View>
-                            {/* file upload section */}
+                            {/* profile image upload section */}
                             <View style={styles.inputContainer}>
                                 <Text style={styles.inputLabel}>Profile Image</Text>
                                 <View style={styles.fileUploadCont}>
@@ -197,16 +267,56 @@ export default function StationSignup(){
                                     >
                                     <Text style={{color:'#fff',textAlign:'center', fontSize:12, fontWeight:'semibold'}}>
                                     {
-                                        uploadedFile?'File uploaded':' Select file'
+                                        fileUrl?'File selected':' Select file'
                                     }    
                                     </Text>
                                     </TouchableOpacity>
                                     <Text>
                                         {
-                                            uploadedFile?uploadedFile.file.originalname: 'No file uploaded'
+                                            fileUrl?'file uploaded': 'No file uploaded'
                                         }
                                     </Text>
                                 </View>        
+                            </View>
+                            {/* Business cert upload section*/}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Business Registration Certificate</Text>
+                                <View style={styles.fileUploadCont}>
+                                    <TouchableOpacity style={styles.button}
+                                        onPress={()=>handleCertUpload()}
+                                    >
+                                    <Text style={{color:'#fff',textAlign:'center', fontSize:12, fontWeight:'semibold'}}>
+                                    {
+                                        certUrl?'File selected':' Select file'
+                                    }    
+                                    </Text>
+                                    </TouchableOpacity>
+                                    <Text>
+                                        {
+                                            certUrl?'file uploaded': 'No file uploaded'
+                                        }
+                                    </Text>
+                                </View>        
+                            </View>
+                            {/* fuel types container */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Fuel Types Available</Text>
+                                <TextInput 
+                                value={formData.fuel.join(',')}
+                                onChangeText={(text)=>handleInputChange('fuel',text)}
+                                style={styles.inputText}
+                                placeholder='e.g Petrol, Diesel, Kerosene'
+                                />
+                            </View>
+                            {/* services container */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Services Offered</Text>
+                                <TextInput 
+                                value={formData.services.join(',')}
+                                onChangeText={(text)=>handleInputChange('services',text)}
+                                style={styles.inputText}
+                                placeholder='e.g Car Wash, Balancing'
+                                />
                             </View>
                             {/* email container */}
                             <View style={styles.inputContainer}>
