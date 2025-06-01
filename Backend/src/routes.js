@@ -11,15 +11,15 @@ const {profileUpload,certUpload} = require("./middlewares/multer.js");
 const router=express.Router();
 
 //auth
-router.post('/signup',userSignup);
-router.post('/signin',userSignin);
+router.post('/user/signup/',userSignup);
+router.post('/user/signin/',userSignin);
 router.post('/signout',userSignout);
 router.post('/requestOTP',requestOTP);
 router.post('/resetPassword',resetPassword)
 
 //station
-router.post('/station/signin',stationSignin)
-router.post('/station/signup',stationSignup)
+router.post('/station/signin/',stationSignin)
+router.post('/station/signup/',stationSignup)
 router.get('/station/all',getAllStations)
 router.get('/station/:id',getStationById)
 

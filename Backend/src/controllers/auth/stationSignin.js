@@ -6,11 +6,7 @@ const stationSignin=async(req,res)=>{
 
     try {
 
-        let {username,password}=req.body;
-
-        username=username.trim();
-        password=password.trim();
-    
+        let {username,password}=req.body;    
         if(!username ||!password){
             return res.status(400).json({message:"Username and Password are required!"})
         }
@@ -37,6 +33,7 @@ const stationSignin=async(req,res)=>{
     
         return res.status(200).json({
             message:"Login successfull!",
+            success:true,
             token,
             user:{
                 id:station._id,
