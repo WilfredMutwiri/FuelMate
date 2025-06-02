@@ -5,50 +5,51 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { router } from 'expo-router';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import {documentPicker} from '../../components/filePicker.jsx'
+import useAuthStore from '../../zustand/store.jsx';
+import Loader from '../../components/loader.jsx';
+import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
+
 
 export default function Profile(){
-    const [fileUrl,setFileUrl]=useState(null);
-    const [uploadedFile,setUploadedFile]=useState(null);
+    const station=useAuthStore((state)=>state.station);
+    const [stationData,setStationData]=useState(null);
+    const [Loading,setLoading]=useState(false);
+    console.log(station.id)
 
-        const handleFileUpload=async()=>{
-            const result=await documentPicker();
-            if(result){
-                setUploadedFile(result);
-                const formData=new FormData();
-                formData.append('file', {
-                    uri: result.uri,
-                    type: result.type || result.mimeType || 'application/octet-stream',
-                    name: result.name || `file-${Date.now()}`,
-                });
-    
-                try {
-                    const response=await axios.post(`${SERVER_URI}/api/v1/upload`,formData,{
-                        headers: {
-                            'Content-Type': 'multipart/form-data',
-                        }
-                    })
-                    console.log("File uploaded successfully",response.data);
-                    setFileUrl(response.data.fileUrl);
-                } catch (error) {
-                    console.error("Error uploading file",error);
-                }
+    useEffect(() => {
+    const getStation = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/station/${station.id}`);
+            const result = response.data;
+            console.log(result)
+            if (result.station) {
+                setStationData(result.station);
+                setLoading(false);
+            } else {
+                setError(true);
+                setLoading(false);
             }
         }
-    
-        useEffect(()=>{
-            if(uploadedFile){
-                console.log("The uploaded file is", uploadedFile)
-                console.log("File URL is", fileUrl);
-            }
-        },[uploadedFile,fileUrl])
+        catch (error) {
+            setError(true);
+            setMessage("An error occurred");
+            console.log("API fetch error:", error.response?.data || error.message);
+            setError(true);
+            setMessage("An error occurred");
+        }
+        setLoading(false);
+    };
+    getStation();
+}, []);
 
-        useEffect(()=>{
-            if(fileUrl){
-                console.log("File URL is", fileUrl);
-            }
-        },[fileUrl])
-
+console.log("station data",stationData)
+console.log(stationData?.county)
 
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -57,58 +58,61 @@ export default function Profile(){
             contentContainerStyle={{flexGrow:1}}
             >
                 <View style={styles.profileCont}>
-                    {/* header section */}
+                    {
+                        Loading?(
+                            <Loader/>
+                        ):(
+                            <>
+                        {/* header section */}
                         <View style={styles.header}>
-                            <Image source={fileUrl?{uri:fileUrl}:userImg} style={styles.profileImg}/>
-                            <TouchableOpacity onPress={handleFileUpload}
-                            style={{marginLeft:-35,marginTop:20,backgroundColor:'gray',padding:5,borderRadius:15}}
-                            >
-                                <FontAwesome6 name="pen" size={16} color="#05367C"/>
-                            </TouchableOpacity>
+                            <Image source={{uri:stationData?.profileImg} || userImg} style={styles.profileImg}/>
                             <View>
-                                <Text style={styles.label}>Kilimambogo Station</Text>
-                                <Text style={styles.subTitle}>Eldoret Town Center</Text>
+                                <Text style={styles.label}>{stationData?.stationName}</Text>
+                                <Text style={styles.subTitle}>{stationData?.county} - <Text>{stationData?.town}</Text></Text>
                             </View>
                         </View>
-
                         {/* status container */}
                         <View style={styles.statusContainer}>
                             <Text style={styles.statusTxt}>Status <Text style={styles.subTitle}>Approved</Text></Text>
                         </View>
-
                         {/* data section */}
                         <View>
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Phone Number</Text>
-                                <Text style={styles.subTitle}>0721234356</Text>
+                                <Text style={styles.subTitle}>{stationData?.phoneNo}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Email Address</Text>
-                                <Text style={styles.subTitle}>kilimambogostation@gmail.com</Text>
+                                <Text style={styles.subTitle}>{stationData?.email}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Physical Address</Text>
-                                <Text style={styles.subTitle}>321-Eldoret</Text>
+                                <Text style={styles.subTitle}>{stationData?.physicalAddress}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>B/S Registration Number</Text>
-                                <Text style={styles.subTitle}>100ABGJJJBUAMBKM103</Text>
+                                <Text style={styles.subTitle}>{stationData?.RegNo}</Text>
+                            </View>
+
+                            <View style={styles.dataContainer}>
+                                <Text style={styles.label}>Registration Certificate</Text>
+                                <Text style={styles.subTitle}>{stationData?.BusinessCert}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Services Offered</Text>
-                                <Text style={styles.subTitle}>Carwash, Balancing</Text>
+                                <Text style={styles.subTitle}>{stationData?.services.join(' ')}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Fuel Types Available</Text>
-                                <Text style={styles.subTitle}>Diesel, Petrol</Text>
+                                <Text style={styles.subTitle}>{stationData?.fuel.join(' ')}</Text>
                             </View>
-                        </View>
 
+                        </View>
                         {/* buttons */}
                         <View style={styles.BTNsContainer}>
                         <TouchableOpacity style={styles.signoutBtn}
@@ -118,12 +122,15 @@ export default function Profile(){
                             <FontAwesome6 name="right-from-bracket" size={18} color="#ffff"/>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.updateBtn}>
+                        {/* <TouchableOpacity style={styles.updateBtn}>
                             <Text style={styles.btnTxt}>Update Profile</Text>
                             <FontAwesome6 name="pen" size={18} color="#ffff"/>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         </View>
+                        </>
+                        )
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -174,7 +181,7 @@ const styles=StyleSheet.create({
         color:"#05367C",
     },
     BTNsContainer:{
-        flexDirection:'row',
+        flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
         marginTop:20,
@@ -183,7 +190,7 @@ const styles=StyleSheet.create({
     },
     signoutBtn:{
         backgroundColor:'#E42629',
-        width:'45%',
+        width:'85%',
         alignSelf:'center',
         padding:13,
         marginTop:10,

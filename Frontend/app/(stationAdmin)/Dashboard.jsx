@@ -7,8 +7,11 @@ import { useEffect, useState } from 'react';
 import graphImg from '../../assets/images/graph.png'
 // import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 // import Loader from '../../components/loader.jsx';
+import useAuthStore from '../../zustand/store.jsx';
 
 export default function StationInfoScreen() {
+
+    const station=useAuthStore((state)=>state.station)
 
     const ordersData=[
         {
@@ -53,7 +56,7 @@ export default function StationInfoScreen() {
         <ScrollView
         contentContainerStyle={{paddingBottom:50}}
         >
-        <Text style={styles.titleTxt}>Welcome back <Text style={styles.subTxt}>Kilimambogo Station!</Text></Text>
+        <Text style={styles.titleTxt}>Welcome back <Text style={styles.subTxt}>{station.username}!</Text></Text>
             <View style={styles.TopContainer1}>
                 <TouchableOpacity style={styles.Tcontainer101}
                     onPress={()=>router.push("/Analytics")}

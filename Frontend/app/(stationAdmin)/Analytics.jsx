@@ -5,10 +5,13 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import graphImg from '../../assets/images/graph.png'
-// import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
-// import Loader from '../../components/loader.jsx';
+import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
+import Loader from '../../components/loader.jsx';
+import useAuthStore from '../../zustand/store.jsx';
 
 export default function StationAnalytics() {
+        const station=useAuthStore((state)=>state.station);
+
 
         const ordersData=[
         {
@@ -56,7 +59,7 @@ export default function StationAnalytics() {
         >
             <View style={styles.AnalyticsContainer}>
                 <View>
-                    <Text style={styles.WelcomeTxt}>Hello <Text style={styles.SubTxt}>Kilimambogo Station!</Text></Text>
+                    <Text style={styles.WelcomeTxt}>Hello <Text style={styles.SubTxt}>{station?.username}</Text></Text>
                     <Text style={styles.BusTxt}>Business Analysis Summary</Text>
                 </View>
                 {/* graph container */}
@@ -108,7 +111,8 @@ const styles=StyleSheet.create({
     WelcomeTxt:{
      fontSize:22,
      fontWeight:"semibold",
-     paddingBottom:10 
+     paddingBottom:10 ,
+     textAlign:'center'
     },
     SubTxt:{
         color:"#077E8C"
