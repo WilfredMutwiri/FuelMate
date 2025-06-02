@@ -7,7 +7,7 @@ const { stationSignin } = require("./controllers/auth/stationSignin.js");
 const { stationSignup, getAllStations,getStationById} = require("./controllers/auth/stationSignup.js");
 const {fileUpload} = require("./controllers/auth/fileUpload.js");
 const {profileUpload,certUpload} = require("./middlewares/multer.js");
-const { placeOrder, getAllOrders, getOrderById } = require("./controllers/auth/order.js");
+const { placeOrder, getAllOrders, getOrderById, updateOrder } = require("./controllers/auth/order.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
@@ -32,5 +32,6 @@ router.post('/upload/docs/',certUpload.single('file'),fileUpload);
 router.post('/order/create/',placeOrder);
 router.get('/order/all',getAllOrders);
 router.get('/order/:id',getOrderById)
+router.patch('/order/update/:id',updateOrder)
 
 module.exports=router;

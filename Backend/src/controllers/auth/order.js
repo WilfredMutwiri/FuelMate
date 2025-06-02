@@ -71,8 +71,48 @@ const getOrderById=async(req,res)=>{
     }
 }
 
+// update order status
+const updateOrder=async(req,res)=>{
+    let {id}=req.params;
+    let {newStatus}=req.body;
+    const validStatus=['received','approved','delivered','canceled'];
+    if(!validStatus.includes(newStatus)){
+        return res.status(400).json({
+            message:"Invalid order status",
+            sucess:false
+        })
+    }
+
+    try {
+        const updatedOrder=await Order.findByIdAndUpdate(
+            id,
+            {status:newStatus},
+            {new:true}
+        );
+
+        if(!updatedOrder){
+            return res.status(404).json({
+                message:"Order not found"
+            })
+        }
+
+        return res.status(200).json({
+            message:"Order updated successfully",
+            order:updatedOrder,
+            success:true
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })
+    }
+
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
-    getOrderById
+    getOrderById,
+    updateOrder
 }
