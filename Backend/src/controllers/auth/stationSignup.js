@@ -21,7 +21,8 @@ const stationSignup=async(req,res)=>{
             phoneNo,
             profileImg,
             stationName,
-            BusinessCert
+            BusinessCert,
+            status
         }=req.body;
 
         if(!(username && email && password && phoneNo)){
@@ -58,7 +59,8 @@ const stationSignup=async(req,res)=>{
             phoneNo,
             profileImg,
             stationName,
-            BusinessCert
+            BusinessCert,
+            status:'Not Approved'
         })
 
         const createdStation=await newStation.save();
@@ -139,10 +141,52 @@ const deleteStation=async(req,res)=>{
         return res.status(500).json({message:error.message})
     }
 }
+
+// update station status
+const updateStationStatus=async(req,res)=>{
+    let {id} = req.params;
+    let {newStatus}=req.body;
+
+    const validStatus=['Not Approved','Approved'];
+    if(!validStatus.includes(newStatus)){
+        return res.status(400).json({
+            message:"Invalid station status",
+            sucess:false
+        })
+    }
+
+    try {
+        const updatedStation=await Station.findByIdAndUpdate(
+            id,
+            {status:newStatus},
+            {new:true}
+        );
+    
+        if(!updatedStation){
+            return res.status(404).json({
+            message:"Order not found"
+            })
+        }
+    
+        return res.status(200).json({
+            message:"Order updated successfully",
+            station:updatedStation,
+            success:true
+        })
+    
+        } catch (error) {
+            return res.status(500).json({
+                message:error.message
+            })
+        }
+    
+
+}
 module.exports={
     stationSignup,
     getAllStations,
     getStationById,
     updateStation,
-    deleteStation
+    deleteStation,
+    updateStationStatus
 }

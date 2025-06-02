@@ -67,7 +67,13 @@ stationName:{
 BusinessCert:{
     type:String,
     required:true
+},
+status:{
+    type:String,
+    enum:['Not Approved','Approved'],
+    default:'Not Approved'
 }
+
 })
 
 const Station=mongoose.model("Station ",stationSignupSchema);
