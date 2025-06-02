@@ -1,6 +1,6 @@
 const Order=require("../../models/ordersModel.js");
 
-const placeOrder=async(res,res)=>{
+const placeOrder=async(req,res)=>{
     try {
         let {
             location,

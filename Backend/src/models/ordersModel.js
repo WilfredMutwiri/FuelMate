@@ -41,5 +41,5 @@ orderSchema.pre('save',function(next){
     next()
 });
 
-const orderModel = mongoose.model('Order', fileSchema);
+const orderModel = mongoose.model('Order',orderSchema);
 module.exports = orderModel;
