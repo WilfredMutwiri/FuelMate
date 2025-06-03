@@ -73,7 +73,6 @@ status:{
     enum:['Not Approved','Approved'],
     default:'Not Approved'
 }
-
 })
 
 const Station=mongoose.model("Station ",stationSignupSchema);

@@ -33,6 +33,11 @@ const orderSchema = new mongoose.Schema({
     createdAt:{
         type:Date,
         default:Date.now
+    },
+    station:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Station',
+        required:true
     }
 })
 

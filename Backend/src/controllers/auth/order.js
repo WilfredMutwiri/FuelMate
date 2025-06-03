@@ -2,13 +2,14 @@ const Order=require("../../models/ordersModel.js");
 
 const placeOrder=async(req,res)=>{
     try {
+        let {stationId}=req.params;
         let {
             location,
             clientPhoneNo,
             fuelType,
             fuelVolume,
             amount,
-            status
+            status,
         }=req.body;
 
         const newOrder=new Order({
@@ -17,7 +18,8 @@ const placeOrder=async(req,res)=>{
             fuelType,
             fuelVolume,
             amount,
-            status:'received'
+            status:'received',
+            station:stationId
         })
 
         const placedOrder=await newOrder.save();
@@ -110,9 +112,28 @@ const updateOrder=async(req,res)=>{
 
 }
 
+// get orders by station
+const getOrdersByStation=async(req,res)=>{
+    let stationId=req.params
+    try {
+        const orders=await Order.find({station:stationId}).populate('station');
+        return res.status(200).json({
+            message:'Station orders fetched successfully!',
+            stationOrders:orders,
+            success:true
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })        
+    }
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
     getOrderById,
-    updateOrder
+    updateOrder,
+    getOrdersByStation
 }
