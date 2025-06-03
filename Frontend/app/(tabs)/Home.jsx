@@ -26,7 +26,7 @@ useEffect(() => {
     const getAStations = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${SERVER_URI}/api/v1/station/all`);
+            const response = await axios.get(`${SERVER_URI}/api/v1/Station/all`);
             const result = response.data;
             if (result.stations) {
                 setStations(result.stations);
@@ -131,18 +131,18 @@ useEffect(()=>{
                                 ):(
                                 stations.map((station)=>(
                                     <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
-                                        <Image source={{uri:station.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                        <Image source={{uri:station?.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station.stationName}</Text>
+                                                <Text>{station?.stationName}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station.rating || 1.5}</Text>
+                                                    <Text>{station?.rating || 1.5}</Text>
                                                 </View>
                                             </View>
                                             <View>
                                                 {
-                                                    station.fuel.map((fuelType, index) => (
+                                                    station?.fuel.map((fuelType, index) => (
                                                     <Text key={index}>{fuelType}</Text>
                                                 ))
                                                 }
@@ -172,18 +172,18 @@ useEffect(()=>{
                                 ):(
                                     stations.map((station)=>(
                                         <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
-                                            <Image source={{uri:station.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
+                                            <Image source={{uri:station?.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                             <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station.stationName}</Text>
+                                                <Text>{station?.stationName}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station.rating || 1.5}</Text>
+                                                    <Text>{station?.rating || 1.5}</Text>
                                                 </View>
                                             </View>
                                                 <View>
                                                     {
-                                                        station.fuel.map((fuelType, index) => (
+                                                        station?.fuel.map((fuelType, index) => (
                                                             <Text key={index}>{fuelType}</Text>
                                                         ))
                                                     }
