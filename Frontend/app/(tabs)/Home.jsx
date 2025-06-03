@@ -134,7 +134,7 @@ useEffect(()=>{
                                         <Image source={{uri:station?.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station?.stationName}</Text>
+                                                <Text>{station?.username}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
                                                     <Text>{station?.rating || 1.5}</Text>
@@ -143,7 +143,9 @@ useEffect(()=>{
                                             <View>
                                                 {
                                                     station?.fuel.map((fuelType, index) => (
-                                                    <Text key={index}>{fuelType}</Text>
+                                                    <Text key={index}>
+                                                    {fuelType.type} : Ksh{parseFloat(fuelType.price).toFixed(2)} /Ltr
+                                                    </Text>
                                                 ))
                                                 }
                                             </View>
@@ -175,18 +177,20 @@ useEffect(()=>{
                                             <Image source={{uri:station?.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                             <View style={styles.stationInfoContainer}>
                                             <View  style={styles.ratingContainer}>
-                                                <Text>{station?.stationName}</Text>
+                                                <Text>{station?.username}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
                                                     <Text>{station?.rating || 1.5}</Text>
                                                 </View>
                                             </View>
                                                 <View>
-                                                    {
-                                                        station?.fuel.map((fuelType, index) => (
-                                                            <Text key={index}>{fuelType}</Text>
-                                                        ))
-                                                    }
+                                                {
+                                                    station?.fuel.map((fuelType, index) => (
+                                                    <Text key={index}>
+                                                    {fuelType.type} : Ksh{parseFloat(fuelType.price).toFixed(2)} /Ltr
+                                                    </Text>
+                                                ))
+                                                }
                                                 </View>
                                             </View>
                                         </TouchableOpacity>
