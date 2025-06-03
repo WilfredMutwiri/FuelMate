@@ -24,10 +24,19 @@ town:{
     type:String,
     required:true
 },
-fuel:{
-    type:Array,
-    required:true
-},
+fuel:[
+    {
+        type:{
+            type:String,
+            required:true,
+            enum:['petrol', 'diesel', 'gasoline', 'kerosene']
+        },
+        price:{
+            type:Number,
+            default:0
+        }
+    }
+],
 services:{
     type:Array,
     required:true

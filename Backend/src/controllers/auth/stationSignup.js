@@ -41,13 +41,18 @@ const stationSignup=async(req,res)=>{
 
         //hash password
         const hashedPassword=await bcrypt.hash(password,10);
+        
+        const fuelData=fuel.map(fuelType=>({
+            type:fuelType.type,
+            price:fuelType.price
+        }))
 
         const newStation=new Station({
             email,
             password:hashedPassword,
             username,
             town,
-            fuel,
+            fuel:fuelData,
             services,
             rating,
             // latitude,
