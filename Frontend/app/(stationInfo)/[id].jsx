@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import { View, Text,StyleSheet,Image, ScrollView, TouchableOpacity} from 'react-native';
+import { View, Text,StyleSheet,Image, ScrollView, TouchableOpacity,Modal, TouchableWithoutFeedback, TextInput} from 'react-native';
 import station1 from '../../assets/images/station1.jpg'
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -7,6 +7,10 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 import Loader from '../../components/loader.jsx';
+import ToastComponent from "../../components/Toast";
+import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+
 
 export default function StationInfoScreen() {
 
@@ -14,6 +18,45 @@ export default function StationInfoScreen() {
     const { id } = useLocalSearchParams();
     const [station, setStation] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [modalOpen,setModalOpen]=useState(false);
+    const router=useRouter();
+    
+    const [formData,setFormData]=useState({
+    location:'',
+	clientPhoneNo:'',
+	fuelType:'',
+	fuelVolume:'',
+	amount:'',
+	status:''
+    })
+    
+    const [order,setOrder]=useState(null);
+    const [settingOrder,setSettingOrder]=useState(null);
+    const [locationName,setLocationName]=useState(null)
+    const [location,setLocation]=useState(null);
+    
+    // get user's current location
+    useEffect(()=>{
+        setLoading(true);
+        (
+            async () =>{
+            let {status}=await Location.requestForegroundPermissionsAsync();
+            if(status!='granted'){
+                Alert.alert("permission denied","Location is required to show your current location");
+                setLocationName("Location unavailabe (Permission denied).")
+                return
+            }
+    
+            let currentLocation=await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation.coords);
+    
+            let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+            if(addressArray.length>0){
+                const address=addressArray[0];
+                setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+            }
+        })();
+    },[])
     
     //   fetching the station data from the server
     useEffect(() => {
@@ -22,7 +65,6 @@ export default function StationInfoScreen() {
                 setLoading(true);
                 const response = await axios.get(`${SERVER_URI}/api/v1/station/${id}`);
                 const result = response.data;
-                console.log(result);
                 if (result.station) {
                     setStation(result.station);
                 }
@@ -36,10 +78,51 @@ export default function StationInfoScreen() {
         getStation();
     },[id])
 
-    useEffect(() => {
-        console.log("id station data",station);
-    },[station])
+    // useEffect(() => {
+    //     console.log("id station data",station);
+    // },[station])
 
+    // order placement
+    const handleInputChange=(name,value)=>{
+        setFormData({
+            ...formData,
+            location:locationName,
+            [name]:value
+        })
+    }
+    const handlePlaceOrder=async()=>{
+        if (!locationName) {
+        ToastComponent("error", "Location is required. Please enable location services or try again.");
+        return;
+        }
+
+        const completeFormData={
+            ...formData,
+            location:locationName
+        }
+
+        try {
+                setSettingOrder(true);
+                const response = await axios.post(`${SERVER_URI}/api/v1/order/create/${id}`,completeFormData);
+                const result = response.data;
+                console.log(result);
+                if (result.success) {
+                    ToastComponent("success","Payment made successfully!");  
+                    setModalOpen(!modalOpen)
+                    router.push('/Orders')
+                }
+            
+        } catch (error) {
+            console.log(error)
+            if(error.response && error.response.data){
+                ToastComponent("error",`${error.response.data.message}`);  
+            }else{
+                ToastComponent("error","An unexpected error occured")
+            }
+        }finally{
+            setSettingOrder(false)
+        }
+    }
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
         <ScrollView
@@ -137,11 +220,83 @@ export default function StationInfoScreen() {
                             <Text>Price</Text>
                             <View style={styles.priceContainer}>
                                 <Text style={styles.price}>Ksh {800}/Ltr</Text>
-                                <TouchableOpacity style={styles.orderBtn}>
+                                <TouchableOpacity style={styles.orderBtn} onPress={()=>setModalOpen(!modalOpen)}>
                                     <Text style={styles.orderTxt}>Order Now!</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
+                        {/* modal section */}
+                        <Modal
+                        visible={modalOpen}
+                        animationType='slide'
+                        transparent={true}
+                        onRequestClose={()=>setModalOpen(!modalOpen)}
+                        >
+                        <TouchableWithoutFeedback onPress={()=>setModalOpen(!modalOpen)}>
+                            <View style={styles.modalOverlay}>
+                                <View style={{paddingTop:20}}>
+                                    {
+                                        settingOrder?(
+                                            <View style={{flexDirection:'column'}}>
+                                                <Loader/>
+                                                <Text style={{color:"#ff6d1f",textAlign:"center",paddingTop:20}}>Placing order ...Please wait...</Text>
+                                            </View>
+                                        ):(
+                                            <Text>Order placed</Text>
+                                        )
+                                    }
+                                </View>
+                                <Text style={styles.modalText}>Place Order</Text>
+                                {/* inputs */}
+                                <View>
+                                    <Text style={styles.label}>Phone Number</Text>
+                                    <TextInput
+                                    style={styles.input}
+                                    value={formData.clientPhoneNo}
+                                    onChangeText={(text)=>handleInputChange('clientPhoneNo',text)}
+                                    keyboardType='numeric'
+                                    placeholder='Enter M-Pesa phone Number'
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={styles.label}>Fuel Type</Text>
+                                    <TextInput
+                                    style={styles.input}
+                                    value={formData.fuelType}
+                                    onChangeText={(text)=>handleInputChange('fuelType',text)}
+                                    placeholder='e.g diesel, kerosene, petrol'
+                                    />
+                                </View>
+
+                                <View>
+                                    <Text style={styles.label}>Fuel Volume</Text>
+                                    <TextInput
+                                    style={styles.input}
+                                    value={formData.fuelVolume}
+                                    onChangeText={(text)=>handleInputChange('fuelVolume',text)}
+                                    keyboardType='numeric'
+                                    placeholder='Enter fuel Volume'
+                                    />
+                                </View>
+
+
+                                <View>
+                                    <Text style={styles.label}>Amount</Text>
+                                    <TextInput
+                                    style={styles.input}
+                                    value={formData.amount}
+                                    onChangeText={(text)=>handleInputChange('amount',text)}
+                                    keyboardType='numeric'
+                                    placeholder='Enter fuel price'
+                                    />
+                                </View>
+
+                                <TouchableOpacity style={styles.orderBtn2} onPress={()=>handlePlaceOrder()}>
+                                    <Text style={styles.btnTxt}>Place Order</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </TouchableWithoutFeedback>
+                        </Modal>
                     </View>
                 </>
             )}
@@ -255,5 +410,53 @@ const styles=StyleSheet.create({
     },
     orderTxt:{
         color:"#fff"
-    }
+    },
+    modalOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    width:"90%",
+    alignSelf:"center",
+    borderRadius:10,
+    height:550,
+    padding:20
+  },
+    closeButton: {
+    backgroundColor: '#E19540',
+    padding: 10,
+    marginTop: 20,
+    borderRadius: 10,
+    alignSelf:"center"
+  },
+    modalText: {
+    fontSize: 18,
+    fontWeight: '500',
+    marginBottom: 15,
+    color:"#ffff"
+  },
+  modalHeader:{
+    flexDirection:"row",
+    alignItems:'center',
+    justifyContent:"space-between",
+    width:"90%"
+},
+label:{
+    color:"#ffff",
+    marginTop:10
+},
+input:{
+    backgroundColor:"#ffff",
+    marginTop:10,
+    borderRadius:10,
+},
+orderBtn2:{
+    backgroundColor:"#00478F",
+    padding:10,
+    justifyContent:'center',
+    alignItems:'center',
+    borderRadius:1 ,
+    borderRadius:10,
+    marginTop:30
+},
+btnTxt:{
+    color:"#fff"
+}
 })
