@@ -14,6 +14,7 @@ export default function StationInfoScreen() {
     const station=useAuthStore((state)=>state.station)
         const [stationData,setStationData]=useState(null);
         const [Loading,setLoading]=useState(false);
+        const [apiResponse,setAPIResponse]=useState(null)
 
         // fetch station ordes
         useEffect(() => {
@@ -27,7 +28,9 @@ export default function StationInfoScreen() {
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/order/station/${station.id}`);
             const result = response.data;
+            // console.log(result)
             if (result.stationOrders) {
+                setAPIResponse(result)
                 setStationData(result.stationOrders);
                 setLoading(false);
             } else {
@@ -47,6 +50,10 @@ export default function StationInfoScreen() {
         getStation();
     }, []);
 
+// useEffect(()=>{
+//     console.log("api response",apiResponse.totalOrders)
+// },[])
+
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
         <ScrollView
@@ -64,7 +71,7 @@ export default function StationInfoScreen() {
                     onPress={()=>router.push("/Orders")}
                 >
                     <Text style={styles.TopTxt}>Received Orders</Text>
-                    <Text style={styles.TopSubTxt}>7</Text>
+                    <Text style={styles.TopSubTxt}>{apiResponse?.totalOrders || 0}</Text>
                 </TouchableOpacity>
             </View>
             {/* container 2 */}
