@@ -37,7 +37,7 @@ export default function StationInfoScreen() {
     },[id])
 
     useEffect(() => {
-        console.log(station);
+        console.log("id station data",station);
     },[station])
 
   return (
@@ -51,7 +51,7 @@ export default function StationInfoScreen() {
             ):(
                 <>
                     <View style={styles.ImageContainer}>
-                        <Image source={station1} style={styles.stationImg}/>
+                        <Image source={{uri:station?.profileImg} || station1} style={styles.stationImg}/>
                     </View>
                     <View style={styles.Stationinfo}>
                         <View style={styles.topInfo}>
@@ -76,17 +76,24 @@ export default function StationInfoScreen() {
                             </View>
                         </View>
                         {/* location View */}
+                        <View style={{flexDirection:"row", justifyContent:"space-between"}}>
                         <View style={styles.locationContainer}>
                             <Text style={styles.headingTxt}>Location</Text>
-                            <Text>{station?.location}</Text>
+                            <Text>{station?.county} - {station?.town}</Text>
+                            <Text>Address: {station?.physicalAddress}</Text>
+                        </View>
+                        <View style={styles.locationContainer}>
+                            <Text style={styles.headingTxt}>Status</Text>
+                            <Text style={styles.subTxt}>{station?.status}</Text>
+                        </View>
                         </View>
                         {/* stationMeta */}
                         <View style={styles.MetaConatiner}>
                             <View style={styles.MetaInfo}>
-                                <FontAwesome6 name="location-dot" size={18} color="#ff6d1f"/>
+                                <FontAwesome6 name="phone" size={18} color="#ff6d1f"/>
                                 <View>
-                                    <Text>Distance</Text>
-                                    <Text>{200}Km</Text>
+                                    <Text>Contact</Text>
+                                    <Text style={styles.subTxt}>{station?.phoneNo}</Text>
                                 </View>
                             </View>
 
@@ -94,7 +101,7 @@ export default function StationInfoScreen() {
                                 <FontAwesome6 name="clock" size={18} color="#ff6d1f"/>
                                 <View>
                                     <Text>Opening</Text>
-                                    <Text>24/7</Text>
+                                    <Text style={styles.subTxt}>24/7</Text>
                                 </View>
                             </View>
                         </View>
@@ -103,9 +110,23 @@ export default function StationInfoScreen() {
                             <Text style={styles.headingTxt}>Available Gas Types</Text>
                             <View style={styles.gasContainer}>
                                 {
-                                    station?.fuel.map((gas)=>(
-                                        <TouchableOpacity key={gas.name} style={styles.gas}>
-                                            <Text>{gas.name}</Text>
+                                    station?.fuel.map((fuelType,index)=>(
+                                        <TouchableOpacity key={index} style={styles.gas}>
+                                            <Text>{fuelType.type}</Text>
+                                            <Text style={styles.subTxt}>Ksh {parseFloat(fuelType.price).toFixed(2)} /Ltr</Text>
+                                        </TouchableOpacity>
+                                    ))
+                                }
+                            </View>
+                        </View>
+                        {/* services */}
+                        <View>
+                            <Text style={styles.headingTxt}>Services Offered</Text>
+                            <View style={styles.gasContainer}>
+                                {
+                                    station?.services.map((service,index)=>(
+                                        <TouchableOpacity key={index} style={styles.services}>
+                                            <Text>{service.name}</Text>
                                         </TouchableOpacity>
                                     ))
                                 }
@@ -164,6 +185,9 @@ const styles=StyleSheet.create({
         fontSize:20,
         color:"#00478F"
     },
+    subTxt:{
+        color:"#00478F"  
+    },
     likesContainer:{
         flexDirection:'row',
         gap:30
@@ -192,14 +216,21 @@ const styles=StyleSheet.create({
     gasContainer:{
         flexDirection:'row',
         paddingTop:10,
-        gap:40
+        gap:40,
     },
-    gas:{
+    services:{
     backgroundColor:'#E3E2E2',
     padding:5,
     width:"25%",
     alignItems:'center',
-    borderRadius:10
+    borderRadius:10,
+    },
+    gas:{
+    backgroundColor:'#E3E2E2',
+    padding:6,
+    width:"auto",
+    alignItems:'center',
+    borderRadius:10,
     },
     lowerInfoContainer:{
         paddingBottom:20

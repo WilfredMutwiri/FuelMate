@@ -51,7 +51,7 @@ export default function Signup(){
         return ToastComponent("error","Passwords don't match")
 
     }
-    const response=await axios.post(`${SERVER_URI}/api/v1/signup`, formData)
+    const response=await axios.post(`${SERVER_URI}/api/v1/user/signup`, formData)
     const result=response.data
     if(response.data.success){
         await signup(result.user.email,result.user.username)

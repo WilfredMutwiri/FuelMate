@@ -9,10 +9,13 @@ import axios from 'axios';
 import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
 import FuelMap from '../../components/fuelMap.jsx';
 import * as Location from 'expo-location';
+import useAuthStore from '../../zustand/store.jsx';
 
 
 export default function Home(){
 const router=useRouter();
+const user=useAuthStore((state)=>state.user)
+
 
 const [location,setLocation]=useState(null);
 const [locationName,setLocationName]=useState(null)
@@ -31,11 +34,9 @@ useEffect(() => {
             if (result.stations) {
                 setStations(result.stations);
                 setSuccess(true);
-                setLoading(false);
                 setMessage(result.message);
             } else {
                 setError(true);
-                setLoading(false);
                 setMessage(result.message);
             }
         }
@@ -43,13 +44,14 @@ useEffect(() => {
             setError(true);
             setMessage("An error occurred");
         }
+        finally{
         setLoading(false);
+        }
     };
     getAStations();
 
 }, []);
 
-console.log(stations)
 // get user's current location
 useEffect(()=>{
     setLoading(true);
@@ -71,7 +73,6 @@ useEffect(()=>{
             setLocationName(`${address.name} | ${address.city} | ${address.region}`)
         }
     })();
-    setLoading(false)
 },[])
 
 
@@ -85,7 +86,7 @@ useEffect(()=>{
                 {/* map section */}
                 <View style={styles.mapContainer}>
                     <View style={styles.IntroContainer}>
-                        <Text>@ Wilfred</Text>
+                        <Text>@ {user?.username || user}</Text>
                         <View style={styles.locationContainer}>
                             <View>
                             <FontAwesome6 name="location-dot" size={18} color="#ff6d1f"/>

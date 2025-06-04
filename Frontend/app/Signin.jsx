@@ -44,23 +44,23 @@ export default function Signin(){
     }
 
     const handleSignin=async()=>{
-        // try {
-        //     const response = await axios.post(`${SERVER_URI}/api/v1/signin`,formData)
-        //     const result=response.data;
-        //     console.log(result.user.username)
-        //     if (result.success){
-        //         await login(result.user.username,result.token)
-        //         ToastComponent("success",`Welcome back! ${formData.username}`);  
-        //         // router.push('/Signup');
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        //     if(error.response && error.response.data){
-        //         ToastComponent("error",`${error.response.data.message}`);  
-        //     }
-        // }
+        try {
+            const response = await axios.post(`${SERVER_URI}/api/v1/user/signin`,formData)
+            const result=response.data;
+            console.log(result.user.username)
+            if (result.success){
+                await login(result.user.username,result.token)
+                ToastComponent("success",`Welcome back! ${formData.username}`);  
+                router.push('/Home');
+            }
+        } catch (error) {
+            console.log(error);
+            if(error.response && error.response.data){
+                ToastComponent("error",`${error.response.data.message}`);  
+            }
+        }
 
-        router.push('/Home');
+        // router.push('/Home');
     }
     const handleRecovery = () => {
         router.push('/Recovery');
