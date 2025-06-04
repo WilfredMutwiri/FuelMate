@@ -36,7 +36,7 @@ const orderSchema = new mongoose.Schema({
     },
     station:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Station',
+        ref:'Station ',
         required:true
     }
 })

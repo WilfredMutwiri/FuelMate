@@ -31,7 +31,7 @@ router.post('/upload/docs/',certUpload.single('file'),fileUpload);
 
 // orders
 router.post('/order/create/:stationId',placeOrder);
-router.get('/order/all',getAllOrders);
+router.get('/order/all/',getAllOrders);
 router.get('/order/:id',getOrderById);
 router.patch('/order/update/:id',updateOrder);
 router.get('/order/station/:id',getOrdersByStation)

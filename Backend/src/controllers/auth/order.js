@@ -39,7 +39,9 @@ const placeOrder=async(req,res)=>{
 
 const getAllOrders=async(req,res)=>{
     try {
+        // let {stationId}=req.params;
         const orders=await Order.find();
+        // const orders=await Order.find();
         return res.status(200).json({
             message:"Orders fetched successfully!",
             orders,
@@ -114,12 +116,13 @@ const updateOrder=async(req,res)=>{
 
 // get orders by station
 const getOrdersByStation=async(req,res)=>{
-    let stationId=req.params
+    let stationId=req.params.id;
     try {
         const orders=await Order.find({station:stationId}).populate('station');
         return res.status(200).json({
             message:'Station orders fetched successfully!',
             stationOrders:orders,
+            totalOrders:orders.length,
             success:true
         })
 
