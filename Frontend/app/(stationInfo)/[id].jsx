@@ -103,6 +103,7 @@ export default function StationInfoScreen() {
 
         try {
                 setSettingOrder(true);
+                console.log("initiating pay")
                 const response = await axios.post(`${SERVER_URI}/api/v1/order/create/${id}`,completeFormData);
                 const result = response.data;
                 console.log(result);

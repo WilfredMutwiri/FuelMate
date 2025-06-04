@@ -11,47 +11,40 @@ import useAuthStore from '../../zustand/store.jsx';
 
 export default function StationAnalytics() {
         const station=useAuthStore((state)=>state.station);
+        const [stationData,setStationData]=useState(null);
+        const [Loading,setLoading]=useState(false);
 
-
-        const ordersData=[
-        {
-            id:1,
-            location:'Kilimambogo area',
-            amount:'20L',
-            fuelType:'Petrol',
-            status:'Confirmed',
-            price:'20,000'
-        },
-        {
-            id:2,
-            location:'Malishoni area',
-            amount:'10L',
-            fuelType:'Diesel',
-            status:'Delivered',
-            price:'8,000'
-
-        },
-        {
-            id:3,
-            location:'Tea Mall area',
-            amount:'22L',
-            fuelType:'Petrol',
-            status:'Delivered',
-            price:'15,000'
-
-        },
-        {
-            id:4,
-            location:'Kapsabet',
-            amount:'15L',
-            fuelType:'Diesel',
-            status:'Delivered',
-            price:'12,000'
+        useEffect(() => {
+        const getStation = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
         }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/station/${station.id}`);
+            const result = response.data;
+            if (result.stationOrders) {
+                setStationData(result.stationOrders);
+                setLoading(false);
+            } else {
+                setError(true);
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            setError(true);
+            setMessage("An error occurred");
+            console.log("API fetch error:", error.response?.data || error.message);
+            setError(true);
+            setMessage("An error occurred");
+        }
+        setLoading(false);
+        };
+        getStation();
+    }, []);
     
-    ]
-
-
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
         <ScrollView
@@ -67,7 +60,7 @@ export default function StationAnalytics() {
                     <Image source={graphImg} style={{width:300,alignSelf:'center',resizeMode:'cover'}}/>
                 </View>
                 {/* latest activity container */}
-                <View style={{gap:10,}}>
+                <View style={{gap:10,borderBottomColor:"#077E8C",height:550,borderBottomWidth:2,overflow:"hidden"}}>
                 <View style={styles.historyTopC}>
                     <Text>Recent Activity</Text>
                     <TouchableOpacity
@@ -77,20 +70,34 @@ export default function StationAnalytics() {
                     </TouchableOpacity>
                 </View>
                     {
-                        ordersData.map((order,index)=>(
-                        <View key={index} style={styles.orderContainer}>
-                            <Text style={styles.SubTxt}>Order: {order.id}</Text>
-                            <View style={{flexDirection:'row',justifyContent:'space-between'}}>
-                                <Text>{order.location}</Text>
-                                <Text style={styles.SubTxt}>{order.status}</Text>
-                            </View>
-                            <View>
-                                <Text>Fuel Type: {order.fuelType}</Text>
-                                <Text>Fuel Amount: {order.amount}</Text>
-                                <Text>Amount Charged : {order.price}</Text>
-                            </View>
+                        Loading?(
+                        <View>
+                            <Loader/>
                         </View>
-                    ))}
+                    ):(
+                        <View style={{gap:10,}}>
+                    {
+                        stationData?.map((order,index)=>(
+                            <View key={index._id || index} style={styles.orderContainer}>
+                                <Text style={styles.SubTxt}>Order ID: {order._id}</Text>
+                                <Text>Customer Location: {order?.location}</Text>
+                                <Text>Customer Contact: {order?.clientPhoneNo}</Text>
+                                <Text>Fuel Type: {order?.fuelType}</Text>
+                                <Text>Fuel Volume: {order?.fuelVolume} L</Text>
+                                <Text>Amount Charged : {order?.amount}</Text>
+                
+                                <View style={styles.StatusContainer}>
+                                        <Text>Status : <Text style={styles.SubTxt}>{order?.status}</Text></Text>
+                                    <TouchableOpacity style={styles.BTNContainer}>
+                                        <Text style={styles.BtnTxt}>Update</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ))
+                    }
+                    </View>
+                    )
+                    }
                 </View>
             </View>
         </ScrollView>
@@ -137,6 +144,23 @@ const styles=StyleSheet.create({
     orderContainer:{
         backgroundColor:"#ffff",
         padding:10,
-        borderRadius:10
+        borderRadius:10,
+    },
+    BTNContainer:{
+        backgroundColor:'#077E8C',
+        padding:5,
+        borderRadius:10,
+        width:70
+    },
+    BtnTxt:{
+        color:"#ffff",
+        fontSize:12,
+        textAlign:"center"
+    },
+        StatusContainer:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        alignItems:"center",
+        paddingTop:10
     }
 })
