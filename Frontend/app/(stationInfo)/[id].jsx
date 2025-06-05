@@ -14,7 +14,6 @@ import { useRouter } from 'expo-router';
 
 export default function StationInfoScreen() {
 
-
     const { id } = useLocalSearchParams();
     const [station, setStation] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -22,19 +21,20 @@ export default function StationInfoScreen() {
     const router=useRouter();
     
     const [formData,setFormData]=useState({
-    // location:'',
-	// clientPhoneNo:'',
-	// fuelType:'',
-	// fuelVolume:'',
+    location:'',
+	clientPhoneNo:'',
+	fuelType:'',
+	fuelVolume:'',
 	amount:'',
     email:'',
-	// status:''
+	status:''
     })
     
-    const [order,setOrder]=useState(null);
+    const [orderInitiated,setOrderInitiated]=useState(false);
     const [settingOrder,setSettingOrder]=useState(null);
     const [locationName,setLocationName]=useState(null)
     const [location,setLocation]=useState(null);
+    const [orderPayLoad,setOrderPayLoad]=useState(null)
     
     // get user's current location
     useEffect(()=>{
@@ -88,19 +88,20 @@ export default function StationInfoScreen() {
     const handleInputChange=(name,value)=>{
         setFormData({
             ...formData,
-            // location:locationName,
+            location:locationName,
             [name]:value
         })
     }
     const handlePlaceOrder=async()=>{
-        // if (!locationName) {
-        // ToastComponent("error", "Location is required. Please enable location services or try again.");
-        // return;
-        // }
+        if (!locationName) {
+        ToastComponent("error", "Location is required. Please enable location services or try again.");
+        setModalOpen(!modalOpen)
+        return;
+        }
 
         const completeFormData={
             ...formData,
-            // location:locationName
+            location:locationName
         }
 
         try {
@@ -110,6 +111,8 @@ export default function StationInfoScreen() {
                 const result = response.data;
 
                 if(result.success){
+                    setOrderPayLoad(completeFormData)
+                    setOrderInitiated(true)
                     router.push({
                     pathname: '/PaymentScreen',
                     params: { 
@@ -117,15 +120,8 @@ export default function StationInfoScreen() {
                         reference:result.reference
                      },
                 });
-                setSettingOrder(!settingOrder)
                 setModalOpen(!modalOpen)
                 }
-
-                // if (result.success) {
-                //     ToastComponent("success","Payment made successfully!");  
-                //     setModalOpen(!modalOpen)
-                //     router.push('/Orders')
-                // }
             
         } catch (error) {
             console.log(error)
@@ -138,6 +134,27 @@ export default function StationInfoScreen() {
             setSettingOrder(false)
         }
     }
+
+
+    // send order to backend
+    useEffect(()=>{
+        if(orderInitiated && orderPayLoad){
+            const sendOrder=async()=>{
+                try {
+                    const response = await axios.post(`${SERVER_URI}/api/v1/order/create/${id}`,orderPayLoad);            
+                } catch (error) {
+                    console.log(error)
+                }finally{
+                    setOrderInitiated(false)
+                    setOrderPayLoad(null)
+                }
+        };
+
+        sendOrder()
+    }
+    },[orderInitiated,orderPayLoad])
+
+
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
         <ScrollView
@@ -232,13 +249,9 @@ export default function StationInfoScreen() {
                         </View>
                         {/* lowerInfo */}
                         <View style={styles.lowerInfoContainer}>
-                            <Text>Price</Text>
-                            <View style={styles.priceContainer}>
-                                <Text style={styles.price}>Ksh {800}/Ltr</Text>
-                                <TouchableOpacity style={styles.orderBtn} onPress={()=>setModalOpen(!modalOpen)}>
-                                    <Text style={styles.orderTxt}>Order Now!</Text>
-                                </TouchableOpacity>
-                            </View>
+                            <TouchableOpacity style={styles.orderBtn} onPress={()=>setModalOpen(!modalOpen)}>
+                                <Text style={styles.orderTxt}>Order Now!</Text>
+                            </TouchableOpacity>
                         </View>
                         {/* modal section */}
                         <Modal
@@ -249,7 +262,7 @@ export default function StationInfoScreen() {
                         >
                         <TouchableWithoutFeedback onPress={()=>setModalOpen(!modalOpen)}>
                             <View style={styles.modalOverlay}>
-                                <View style={{paddingTop:20}}>
+                                <View>
                                     {
                                         settingOrder?(
                                             <View style={{flexDirection:'column'}}>
@@ -263,7 +276,7 @@ export default function StationInfoScreen() {
                                 </View>
                                 <Text style={styles.modalText}>Place Order</Text>
                                 {/* inputs */}
-                                {/* <View>
+                                <View>
                                     <Text style={styles.label}>Phone Number</Text>
                                     <TextInput
                                     style={styles.input}
@@ -272,8 +285,8 @@ export default function StationInfoScreen() {
                                     keyboardType='numeric'
                                     placeholder='Enter M-Pesa phone Number'
                                     />
-                                </View> */}
-{/*                                 
+                                </View>
+                                
                                 <View>
                                     <Text style={styles.label}>Fuel Type</Text>
                                     <TextInput
@@ -282,9 +295,9 @@ export default function StationInfoScreen() {
                                     onChangeText={(text)=>handleInputChange('fuelType',text)}
                                     placeholder='e.g diesel, kerosene, petrol'
                                     />
-                                </View> */}
+                                </View>
 
-                                {/* <View>
+                                <View>
                                     <Text style={styles.label}>Fuel Volume</Text>
                                     <TextInput
                                     style={styles.input}
@@ -293,7 +306,7 @@ export default function StationInfoScreen() {
                                     keyboardType='numeric'
                                     placeholder='Enter fuel Volume'
                                     />
-                                </View> */}
+                                </View>
 
 
                                 <View>
@@ -320,7 +333,7 @@ export default function StationInfoScreen() {
                                 </View>
 
                                 <TouchableOpacity style={styles.orderBtn2} onPress={()=>handlePlaceOrder()}>
-                                    <Text style={styles.btnTxt}>Pay with paystack</Text>
+                                    <Text style={styles.btnTxt}>Confirm Order</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
@@ -434,7 +447,10 @@ const styles=StyleSheet.create({
         padding:10,
         justifyContent:'center',
         alignItems:'center',
-        borderRadius:10
+        borderRadius:10,
+        alignSelf:'center',
+        marginTop:30,
+        width:250
     },
     orderTxt:{
         color:"#fff"
@@ -444,20 +460,13 @@ const styles=StyleSheet.create({
     width:"90%",
     alignSelf:"center",
     borderRadius:10,
-    height:550,
+    height:560,
     padding:20
-  },
-    closeButton: {
-    backgroundColor: '#E19540',
-    padding: 10,
-    marginTop: 20,
-    borderRadius: 10,
-    alignSelf:"center"
   },
     modalText: {
     fontSize: 18,
     fontWeight: '500',
-    marginBottom: 15,
+    marginBottom: 10,
     color:"#ffff"
   },
   modalHeader:{
