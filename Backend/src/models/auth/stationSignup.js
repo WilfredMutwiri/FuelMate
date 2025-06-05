@@ -81,7 +81,11 @@ status:{
     type:String,
     enum:['Not Approved','Approved'],
     default:'Not Approved'
-}
+},
+createdAt:{
+    type:Date,
+    default:Date.now
+},
 })
 
 const Station=mongoose.model("Station ",stationSignupSchema);

@@ -86,7 +86,7 @@ const stationSignup=async(req,res)=>{
 // get all stations
 const getAllStations=async(req,res)=>{
     try {
-        const stations=await Station.find();
+        const stations=await Station.find().sort({createdAt:-1});
         return res.status(200).json({
             message:"Stations fetched successfully",
             stations
