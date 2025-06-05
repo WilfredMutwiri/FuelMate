@@ -118,7 +118,7 @@ const updateOrder=async(req,res)=>{
 const getOrdersByStation=async(req,res)=>{
     let stationId=req.params.id;
     try {
-        const orders=await Order.find({station:stationId}).populate('station');
+        const orders=await Order.find({station:stationId}).populate('station').sort({createdAt:-1});
         return res.status(200).json({
             message:'Station orders fetched successfully!',
             stationOrders:orders,
