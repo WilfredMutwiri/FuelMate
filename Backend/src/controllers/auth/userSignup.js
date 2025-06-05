@@ -5,6 +5,10 @@ const User=require('../../models/auth/userSignupModel');
 const userSignup=async(req,res)=>{
     try {
         let {email,username,password}=req.body;
+
+        email=email.trim().toLowerCase();
+        username=username.trim().toLowerCase();
+        
         if(!(username && email && password)){
             return res.status(400).json({message: 'All fields are required'});
           }else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
