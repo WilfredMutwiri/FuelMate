@@ -24,6 +24,8 @@ const stationSignup=async(req,res)=>{
             BusinessCert,
             status
         }=req.body;
+        
+        username=username.trim().toLowerCase();
 
         if(!(username && email && password && phoneNo)){
             return res.status(400).json({message: 'All fields are required'});
