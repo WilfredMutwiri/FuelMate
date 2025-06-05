@@ -28,6 +28,13 @@ export default function RootLayout() {
         <Stack.Screen name="Recovery" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="Recovery2" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="(tabs)" options={{headerShown:false,title: '',}}/>
+        <Stack.Screen name="PaymentScreen" options={{
+          headerShown:true,
+          title: 'Checkout',
+          headerStyle: {backgroundColor: '#02223B'},
+          headerTintColor: '#EBF6FE',
+          }}/>
+          
         <Stack.Screen name="(stationInfo)" options={{headerShown:false,title: '',}}/>
         <Stack.Screen name="UserNotifications" options={
           {

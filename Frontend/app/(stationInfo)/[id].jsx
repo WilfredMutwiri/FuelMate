@@ -22,12 +22,13 @@ export default function StationInfoScreen() {
     const router=useRouter();
     
     const [formData,setFormData]=useState({
-    location:'',
-	clientPhoneNo:'',
-	fuelType:'',
-	fuelVolume:'',
+    // location:'',
+	// clientPhoneNo:'',
+	// fuelType:'',
+	// fuelVolume:'',
 	amount:'',
-	status:''
+    email:'',
+	// status:''
     })
     
     const [order,setOrder]=useState(null);
@@ -82,36 +83,49 @@ export default function StationInfoScreen() {
     //     console.log("id station data",station);
     // },[station])
 
+
     // order placement
     const handleInputChange=(name,value)=>{
         setFormData({
             ...formData,
-            location:locationName,
+            // location:locationName,
             [name]:value
         })
     }
     const handlePlaceOrder=async()=>{
-        if (!locationName) {
-        ToastComponent("error", "Location is required. Please enable location services or try again.");
-        return;
-        }
+        // if (!locationName) {
+        // ToastComponent("error", "Location is required. Please enable location services or try again.");
+        // return;
+        // }
 
         const completeFormData={
             ...formData,
-            location:locationName
+            // location:locationName
         }
 
         try {
                 setSettingOrder(true);
                 console.log("initiating pay")
-                const response = await axios.post(`${SERVER_URI}/api/v1/order/create/${id}`,completeFormData);
+                const response = await axios.post(`${SERVER_URI}/api/v1/paystack/Init/`,completeFormData);
                 const result = response.data;
-                console.log(result);
-                if (result.success) {
-                    ToastComponent("success","Payment made successfully!");  
-                    setModalOpen(!modalOpen)
-                    router.push('/Orders')
+
+                if(result.success){
+                    router.push({
+                    pathname: '/PaymentScreen',
+                    params: { 
+                        authorizationUrl:result.authorization_url,
+                        reference:result.reference
+                     },
+                });
+                setSettingOrder(!settingOrder)
+                setModalOpen(!modalOpen)
                 }
+
+                // if (result.success) {
+                //     ToastComponent("success","Payment made successfully!");  
+                //     setModalOpen(!modalOpen)
+                //     router.push('/Orders')
+                // }
             
         } catch (error) {
             console.log(error)
@@ -249,7 +263,7 @@ export default function StationInfoScreen() {
                                 </View>
                                 <Text style={styles.modalText}>Place Order</Text>
                                 {/* inputs */}
-                                <View>
+                                {/* <View>
                                     <Text style={styles.label}>Phone Number</Text>
                                     <TextInput
                                     style={styles.input}
@@ -258,7 +272,8 @@ export default function StationInfoScreen() {
                                     keyboardType='numeric'
                                     placeholder='Enter M-Pesa phone Number'
                                     />
-                                </View>
+                                </View> */}
+{/*                                 
                                 <View>
                                     <Text style={styles.label}>Fuel Type</Text>
                                     <TextInput
@@ -267,9 +282,9 @@ export default function StationInfoScreen() {
                                     onChangeText={(text)=>handleInputChange('fuelType',text)}
                                     placeholder='e.g diesel, kerosene, petrol'
                                     />
-                                </View>
+                                </View> */}
 
-                                <View>
+                                {/* <View>
                                     <Text style={styles.label}>Fuel Volume</Text>
                                     <TextInput
                                     style={styles.input}
@@ -278,7 +293,19 @@ export default function StationInfoScreen() {
                                     keyboardType='numeric'
                                     placeholder='Enter fuel Volume'
                                     />
+                                </View> */}
+
+
+                                <View>
+                                    <Text style={styles.label}>Email</Text>
+                                    <TextInput
+                                    style={styles.input}
+                                    value={formData.email}
+                                    onChangeText={(text)=>handleInputChange('email',text)}
+                                    placeholder='Enter Your Email'
+                                    />
                                 </View>
+
 
 
                                 <View>
@@ -293,7 +320,7 @@ export default function StationInfoScreen() {
                                 </View>
 
                                 <TouchableOpacity style={styles.orderBtn2} onPress={()=>handlePlaceOrder()}>
-                                    <Text style={styles.btnTxt}>Place Order</Text>
+                                    <Text style={styles.btnTxt}>Pay with paystack</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
