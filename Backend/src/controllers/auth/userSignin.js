@@ -49,6 +49,27 @@ const userSignin=async(req,res)=>{
    
 }
 
+// get User Info
+const getUserInfo=async(req,res)=>{
+    const {userId}=req.params;
+    try {
+        const user=await User.findById(userId);
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+
+        return res.status(200).json({
+            message:"User Info Fetched Successfully!",
+            success:true,
+            user
+        })
+
+    } catch (error) {
+        return res.status(500).json({message:"Error fetching user info",error})
+        
+    }
+}
+
 const userSignout=(req,res)=>{
     try {
         res.clearCookie('access_token').status(200).json({message:"Signout successful!"})
@@ -59,5 +80,6 @@ const userSignout=(req,res)=>{
 
 module.exports={
     userSignin,
-    userSignout
+    userSignout,
+    getUserInfo
 }

@@ -1,6 +1,6 @@
 const express=require("express");
 const { userSignup } = require("./controllers/auth/userSignup.js");
-const { userSignin, userSignout } = require("./controllers/auth/userSignin.js");
+const { userSignin, userSignout, getUserInfo } = require("./controllers/auth/userSignin.js");
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
@@ -17,7 +17,8 @@ router.post('/user/signup/',userSignup);
 router.post('/user/signin/',userSignin);
 router.post('/signout',userSignout);
 router.post('/requestOTP',requestOTP);
-router.post('/resetPassword',resetPassword)
+router.post('/resetPassword',resetPassword);
+router.get('/user/info/:userId',getUserInfo)
 
 //station
 router.post('/station/signin/',stationSignin)

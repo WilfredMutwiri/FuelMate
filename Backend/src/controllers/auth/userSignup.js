@@ -4,7 +4,7 @@ const User=require('../../models/auth/userSignupModel');
 
 const userSignup=async(req,res)=>{
     try {
-        let {email,username,password}=req.body;
+        let {email,username,password,phoneNo}=req.body;
 
         email=email.trim().toLowerCase();
         username=username.trim().toLowerCase();
@@ -28,6 +28,7 @@ const userSignup=async(req,res)=>{
 
         const newUser=new User({
             email,
+            phoneNo,
             password:hashedPassword,
             username
         })

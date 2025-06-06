@@ -11,6 +11,11 @@ username:{
     required:true,
     unique:true
 },
+phoneNo:{
+    type:Number,
+    required:true,
+    unique:true
+},
 password:{
     type:String,
     required:true
