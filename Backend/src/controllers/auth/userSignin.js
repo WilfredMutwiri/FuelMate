@@ -72,7 +72,10 @@ const getUserInfo=async(req,res)=>{
 
 const userSignout=(req,res)=>{
     try {
-        res.clearCookie('access_token').status(200).json({message:"Signout successful!"})
+        res.clearCookie('access_token').status(200).json({
+            message:"Signout successful!",
+            success:true
+        })
     } catch (error) {
         return res.status(500).json({message:error.message})
     }
