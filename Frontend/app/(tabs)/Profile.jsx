@@ -2,8 +2,87 @@ import {View,Text,StyleSheet, ScrollView,Image, TextInput, TouchableOpacity} fro
 import { SafeAreaView } from 'react-native-safe-area-context'
 import userImg from '../../assets/images/user.jpg';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import Loader from '../../components/loader.jsx';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import useAuthStore from '../../zustand/store.jsx';
+import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
+import * as Location from 'expo-location';
+import ToastComponent from "../../components/Toast";
+import {useRouter} from 'expo-router';
 
 export default function Profile(){
+    const router=useRouter();
+    const user=useAuthStore((state)=>state.user)
+    const [userData,setUserData]=useState(null);
+    const [Loading,setLoading]=useState(false);
+    const [location,setLocation]=useState(null);
+    const [locationName,setLocationName]=useState(null)
+
+    // get user info
+
+    useEffect(() => {
+    const getUserInfo = async () => {
+
+        try {
+            console.log("initiating info fetch")
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/user/info/${user.id}`);
+            const result = response.data;
+            console.log(result)
+            if (result.success) {
+                setUserData(result);
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("API fetch error:", error.response?.data || error.message);
+        }finally{
+            setLoading(false);
+        }
+    };
+
+    getUserInfo();
+
+}, []);
+
+    // get user's current location
+    useEffect(()=>{
+        setLoading(true);
+        (
+            async () =>{
+            let {status}=await Location.requestForegroundPermissionsAsync();
+            if(status!='granted'){
+                Alert.alert("permission denied","Location is required to show your current location");
+                setLocationName("Location unavailabe (Permission denied).")
+                return
+            }
+    
+            let currentLocation=await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation.coords);
+    
+            let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+            if(addressArray.length>0){
+                const address=addressArray[0];
+                setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+            }
+        })();
+    },[])
+
+    // handleSignout
+    const handleSignout=async(req,res)=>{
+        try {
+            const response = await axios.post(`${SERVER_URI}/api/v1/signout/`);
+            console.log(response)
+            if(response.data.success){
+                router.push('/Signin')
+            }
+        } catch (error) {
+            ToastComponent("error",error.message)
+        }
+    }
+    
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView
@@ -12,11 +91,23 @@ export default function Profile(){
             >
                 <View style={styles.profileCont}>
                     {/* header section */}
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                        <>
                         <View style={styles.header}>
                             <Image source={userImg} style={styles.profileImg}/>
                             <View>
-                                <Text style={styles.label}>John Kamau</Text>
-                                <Text style={styles.subTitle}>Eldoret Town Center</Text>
+                                <Text style={styles.label}>{userData?.user?.email}</Text>
+                                <Text style={styles.subTitle}>{
+                                locationName?(
+                                    locationName
+                                ):(
+                                    <Text>Location not found!</Text>
+                                )
+                                }
+                                </Text>
                             </View>
                         </View>
 
@@ -24,33 +115,30 @@ export default function Profile(){
                         <View>
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Username</Text>
-                                <Text style={styles.subTitle}>J_Kamau</Text>
+                                <Text style={styles.subTitle}>{userData?.user?.username}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Phone Number</Text>
-                                <Text style={styles.subTitle}>0721234356</Text>
+                                <Text style={styles.subTitle}>{userData?.user?.phoneNo}</Text>
                             </View>
 
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Email Address</Text>
-                                <Text style={styles.subTitle}>johnkamau@gmail.com</Text>
+                                <Text style={styles.subTitle}>{userData?.user?.email}</Text>
                             </View>
                         </View>
 
                         {/* buttons */}
                         <View style={styles.BTNsContainer}>
-                        <TouchableOpacity style={styles.signoutBtn}>
+                        <TouchableOpacity style={styles.signoutBtn} onPress={handleSignout}>
                             <Text style={styles.btnTxt}>Signout</Text>
                             <FontAwesome6 name="right-from-bracket" size={18} color="#ffff"/>
                         </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.updateBtn}>
-                            <Text style={styles.btnTxt}>Update Profile</Text>
-                            <FontAwesome6 name="pen" size={18} color="#ffff"/>
-                        </TouchableOpacity>
-
                         </View>
+                        </>
+                        )
+                    }
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -101,26 +189,15 @@ const styles=StyleSheet.create({
         color:"#05367C",
     },
     BTNsContainer:{
-        flexDirection:'row',
         alignItems:'center',
         justifyContent:'center',
         marginTop:20,
         justifyContent:'space-between',
-        marginTop:"50%"
+        marginTop:"40%"
     },
     signoutBtn:{
         backgroundColor:'#E42629',
-        width:'45%',
-        alignSelf:'center',
-        padding:13,
-        marginTop:10,
-        borderRadius:10,
-        flexDirection:'row',
-        justifyContent:'space-between',
-    },
-    updateBtn:{
-        backgroundColor:'#05367C',
-        width:'45%',
+        width:250,
         alignSelf:'center',
         padding:13,
         marginTop:10,

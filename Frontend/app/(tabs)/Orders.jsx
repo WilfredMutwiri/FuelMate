@@ -109,7 +109,7 @@ const styles=StyleSheet.create({
         color:'#05367C',
     },
     orderContainer:{
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: 'rgba(0,0,0,0.1)',
         borderRadius:10,
         padding:10
     }

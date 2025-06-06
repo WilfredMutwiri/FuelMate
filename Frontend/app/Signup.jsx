@@ -31,7 +31,8 @@ export default function Signup(){
         username:'',
         email:'',
         password:'',
-        confirmPassword:''
+        confirmPassword:'',
+        phoneNo:''
     })
     const handleInputChange=(name,value)=>{
         setFormData({
@@ -94,6 +95,17 @@ export default function Signup(){
                                 value={formData.username}
                                 onChangeText={(text)=>handleInputChange('username',text)}
                                 placeholder='Enter your username'
+                                />
+                            </View>
+                            {/* phone number button */}
+                            <View style={styles.inputContainer}>
+                                <Text style={styles.inputLabel}>Phone Number</Text>
+                                <TextInput 
+                                style={styles.inputText}
+                                value={formData.phoneNo}
+                                keyboardType='numeric'
+                                onChangeText={(text)=>handleInputChange('phoneNo',text)}
+                                placeholder='Enter your phone number'
                                 />
                             </View>
                             {/* email button */}
@@ -176,7 +188,7 @@ const styles = StyleSheet.create({
     container:{
         flex:1,
         backgroundColor:'#fff',
-        paddingBottom:30
+        paddingBottom:50
     },
     LogoContainer:{
         flexDirection:'row',

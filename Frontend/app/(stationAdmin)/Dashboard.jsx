@@ -127,9 +127,6 @@ export default function StationInfoScreen() {
                                     
                         <View style={styles.StatusContainer}>
                             <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
-                            <TouchableOpacity style={styles.BTNContainer}>
-                                <Text style={styles.BtnTxt}>Update</Text>
-                            </TouchableOpacity>
                         </View>
                     </View>
                 ))
