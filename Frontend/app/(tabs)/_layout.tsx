@@ -68,7 +68,7 @@ return (
         <Tabs.Screen name="Orders" options={
           {
             headerShown:true,
-            title: 'Order Progress',
+            title: 'Orders',
             tabBarIcon: ({ color, size=10,focused }) => (
               <FontAwesome6 
               name="cart-shopping" 

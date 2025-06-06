@@ -10,10 +10,12 @@ import Loader from '../../components/loader.jsx';
 import ToastComponent from "../../components/Toast";
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+import useAuthStore from '../../zustand/store.jsx';
 
 
 export default function StationInfoScreen() {
 
+    const user=useAuthStore((state)=>state.user)
     const { id } = useLocalSearchParams();
     const [station, setStation] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -27,7 +29,8 @@ export default function StationInfoScreen() {
 	fuelVolume:'',
 	amount:'',
     email:'',
-	status:''
+	status:'',
+    customer:''
     })
     
     const [orderInitiated,setOrderInitiated]=useState(false);
@@ -89,6 +92,7 @@ export default function StationInfoScreen() {
         setFormData({
             ...formData,
             location:locationName,
+            customer:user.id,
             [name]:value
         })
     }
@@ -101,7 +105,8 @@ export default function StationInfoScreen() {
 
         const completeFormData={
             ...formData,
-            location:locationName
+            location:locationName,
+            customer:user.id
         }
 
         try {

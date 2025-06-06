@@ -12,14 +12,14 @@ const useAuthStore=create(
             station:null,
 
             //user
-            login:async(username,token)=>{
-                set({user:{username,token},isAuthenticated:true})
+            login:async(username,token,id)=>{
+                set({user:{username,token,id},isUserAuthenticated:true})
             },
             signup:async(email,username)=>{
-                set({user:{email,username},isAuthenticated:true})
+                set({user:{email,username},isUserAuthenticated:true})
             },
             logout:async(username,email)=>{
-                set({user:null,isAuthenticated:false})
+                set({user:null,isUserAuthenticated:false})
             },
 
             // station

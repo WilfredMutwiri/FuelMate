@@ -49,7 +49,7 @@ export default function Signin(){
             const result=response.data;
             console.log(result.user.username)
             if (result.success){
-                await login(result.user.username,result.token)
+                await login(result.user.username,result.token,result.user.id)
                 ToastComponent("success",`Welcome back! ${formData.username}`);  
                 router.push('/Home');
             }

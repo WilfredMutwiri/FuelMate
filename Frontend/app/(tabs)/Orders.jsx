@@ -1,8 +1,50 @@
-import {View,Text,StyleSheet, ScrollView} from 'react-native'
+import {View,Text,StyleSheet, ScrollView,TouchableOpacity} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
+import useAuthStore from '../../zustand/store.jsx';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Loader from '../../components/loader.jsx';
 
 export default function Orders(){
+    const user=useAuthStore((state)=>state.user)
+    console.log(user.id)
+    const [customerData,setCustomerData]=useState(null);
+    const [Loading,setLoading]=useState(false);
+    const [apiResponse,setAPIResponse]=useState(null)
+
+    useEffect(() => {
+    const getOrders = async () => {
+
+        try {
+            console.log("initiating orders fetch")
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/customer/${user.id}`);
+            const result = response.data;
+            console.log(result)
+            if (result.customerOrders) {
+                setAPIResponse(result)
+                setCustomerData(result.customerOrders);
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("API fetch error:", error.response?.data || error.message);
+        }finally{
+            setLoading(false);
+        }
+    };
+
+    getOrders();
+
+}, []);
+
+useEffect(()=>{
+console.log(customerData)
+},[customerData])
+
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView
@@ -11,93 +53,41 @@ export default function Orders(){
             >
                 <View style={styles.orderCont}>
                     <View>
-                        <Text style={styles.orderID}>Order ID : <Text style={styles.IDsubTxt}>#123fklwewe13232dsda</Text></Text>
-                        <Text>Ordered On : <Text style={styles.IDsubTxt}>04/08/2025</Text> - <Text style={styles.IDsubTxt}>09:10 PM</Text></Text>
+                        <Text style={styles.orderID}>Hello <Text style={styles.subTxt}>{user?.username}</Text></Text>
+                        <Text>Total orders placed : <Text style={styles.subTxt}>{apiResponse?.totalOrders || 0}</Text></Text>
                     </View>
-                    {/* order progress*/}
+                    {/* orders*/}
                     <View>
-                        <Text style={{fontSize:18, fontWeight:'bold', marginTop:20,marginBottom:20}}>Progress:</Text>
-
-                        <View style={styles.orderStatus}>
-                            <FontAwesome6 name="square-check" size={22} color="#10AB10"/>
-                            <Text>-------------------</Text>
-                            <Text>Order Placed</Text>
-                        </View>
-                        <View>
-                            {[...Array(2)].map((_, i) => (
-                                <View key={i}>
-                                    <Text style={styles.drop}>.</Text>
-                                </View>
-                            ))}
-                        </View>
-
-                        <View style={styles.orderStatus}>
-                            <FontAwesome6 name="square-check" size={22} color="#10AB10"/>
-                            <Text>-------------------</Text>
-                            <Text>Order Confirmed</Text>
-                        </View>
-
-                        <View>
-                            {[...Array(2)].map((_, i) => (
-                                <View key={i}>
-                                    <Text style={styles.drop}>.</Text>
-                                </View>
-                            ))}
-                        </View>
-
-                        <View style={styles.orderStatus}>
-                            <FontAwesome6 name="square" size={22} color="#000"/>
-                            <Text>-------------------</Text>
-                            <Text>Order Dispatched</Text>
-                        </View>
-
-                        <View>
-                            {[...Array(2)].map((_, i) => (
-                                <View key={i}>
-                                    <Text style={styles.drop}>.</Text>
-                                </View>
-                            ))}
-                        </View>
-
-
-                        <View style={styles.orderStatus}>
-                            <FontAwesome6 name="square" size={22} color="#000"/>
-                            <Text>-------------------</Text>
-                            <Text>Order Delivered</Text>
-                        </View>
-                        <Text style={{marginTop:30,marginBottom:30}}>---------------------------------------------------------------------------</Text>
-
-                        {/* payment options */}
-                        <View>
-                            <Text style={{fontSize:18,paddingBottom:15,fontWeight:'semibold'}}>Payment Option:</Text>
-                            <View style={{flexDirection:'row', alignItems:'center', gap:20, marginTop:10,marginBottom:10}}>
-                                <Text>Pay on Delivery</Text>
-                                <FontAwesome6 name="square-check" size={20} color="#10AB10"/>
+                        {
+                            Loading?(
+                            <View>
+                                <Loader/>
                             </View>
-
-                            <View style={{flexDirection:'row', alignItems:'center', gap:20, marginTop:10,marginBottom:10}}>
-                                <Text>Pay before Delivery</Text>
-                                <FontAwesome6 name="square" size={20} color="#000"/>
-                            </View>
+                        ):(
+                            <View style={{gap:10,marginTop:20}}>
+                            {
+                                customerData?.map((order,index)=>(
+                                <View key={index._id || index} style={styles.orderContainer}>
+                                    <Text style={styles.subTxt}>Order ID: {order._id}</Text>
+                                    <Text>Delivery Location: {order?.location}</Text>
+                                    <Text>Fuel Type: {order?.fuelType}</Text>
+                                    <Text>Fuel Volume: {order?.fuelVolume} L</Text>
+                                    <Text>Amount Charged : {order?.amount}</Text>
+                        
+                                    <View style={styles.StatusContainer}>
+                                        <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
+                                    </View>
+                                </View>
+                                ))
+                            }
                         </View>
-
-                        {/* delivery address */}
-
-                        <View>
-                            <Text style={{fontSize:18,paddingBottom:15,paddingTop:20,fontWeight:'semibold'}}>Delivery Address:</Text>
-                            <Text>350 street- kilimambogo area</Text>
-                        </View>
-
-                        {/* total price */}
-                        <View style={{marginBottom:30}}>
-                            <Text style={{fontSize:18,paddingBottom:15,paddingTop:20,fontWeight:'semibold'}}>Total Price:</Text>
-                            <Text style={{color:"#0EA01F",fontWeight:"semibold",fontSize:25}}>Ksh <Text>13000</Text></Text>
-                        </View>
-                    </View>
+                        )
+                    }
                 </View>
-            </ScrollView>
-        </SafeAreaView>
-    )
+            </View>
+        </ScrollView>
+    </SafeAreaView>
+)
 }
 
 const styles=StyleSheet.create({
@@ -115,18 +105,12 @@ const styles=StyleSheet.create({
         marginTop:20,
         marginBottom:10
     },
-    IDsubTxt:{
+    subTxt:{
         color:'#05367C',
     },
-    orderStatus:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginBottom:10,
-        marginTop:10,
-        gap:30
-    },
-    drop:{
-        fontSize:30,
-        color:'#000',
+    orderContainer:{
+        backgroundColor: 'rgba(0,0,0,0.2)',
+        borderRadius:10,
+        padding:10
     }
 })
