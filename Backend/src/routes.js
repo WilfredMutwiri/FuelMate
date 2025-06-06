@@ -7,7 +7,7 @@ const { stationSignin } = require("./controllers/auth/stationSignin.js");
 const { stationSignup, getAllStations,getStationById, updateStationStatus} = require("./controllers/auth/stationSignup.js");
 const {fileUpload} = require("./controllers/auth/fileUpload.js");
 const {profileUpload,certUpload} = require("./middlewares/multer.js");
-const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation } = require("./controllers/auth/order.js");
+const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer } = require("./controllers/auth/order.js");
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
@@ -36,6 +36,7 @@ router.get('/order/all/',getAllOrders);
 router.get('/order/:id',getOrderById);
 router.patch('/order/update/:id',updateOrder);
 router.get('/order/station/:id',getOrdersByStation)
+router.get('/order/customer/:id',getOrdersByCustomer)
 
 // paystack
 router.post('/paystack/Init/',paystackInit)

@@ -10,7 +10,10 @@ const placeOrder=async(req,res)=>{
             fuelVolume,
             amount,
             status,
+            customer,
         }=req.body;
+
+        fuelType=fuelType.trim().toLowerCase();
 
         const newOrder=new Order({
             location,
@@ -18,6 +21,7 @@ const placeOrder=async(req,res)=>{
             fuelType,
             fuelVolume,
             amount,
+            customer,
             status:'received',
             station:stationId
         })
@@ -133,10 +137,30 @@ const getOrdersByStation=async(req,res)=>{
     }
 }
 
+// get orders by cstomer
+const getOrdersByCustomer=async(req,res)=>{
+    let customer=req.params.id;
+    try {
+        const orders=await Order.find({customer:customer}).populate('customer').sort({createdAt:-1});
+        return res.status(200).json({
+            message:'Customer orders fetched successfully!',
+            customerOrders:orders,
+            totalOrders:orders.length,
+            success:true
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message
+        })        
+    }
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
     getOrderById,
     updateOrder,
-    getOrdersByStation
+    getOrdersByStation,
+    getOrdersByCustomer
 }
