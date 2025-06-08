@@ -254,6 +254,29 @@ const getTotalAmountByStation=async(req,res)=>{
     }
 }
 
+// get total fuel volume ordered per station
+const getTotalVolumeDeliveredByStation=async(req,res)=>{
+    const stationId=req.params.id;
+
+    try {
+        const deliveredOrders=await Order.find({
+            station:stationId,
+            status:"delivered"
+        });
+
+        const totalVolume=deliveredOrders.reduce((sum,order)=>sum+order.fuelVolume,0);
+
+        return res.status(200).json({
+            message:"Total fuel volume delivered by this station calculated successfully!",
+            totalVolume,
+            success:true
+        })
+        
+    } catch (error) {
+        return  res.status(500).json({message:error.message,success:false})
+    }
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
@@ -264,5 +287,6 @@ module.exports={
     getDeliveredOrdersByStation,
     getCanceledOrdersByStation,
     getApprovedOrdersByStation,
-    getTotalAmountByStation
+    getTotalAmountByStation,
+    getTotalVolumeDeliveredByStation
 }
