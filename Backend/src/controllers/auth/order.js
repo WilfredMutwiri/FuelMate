@@ -137,7 +137,7 @@ const getOrdersByStation=async(req,res)=>{
     }
 }
 
-// get orders by cstomer
+// get orders by customer
 const getOrdersByCustomer=async(req,res)=>{
     let customer=req.params.id;
     try {
@@ -156,11 +156,39 @@ const getOrdersByCustomer=async(req,res)=>{
     }
 }
 
+
+// delivered orders by station
+const getDeliveredOrdersByStation=async(req,res)=>{
+    const stationId=req.params.id;
+
+    try {
+        const deliveredOrders=await Order.find({
+            station:stationId,
+            status:"delivered",
+        }).populate("station").sort({createdAt:-1})
+
+        return res.status(200).json({
+            message:"Delivered orders for station fetched successfully!",
+            deliveredOrders,
+            totalOrders:deliveredOrders.length,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message,
+            success:false
+        })
+    }
+}
+
+
+
 module.exports={
     placeOrder,
     getAllOrders,
     getOrderById,
     updateOrder,
     getOrdersByStation,
-    getOrdersByCustomer
+    getOrdersByCustomer,
+    getDeliveredOrdersByStation
 }
