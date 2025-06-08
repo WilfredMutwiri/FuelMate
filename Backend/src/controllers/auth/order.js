@@ -232,6 +232,28 @@ const getApprovedOrdersByStation=async(req,res)=>{
     }
 }
 
+// get total amount raised from orders
+const getTotalAmountByStation=async(req,res)=>{
+    const stationId=req.params.id;
+
+    try {
+        const orders=await Order.find({station:stationId});
+
+        const totalAmount=orders.reduce((sum,order)=>sum+order.amount,0);
+
+        return res.status(200).json({
+            message:"Total amount for this station calculated successfully!",
+            totalAmount,
+            success:true
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message,
+            success:false
+        })
+    }
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
@@ -241,5 +263,6 @@ module.exports={
     getOrdersByCustomer,
     getDeliveredOrdersByStation,
     getCanceledOrdersByStation,
-    getApprovedOrdersByStation
+    getApprovedOrdersByStation,
+    getTotalAmountByStation
 }
