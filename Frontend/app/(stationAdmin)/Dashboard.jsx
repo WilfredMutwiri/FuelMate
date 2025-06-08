@@ -8,15 +8,23 @@ import graphImg from '../../assets/images/graph.png'
 import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 import Loader from '../../components/loader.jsx';
 import useAuthStore from '../../zustand/store.jsx';
+import {FuelStatusBarGraph} from '../../components/Analytics/fuelStatus.jsx';
+import ToastComponent from "../../components/Toast";
+
 
 export default function StationInfoScreen() {
 
     const station=useAuthStore((state)=>state.station)
         const [stationData,setStationData]=useState(null);
         const [Loading,setLoading]=useState(false);
-        const [apiResponse,setAPIResponse]=useState(null)
+        const [apiResponse,setAPIResponse]=useState(null);
+        const [deliveredFuel,setDeliveredFuel]=useState(0);
+        const [totalSales,setTotalSales]=useState(0);
+        const [declinedOrders,setDeclinedOrders]=useState(0)
+        const [approvedOrders,setApprovedOrders]=useState(0);
+        const [deliveredOrders,setDeliveredOrders]=useState(0)
 
-        // fetch station ordes
+        // fetch station orders
         useEffect(() => {
         const getStation = async () => {
         if (!station?.id) {
@@ -34,25 +42,169 @@ export default function StationInfoScreen() {
                 setStationData(result.stationOrders);
                 setLoading(false);
             } else {
-                setError(true);
                 setLoading(false);
             }
         }
         catch (error) {
-            setError(true);
-            setMessage("An error occurred");
-            console.log("API fetch error:", error.response?.data || error.message);
-            setError(true);
-            setMessage("An error occurred");
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
         }
         setLoading(false);
         };
         getStation();
     }, []);
 
-// useEffect(()=>{
-//     console.log("api response",apiResponse.totalOrders)
-// },[])
+
+// get total Delivered fuel
+        useEffect(() => {
+        const getDeliveredFuel = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/fuelVolume/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setDeliveredFuel(result.totalVolume);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getDeliveredFuel();
+    }, []);
+
+
+// get total station sales
+        useEffect(() => {
+        const getStationSales = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/revenue/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setTotalSales(result.totalAmount);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getStationSales();
+    }, []);
+
+
+
+// get declined/canceled orders
+        useEffect(() => {
+        const getDeclinedrders = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/canceled/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setDeclinedOrders(result.totalOrders);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getDeclinedrders();
+    }, []);
+
+    // get approved orders
+        useEffect(() => {
+        const getApprovedOrders= async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/approved/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setApprovedOrders(result.totalOrders);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getApprovedOrders();
+    }, []);
+
+
+    // get delivered orders
+        useEffect(() => {
+        const getDeliveredOrders = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/delivered/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setDeliveredOrders(result.totalOrders);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getDeliveredOrders();
+    }, []);
+
+
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -65,13 +217,25 @@ export default function StationInfoScreen() {
                     onPress={()=>router.push("/Analytics")}
                 >
                     <Text style={styles.TopTxt}>Total Sales</Text>
-                    <Text style={styles.TopSubTxt}>Ksh 20,000.00</Text>
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                            <Text style={styles.TopSubTxt}>Ksh {totalSales || 0}</Text>
+                        )
+                    }
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.Tcontainer102}
                     onPress={()=>router.push("/Orders")}
                 >
                     <Text style={styles.TopTxt}>Received Orders</Text>
-                    <Text style={styles.TopSubTxt}>{apiResponse?.totalOrders || 0}</Text>
+                    {
+                        Loading?(
+                            <Loader/>
+                        ):(
+                            <Text style={styles.TopSubTxt}>{apiResponse?.totalOrders || 0}</Text>
+                        )
+                    }
                 </TouchableOpacity>
             </View>
             {/* container 2 */}
@@ -80,21 +244,62 @@ export default function StationInfoScreen() {
                     onPress={()=>router.push("/Orders")}
                 >
                     <Text style={styles.TopTxt}>Delivered Fuel</Text>
-                    <Text style={styles.TopSubTxt}>320 L</Text>
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                    <Text style={styles.TopSubTxt}>{deliveredFuel || 0} L</Text>
+                        )
+                    }
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.Tcontainer203}
+                    onPress={()=>router.push("/Orders")}
+                >
+                    <Text style={styles.TopTxt}>Approved Orders</Text>
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                    <Text style={styles.TopSubTxt}>{approvedOrders || 0}</Text>
+                        )
+                    }
+                </TouchableOpacity>
+            </View>
+
+            {/* container 3 */}
+                <View style={styles.TopContainer2}>
+                <TouchableOpacity style={styles.Tcontainer103}
+                    onPress={()=>router.push("/Orders")}
+                >
+                    <Text style={styles.TopTxt}>Delivered Orders</Text>
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                    <Text style={styles.TopSubTxt}>{deliveredOrders || 0}</Text>
+                        )
+                    }
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.Tcontainer202}
                     onPress={()=>router.push("/Orders")}
                 >
                     <Text style={styles.TopTxt}>Declined Orders</Text>
-                    <Text style={styles.TopSubTxt}>0</Text>
+                    {
+                        Loading ? (
+                            <Loader/>
+                        ):(
+                    <Text style={styles.TopSubTxt}>{declinedOrders || 0}</Text>
+                        )
+                    }
                 </TouchableOpacity>
-            </View>
 
+            </View>
             {/* analytics section */}
             <View style={styles.analyticsContainer}>
-                <Text style={styles.titleTxt}>Revenue Overview</Text>
                 {/* graph */}
-                <Image source={graphImg} style={{width:310,alignSelf:'center',resizeMode:'cover'}}/>
+                <View>
+                    <FuelStatusBarGraph/>
+                </View>
             </View>
 
             {/* history section */}
@@ -189,8 +394,22 @@ const styles=StyleSheet.create({
         width:150,
         justifyContent:'center'
     },
+        Tcontainer103:{
+        backgroundColor:'green',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
+    },
         Tcontainer202:{
         backgroundColor:'#D9512C',
+        padding:15,
+        borderRadius:10,
+        width:150,
+        justifyContent:'center'
+    },
+        Tcontainer203:{
+        backgroundColor:'gray',
         padding:15,
         borderRadius:10,
         width:150,

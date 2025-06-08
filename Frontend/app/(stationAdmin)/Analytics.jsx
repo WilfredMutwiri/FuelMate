@@ -8,6 +8,8 @@ import graphImg from '../../assets/images/graph.png'
 import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 import Loader from '../../components/loader.jsx';
 import useAuthStore from '../../zustand/store.jsx';
+import {FuelStatusBarGraph, SalesPieChart} from '../../components/Analytics/fuelStatus.jsx';
+import {StationSalesBarGraph} from '../../components/Analytics/sales.jsx'
 
 export default function StationAnalytics() {
         const station=useAuthStore((state)=>state.station);
@@ -57,47 +59,10 @@ export default function StationAnalytics() {
                 </View>
                 {/* graph container */}
                 <View style={styles.analyticsContainer}>
-                    <Image source={graphImg} style={{width:300,alignSelf:'center',resizeMode:'cover'}}/>
+                    <FuelStatusBarGraph/>
                 </View>
-                {/* latest activity container */}
-                <View style={{gap:10,borderBottomColor:"#077E8C",height:550,borderBottomWidth:2,overflow:"hidden"}}>
-                <View style={styles.historyTopC}>
-                    <Text>Recent Activity</Text>
-                    <TouchableOpacity
-                    onPress={()=>router.push('/Orders')}
-                    >
-                        <Text style={styles.SubTxt}>View All</Text>
-                    </TouchableOpacity>
-                </View>
-                    {
-                        Loading?(
-                        <View>
-                            <Loader/>
-                        </View>
-                    ):(
-                        <View style={{gap:10,}}>
-                    {
-                        stationData?.map((order,index)=>(
-                            <View key={index._id || index} style={styles.orderContainer}>
-                                <Text style={styles.SubTxt}>Order ID: {order._id}</Text>
-                                <Text>Customer Location: {order?.location}</Text>
-                                <Text>Customer Contact: {order?.clientPhoneNo}</Text>
-                                <Text>Fuel Type: {order?.fuelType}</Text>
-                                <Text>Fuel Volume: {order?.fuelVolume} L</Text>
-                                <Text>Amount Charged : {order?.amount}</Text>
-                
-                                <View style={styles.StatusContainer}>
-                                        <Text>Status : <Text style={styles.SubTxt}>{order?.status}</Text></Text>
-                                    <TouchableOpacity style={styles.BTNContainer}>
-                                        <Text style={styles.BtnTxt}>Update</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        ))
-                    }
-                    </View>
-                    )
-                    }
+                <View style={styles.analyticsContainer}>
+                    <StationSalesBarGraph/>
                 </View>
             </View>
         </ScrollView>
@@ -135,32 +100,4 @@ const styles=StyleSheet.create({
         marginTop:20,
         padding:10
     },
-        historyTopC:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        paddingBottom:10,
-        paddingTop:20
-    },
-    orderContainer:{
-        backgroundColor:"#ffff",
-        padding:10,
-        borderRadius:10,
-    },
-    BTNContainer:{
-        backgroundColor:'#077E8C',
-        padding:5,
-        borderRadius:10,
-        width:70
-    },
-    BtnTxt:{
-        color:"#ffff",
-        fontSize:12,
-        textAlign:"center"
-    },
-        StatusContainer:{
-        flexDirection:"row",
-        justifyContent:"space-between",
-        alignItems:"center",
-        paddingTop:10
-    }
 })
