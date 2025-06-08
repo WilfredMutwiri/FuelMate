@@ -187,15 +187,15 @@ const getCanceledOrdersByStation=async(req,res)=>{
     const stationId=req.params.id;
 
     try {
-        const deliveredOrders=await Order.find({
+        const canceledOrders=await Order.find({
             station:stationId,
             status:"canceled",
         }).populate("station").sort({createdAt:-1})
 
         return res.status(200).json({
             message:"Canceled orders for station fetched successfully!",
-            deliveredOrders,
-            totalOrders:deliveredOrders.length,
+            canceledOrders,
+            totalOrders:canceledOrders.length,
             success:true
         })
     } catch (error) {
@@ -208,6 +208,29 @@ const getCanceledOrdersByStation=async(req,res)=>{
 
 
 
+// approved orders by station
+const getApprovedOrdersByStation=async(req,res)=>{
+    const stationId=req.params.id;
+
+    try {
+        const approvedOrders=await Order.find({
+            station:stationId,
+            status:"approved",
+        }).populate("station").sort({createdAt:-1})
+
+        return res.status(200).json({
+            message:"approved orders for station fetched successfully!",
+            approvedOrders,
+            totalOrders:approvedOrders.length,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message,
+            success:false
+        })
+    }
+}
 
 module.exports={
     placeOrder,
@@ -217,5 +240,6 @@ module.exports={
     getOrdersByStation,
     getOrdersByCustomer,
     getDeliveredOrdersByStation,
-    getCanceledOrdersByStation
+    getCanceledOrdersByStation,
+    getApprovedOrdersByStation
 }
