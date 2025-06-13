@@ -277,6 +277,46 @@ const getTotalVolumeDeliveredByStation=async(req,res)=>{
     }
 }
 
+// get orders by month
+const getOrdersByMonth=async(req,res)=>{
+    const {stationId, month, year} = req.params;
+
+    const monthInt = parseInt(month, 10);
+    const yearInt = parseInt(year, 10);
+
+    if (monthInt < 1 || monthInt > 12 || yearInt < 2000) {
+    return res.status(400).json({
+        message: "Invalid month or year",
+        success: false
+    });
+    }
+
+    try {
+        const orders = await Order.find({
+            station: stationId,
+            createdAt: {
+                $gte: new Date(yearInt, monthInt - 1, 1),
+                $lt: new Date(yearInt, monthInt, 1)
+            }
+        })
+        .populate('station');
+
+
+        return res.status(200).json({
+            message: "Orders for the specified month fetched successfully!",
+            orders,
+            totalOrders: orders.length,
+            success: true
+        })
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message,
+            success: false
+        });
+    }
+}
+
 module.exports={
     placeOrder,
     getAllOrders,
@@ -288,5 +328,6 @@ module.exports={
     getCanceledOrdersByStation,
     getApprovedOrdersByStation,
     getTotalAmountByStation,
-    getTotalVolumeDeliveredByStation
+    getTotalVolumeDeliveredByStation,
+    getOrdersByMonth
 }
