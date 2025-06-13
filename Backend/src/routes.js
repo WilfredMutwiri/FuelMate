@@ -43,7 +43,7 @@ router.get('/order/canceled/station/:id',getCanceledOrdersByStation);
 router.get('/order/approved/station/:id',getApprovedOrdersByStation);
 router.get('/order/revenue/station/:id',getTotalAmountByStation);
 router.get('/order/fuelVolume/station/:id',getTotalVolumeDeliveredByStation);
-router.get('/order/getByMonth/:stationId/:month/:year',getOrdersByMonth);
+router.get('/order/getOrdersByMonth/:stationId/:month/:year',getOrdersByMonth);
 
 // paystack
 router.post('/paystack/Init/',paystackInit)
