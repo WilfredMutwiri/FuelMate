@@ -3,7 +3,7 @@ import {Alert, Button, Label, Spinner, TextInput} from 'flowbite-react'
 import {SERVER_URL} from '../constants/SERVER_URL'
 import { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
-import signupImg from '../images/signup.webp'
+import signupImg from '../assets/signup.webp'
 export default function signup() {
   const [formData,setFormData]=useState({});
   const [loading,setLoading]=useState(false);
@@ -55,6 +55,7 @@ export default function signup() {
                 <img src={signupImg} alt='signup image'/>
             </div>
                 <div className='flex-1 mt-5 md:mt-0'>
+                    <h2 className='text-2xl pb-5 text-center'>Admin Registration!</h2>
                     <form className='flex flex-col gap-3' onSubmit={handleSubmit}>
                         <Label value='Username'/>
                         <TextInput 
@@ -90,7 +91,7 @@ export default function signup() {
                             <Label htmlFor='showPasswordBox'value='Show Password'/>
                         </div>
                         <Button 
-                        gradientDuoTone='pinkToOrange'
+                        gradientDuoTone='purpleToBlue'
                         type='submit'
                         disabled={loading}
                         >
