@@ -1,31 +1,23 @@
-import React from 'react'
 import { IoMdClose } from "react-icons/io";
-import { GrUserWorker } from "react-icons/gr";
-import { FaUsers } from "react-icons/fa";
-import logo from '../assets/schoolLogo.webp'
-import { FaDatabase } from "react-icons/fa6";
-import { GiLovers } from "react-icons/gi";
+import logo from '../assets/logo.webp'
 import { useSelector,useDispatch } from 'react-redux';
 import { FaCaretDown } from "react-icons/fa";
-import SchoolLogo from '../assets/schoolLogo.webp';
-
-import { useRef, useState } from "react";
-
-import TeachersSquare from "./Messages/TeachersSquare";
-import ParentsSquare from "./Messages/ParentsSquare";
-import WorkersSquare from "./Messages/WorkersSquare";
-import UpdatePage from "./Manage_Database/ManageTeachers";
-import { Button, ButtonGroup } from "flowbite-react";
+import { MdDashboard } from "react-icons/md";
+import { MdOutlineEmergency } from "react-icons/md";
+import { RiGasStationFill } from "react-icons/ri";
+import { FcApproval } from "react-icons/fc";
+import { IoMdTrendingUp } from "react-icons/io";
+import { useState } from "react";
+import { Button} from "flowbite-react";
 import { Link, useNavigate } from 'react-router-dom';
 import {SERVER_URL} from '../constants/SERVER_URL'
 import { signoutSuccess } from '../../Redux/User/userSlice';
 import Dashboard from './Dashboard';
-import ManageTeachers from './Manage_Database/ManageTeachers';
-import ManageParents from './Manage_Database/ManageParents';
+
+
 export default function AdminDashboard() {
     const Navigate=useNavigate()
     const dispatch=useDispatch();
-    const {currentUser}=useSelector(state=>state.user)
     const [visibleSection,setVisibleSection]=useState('dashboard')
     const [menuVisible,setMenuVisible]=useState(true)
     const handleRevealMenu=()=>{
@@ -67,34 +59,35 @@ export default function AdminDashboard() {
             <section>
                 <div className="block md:flex w-[95%] m-auto mt-10 gap-5 md:gap-10">
                     {/* left section */}
-                <div className={`flex flex-col justify-between -mt-7 bg-cyan-700 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
+                <div className={`flex flex-col justify-between -mt-7 bg-gray-950 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
                     <div className='p-4'>
                     <div className=''>
-                        <img className='w-24 rounded-full mx-auto' src={logo} alt="profilePic"/>
+                        <img className='w-44 rounded-full mx-auto' src={logo} alt="profilePic"/>
                     </div>
-                    <h2 className='text-center text-white p-3'>Destinykers High School</h2>
+                    <h2 className='text-center text-3xl text-white p-3'>FuelMate</h2>
                     <div>
-                        <p className='text-center text-sm italic text-white'>Learn To Inspire</p>
+                        <p className='text-center text-sm italic text-white'>Your Fuel, Delivered Anywhere, Anytime
+</p>
                     </div>
                     </div>
-                    <div className='p-4 border-t-4 bg-cyan-700'>
+                    <div className='p-4 border-t-4 bg-gray-950'>
                         <ul className='flex flex-col gap-5 text-center'>
-                            <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex          gap-3'><span><FaDatabase className="text-xl"/></span>Dashboard</li>
+                            <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><MdDashboard  className="text-xl"/></span>Dashboard</li>
 
                             <Link to="/ManageTeachers">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Teachers</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-500 cursor-pointer flex gap-3'><span><MdOutlineEmergency className="text-xl"/></span>Emergency Requests</li>
                             </Link>
 
                             <Link to="/manageParents">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Parents</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FcApproval className="text-xl"/></span>Approved Stations</li>
                             </Link>
                             
                             <Link to="/manageWorkers">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Workers</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
                             </Link>
 
                             <Link to="/manageStudents">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Students</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                             </Link>
                         </ul>
                         <Button className="w-full mt-4" outline onClick={handleSignout}>Exit</Button>
