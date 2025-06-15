@@ -49,6 +49,7 @@ const getAllOrders=async(req,res)=>{
         return res.status(200).json({
             message:"Orders fetched successfully!",
             orders,
+            totalOrders:orders.length,
             success:true
         })
     } catch (error) {

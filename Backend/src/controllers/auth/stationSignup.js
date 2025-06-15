@@ -89,7 +89,9 @@ const getAllStations=async(req,res)=>{
         const stations=await Station.find().sort({createdAt:-1});
         return res.status(200).json({
             message:"Stations fetched successfully",
-            stations
+            stations,
+            totalStations:stations.length,
+            success:true
         })
     } catch (error) {
         return res.status(500).json({message:error.message})
