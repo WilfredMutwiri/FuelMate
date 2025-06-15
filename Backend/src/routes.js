@@ -10,6 +10,7 @@ const {profileUpload,certUpload} = require("./middlewares/multer.js");
 const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer, getDeliveredOrdersByStation, getCanceledOrdersByStation, getApprovedOrdersByStation, getTotalAmountByStation, getTotalVolumeDeliveredByStation, getOrdersByMonth } = require("./controllers/auth/order.js");
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
+const { adminSignin } = require("./controllers/auth/adminSignin.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
@@ -20,7 +21,8 @@ router.post('/signout',userSignout);
 router.post('/requestOTP',requestOTP);
 router.post('/resetPassword',resetPassword);
 router.get('/user/info/:userId',getUserInfo);
-router.post('/admin/signup/',adminSignup)
+router.post('/admin/signup/',adminSignup);
+router.post('/admin/signin/',adminSignin);
 
 //station
 router.post('/station/signin/',stationSignin)
