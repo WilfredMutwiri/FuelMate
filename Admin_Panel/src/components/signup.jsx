@@ -22,11 +22,11 @@ export default function signup() {
       setLoading(true);
       setErrorMessage("");
       setSuccessMessage(false)
-      if(!formData.userName || !formData.email || !formData.password){
+      if(!formData.username || !formData.email || !formData.password){
           return setErrorMessage("All fields must be filled")
       }
       try {
-          const res=await fetch(SERVER_URL+'/api/auth/signup',{
+          const res=await fetch(SERVER_URL+'/api/v1/admin/signup/',{
               method:"POST",
               headers:{'Content-Type':'application/json'},
               body:JSON.stringify(formData)
@@ -61,7 +61,7 @@ export default function signup() {
                         <TextInput 
                         placeholder='mark'
                         type='text'
-                        id='userName'
+                        id='username'
                         onChange={handleChange}
                         required
                         />

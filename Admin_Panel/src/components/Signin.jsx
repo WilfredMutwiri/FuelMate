@@ -37,9 +37,9 @@ export default function SignIn(){
             setErrorMessage("");
             setLoginSuccess(false)
             if(
-                !formData.email ||
+                !formData.username||
                 !formData.password ||
-                formData.email===" "||
+                formData.username===" "||
                 formData.password===""
             ){
                 setErrorMessage("All fields must be filled!");
@@ -48,7 +48,7 @@ export default function SignIn(){
             }
             try {
                 dispatch(signInStart())
-                const res=await fetch(SERVER_URL+'/api/auth/signin',{
+                const res=await fetch(SERVER_URL+'/api/v1/admin/signin/',{
                     method:"POST",
                     headers:{'Content-Type':'application/json'},
                     body:JSON.stringify(formData)
@@ -81,11 +81,11 @@ export default function SignIn(){
                 <div className='flex-1 flex-col mt-5'>
                 <h2 className='text-cyan-800 font-semibold text-lg md:text-xl'>{welcomeText}</h2>
                     <form className='flex flex-col gap-3 pt-2' onSubmit={handleSubmit}>
-                        <Label value='Email address'/>
+                        <Label value='Username'/>
                         <TextInput
-                        placeholder='admin@fuelmate.com'
-                        type='email'
-                        id='email'
+                        placeholder='Enter your username'
+                        type='text'
+                        id='username'
                         onChange={handleChange}
                         required
                         />
