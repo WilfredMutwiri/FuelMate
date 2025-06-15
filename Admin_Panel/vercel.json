@@ -1,0 +1,10 @@
+{
+    "rewrites":[
+        {"source":"/Signup","destination":"/"},
+        {"source":"/SignIn","destination":"/"},
+        {"source":"/admin","destination":"/"},
+        {"source":"/Landing","destination":"/"},
+        {"source":"/","destination":"/"},
+        {"source":"/(.*)","destination":"/"}
+    ]
+}
