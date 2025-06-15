@@ -72,22 +72,22 @@ export default function AdminDashboard() {
                     </div>
                     <div className='p-4 border-t-4 bg-gray-950'>
                         <ul className='flex flex-col gap-5 text-center'>
-                            <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><MdDashboard  className="text-xl"/></span>Dashboard</li>
+                            <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdDashboard  className="text-xl"/></span>Dashboard</li>
 
                             <Link to="/ManageTeachers">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-500 cursor-pointer flex gap-3'><span><MdOutlineEmergency className="text-xl"/></span>Emergency Requests</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdOutlineEmergency className="text-xl"/></span>Emergency Requests</li>
                             </Link>
 
                             <Link to="/manageParents">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FcApproval className="text-xl"/></span>Approved Stations</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><FcApproval className="text-xl"/></span>Approved Stations</li>
                             </Link>
                             
                             <Link to="/manageWorkers">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
                             </Link>
 
                             <Link to="/manageStudents">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                             </Link>
                         </ul>
                         <Button className="w-full mt-4" outline onClick={handleSignout}>Exit</Button>

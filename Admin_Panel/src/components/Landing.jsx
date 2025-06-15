@@ -2,21 +2,15 @@ import React from 'react'
 import { Button } from "flowbite-react";
 import { Link } from "react-router-dom";
 import landingImg from '../assets/logo.webp';
-import dropImg from '../assets/drop.png'
+import dropImg from '../assets/landingImg.webp'
 
 export default function Landing() {
     return (
         <div className="w-full bg-gray-50 ">
             <div className="block md:flex gap-14 w-11/12 md:w-10/12 pt-16 mx-auto">
             <div className='flex flex-1 flex-row border-b-2 border-yellow-400'>
-                <div className='bg-blue-800 h-48 rounded-b-full'>
-                    <img className='w-40 h-auto mx-auto' src={dropImg} alt='landing image'/>
-                </div>
                 <div>
-                <img className='mt-28 w-120 h-auto mx-auto' src={landingImg} alt='landing image'/>
-                </div>
-                <div className='bg-blue-800 h-48 rounded-b-full'>
-                    <img className='w-40 h-auto mx-auto' src={dropImg} alt='landing image'/>
+                <img className='w-120 h-auto mx-auto' src={dropImg} alt='landing image'/>
                 </div>
             </div>
             <div className='flex-1 leading-relaxed pt-10 border-t-2 border-yellow-400'>
