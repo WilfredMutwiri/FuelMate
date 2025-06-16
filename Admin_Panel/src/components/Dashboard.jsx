@@ -17,7 +17,9 @@ export default function Dashboard() {
 
     const [stationsCount,setStationsCount]=useState(0);
     const [ordersCount,setOrdersCount]=useState(0);
-    const [workersCount,setWorkersCount]=useState(0);
+    const [approvedStationsCount,setApprovedStationsCount]=useState(0);
+    const [notApprovedStationsCount,setNotApprovedStationsCount]=useState(0);
+
     const[studentsAmount,setStudentAmount]=useState(0);
     const [outdatedRecord,setOutdatedRecord]=useState(true);
 
@@ -53,13 +55,28 @@ const getOrdersCount=async()=>{
     }
 }
 
-//get workers count
-const getWorkersCount=async()=>{
-    const response=await fetch(`${SERVER_URL}/api/users/workersCount`);
+//get all approved stations count
+const getApprovedStationsCount=async()=>{
+    const response=await fetch(`${SERVER_URL}/api/v1/station/approved`);
     const data=await response.json();
     if(response.ok){
         setOutdatedRecord(false);
-        setWorkersCount(data);
+        setApprovedStationsCount(data.totalStations);
+    }else{
+        setOutdatedRecord(true);
+        throw new data.error || "Error fetching parents";
+    }
+
+}
+
+//get all approved stations count
+const getNotApprovedStationsCount=async()=>{
+    const response=await fetch(`${SERVER_URL}/api/v1/station/not-approved`);
+    const data=await response.json();
+    console.log(data.totalStations);
+    if(response.ok){
+        setOutdatedRecord(false);
+        setNotApprovedStationsCount(data.totalStations);
     }else{
         setOutdatedRecord(true);
         throw new data.error || "Error fetching parents";
@@ -95,7 +112,8 @@ const getWorkersCount=async()=>{
         setWelcomeText(getTimeOfDay())
         getStationsCount();
         getOrdersCount();
-        getWorkersCount();
+        getApprovedStationsCount();
+        getNotApprovedStationsCount();
         getStudents();
     },[]);
 
@@ -143,7 +161,7 @@ const getWorkersCount=async()=>{
                     <div className='p-3 rounded-md flex-1 bg-green-200 shadow-md hover:shadow-none shadow-gray-400'>
                         <FcApproval className='text-xl mx-auto w-auto h-10 text-cyan-700'/>
                         <h2 className='font-semibold text-lg text-center pt-3 text-black'>Approved Stations</h2>
-                        <h3 className='text-4xl text-center font-semibold pt-3 text-green-800'>{stationsCount}</h3>
+                        <h3 className='text-4xl text-center font-semibold pt-3 text-green-800'>{approvedStationsCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs pt-2 font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "All approved stations"}</p>
                         <Link to="/ApprovedStations">
@@ -156,7 +174,7 @@ const getWorkersCount=async()=>{
                     <div className='p-3 rounded-md flex-1 bg-orange-200 shadow-md hover:shadow-none shadow-gray-400'>
                         <CiNoWaitingSign className='text-xl mx-auto w-auto h-10 text-yellow-500'/>
                         <h2 className='font-semibold text-lg text-center pt-3 text-black'>Pending Stations Approvals</h2>
-                        <h3 className='text-4xl text-center font-semibold pt-3 text-yellow-500'>{stationsCount}</h3>
+                        <h3 className='text-4xl text-center font-semibold pt-3 text-yellow-500'>{notApprovedStationsCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs pt-2 font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "Stations awaiting approval"}</p>
                         <Link to="/PendingApprovals">

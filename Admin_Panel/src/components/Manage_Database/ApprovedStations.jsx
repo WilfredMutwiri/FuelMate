@@ -1,79 +1,42 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchParents } from '../../../Redux/User/parentSlice';
+import React, { useEffect, useCallback, useState } from 'react';
 import { IoTrashOutline } from "react-icons/io5";
 import {SERVER_URL} from '../../constants/SERVER_URL';
 import { Alert, Button, Label, Spinner, TextInput,Table,Modal } from "flowbite-react";
-import { addParentFailure,addParentStart,addParentSuccess } from '../../../Redux/User/parentSlice';
 import Sidebar from '../Sidebar';
-import { FaUsers } from "react-icons/fa";
-import { TiMessages } from "react-icons/ti";
 
 export default function ApprovedStations() {
-    const [formData,setFormData]=useState({});
-    const [isloading,setIsLoading]=useState(false);
     const [isError,setError]=useState(null);
-    const [addSuccess,setAddSuccess]=useState(false);
-    const dispatch=useDispatch();
-    const { parents, loading, error } = useSelector(state => state.parent);
-    // modal
-    const [openModal,setOpenModal]=useState(false);
-    // parents
-    const [parentsCount,setParentsCount]=useState(0);
+    const [approvedStationsCount,setApprovedStationsCount]=useState(0);
+    const [approvedStations, setApprovedStations] = useState([]);
+    const [loading,setLoading]=useState(false)
     const [showAll,setShowAll]=useState(false);
-    // handle change function
-    const handleChange=(e)=>{
-        setFormData({...formData,[e.target.id]:e.target.value.trim()})
-    }
-    const handleSubmit=async(e)=>{
-        e.preventDefault();
-        setIsLoading(true);
-        setError(false);
-        setAddSuccess(false)
-        try {
-            dispatch(addParentStart())
-            const res=await fetch(SERVER_URL+"/api/users/addParent",{
-                method:"POST",
-                headers:{
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify(formData)
-            })
-            const data=await res.json();
-            if(data.success===false){
-                setAddSuccess(false)
-                dispatch(addParentFailure(data.message))
-                return;
-            }
-            if(res.ok){
-                dispatch(addParentSuccess(data))
-                setIsLoading(false);
-                setError(null);
-                setAddSuccess(true)
-            }
-        } catch (error) {
-            setError(error.message);
-            setIsLoading(false);
-            setAddSuccess(false)
-            dispatch(addParentFailure(error.message))
-        }
-    }
 
-    //get parents
-    const getParentsCount=async()=>{
-        const response=await fetch(`${SERVER_URL}/api/users/parentsCount`);
-        const data=await response.json();
-        if(response.ok){
-            setParentsCount(data);
-        }else{
-            throw new data.error || "Error fetching parents";
-        }
-    } 
+    //get all approved stations count
+const getApprovedStationsCount=useCallback(async()=>{
+    setLoading(true)
+
+    try{
+    const response=await fetch(`${SERVER_URL}/api/v1/station/approved`);
+    const data=await response.json();
+    console.log(data.stations)
+    if(response.ok){
+        setApprovedStationsCount(data.totalStations);
+        setApprovedStations(data.stations)
+    }else{
+        throw new data.error || "Error fetching parents";
+        setLoading(false)
+    }
+}catch(error){
+    setError(error.message)
+    console.log(error.message)
+}finally{
+    setLoading(false)
+}
+},[])
     // use effect
     useEffect(() => {
-        dispatch(fetchParents());
-        getParentsCount();
-    }, [dispatch]);
+        getApprovedStationsCount();
+    }, [getApprovedStationsCount]);
 
     //toggle height
     const toggleHeight=()=>{
@@ -98,33 +61,31 @@ export default function ApprovedStations() {
                                     <Table.HeadCell>Location</Table.HeadCell>
                                     <Table.HeadCell>Registration Number</Table.HeadCell>
                                     <Table.HeadCell>Business Certificate</Table.HeadCell>
-                                    <Table.HeadCell>Station Phon No:</Table.HeadCell>
+                                    <Table.HeadCell>Station Phone No:</Table.HeadCell>
                                     <Table.HeadCell>
                                         <span className="sr-only">Edit</span>
                                     </Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body className="divide-y">
-                                    {parents && parents.map((parent) => (
-                                        <Table.Row key={parent._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    {approvedStations.length >0 && approvedStations.map((station) => (
+                                        <Table.Row key={station._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                {parent.fullName}
+                                                {station.username}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {parent.phoneNo}
+                                                {station.town}, {station.county}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {parent.studentName}
+                                                {station.RegNo}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {parent.studentAdmNo}
+                                                {station.BusinessCert}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-black">
+                                                {station.phoneNo}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
                                             <a href="#" className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</a>
-                                            </Table.Cell>
-                                            <Table.Cell>
-                                                <a href="#" className="font-medium text-red-600 hover:underline dark:text-cyan-500">
-                                                    <IoTrashOutline/>
-                                                </a>
                                             </Table.Cell>
                                         </Table.Row>
                                     ))}
@@ -140,7 +101,7 @@ export default function ApprovedStations() {
                                 </>
                             }
                             {
-                                error && <Alert className='mt-4' color="failure">{error}</Alert>
+                                isError && <Alert className='mt-4' color="failure">{isError}</Alert>
                             }
                         </div>
                     </div>
