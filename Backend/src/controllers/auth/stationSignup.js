@@ -98,6 +98,36 @@ const getAllStations=async(req,res)=>{
     }
 }
 
+// get all approved stations
+const getAllApprovedStations=async(req,res)=>{
+    try {
+        const stations=await Station.find({status:'Approved'}).sort({createdAt:-1});
+        return res.status(200).json({
+            message:"Stations fetched successfully",
+            stations,
+            totalStations:stations.length,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+// get all stations with Not Approved status
+const getAllNotApprovedStations=async(req,res)=>{
+    try {
+        const stations=await Station.find({status:'Not Approved'}).sort({createdAt:-1});
+        return res.status(200).json({
+            message:"Stations fetched successfully",
+            stations,
+            totalStations:stations.length,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
 // get station by id
 const getStationById=async(req,res)=>{
     try {
@@ -173,12 +203,12 @@ const updateStationStatus=async(req,res)=>{
     
         if(!updatedStation){
             return res.status(404).json({
-            message:"Order not found"
+            message:"Station not found"
             })
         }
     
         return res.status(200).json({
-            message:"Order updated successfully",
+            message:"Station updated successfully",
             station:updatedStation,
             success:true
         })
@@ -197,5 +227,7 @@ module.exports={
     getStationById,
     updateStation,
     deleteStation,
-    updateStationStatus
+    updateStationStatus,
+    getAllApprovedStations,
+    getAllNotApprovedStations
 }

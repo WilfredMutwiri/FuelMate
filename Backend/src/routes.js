@@ -4,7 +4,7 @@ const { userSignin, userSignout, getUserInfo } = require("./controllers/auth/use
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
-const { stationSignup, getAllStations,getStationById, updateStationStatus} = require("./controllers/auth/stationSignup.js");
+const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations} = require("./controllers/auth/stationSignup.js");
 const {fileUpload} = require("./controllers/auth/fileUpload.js");
 const {profileUpload,certUpload} = require("./middlewares/multer.js");
 const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer, getDeliveredOrdersByStation, getCanceledOrdersByStation, getApprovedOrdersByStation, getTotalAmountByStation, getTotalVolumeDeliveredByStation, getOrdersByMonth } = require("./controllers/auth/order.js");
@@ -25,11 +25,13 @@ router.post('/admin/signup/',adminSignup);
 router.post('/admin/signin/',adminSignin);
 
 //station
+router.get('/station/approved/',getAllApprovedStations);
+router.get('/station/not-approved/',getAllNotApprovedStations);
 router.post('/station/signin/',stationSignin)
 router.post('/station/signup/',stationSignup)
 router.get('/station/all',getAllStations)
 router.get('/station/:id',getStationById)
-router.patch('/station/update/:id',updateStationStatus)
+router.patch('/station/update/:id',updateStationStatus);
 
 // file uploads
 router.post('/upload/images/',profileUpload.single('file'),fileUpload);
