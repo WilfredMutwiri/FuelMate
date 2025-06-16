@@ -9,7 +9,7 @@ import Sidebar from '../Sidebar';
 import { FaUsers } from "react-icons/fa";
 import { TiMessages } from "react-icons/ti";
 
-export default function ManageParents() {
+export default function ApprovedStations() {
     const [formData,setFormData]=useState({});
     const [isloading,setIsLoading]=useState(false);
     const [isError,setError]=useState(null);
@@ -89,16 +89,16 @@ export default function ManageParents() {
                     {/* Teachers div */}
                     <div className={`bg-gray-200 p-1 rounded-md overflow-hidden ${showAll?"h-[500px]":"h-auto"}`}>
                         <div className='flex justify-between bg-gray-200 rounded-md p-2'>
-                            <h2 className="flex-1 mx-auto p-2 text-left text-lg text-cyan-700">Available Parents</h2>
+                            <h2 className="flex-1 mx-auto p-2 text-left text-lg text-cyan-700">Approved Fuel Stations</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <Table hoverable>
                                 <Table.Head>
-                                    <Table.HeadCell>Parent's Name</Table.HeadCell>
-                                    <Table.HeadCell>Parent's Phone No</Table.HeadCell>
-                                    <Table.HeadCell>Student Name</Table.HeadCell>
-                                    <Table.HeadCell>Student Adm No</Table.HeadCell>
-                                    <Table.HeadCell>Record</Table.HeadCell>
+                                    <Table.HeadCell>Station Name</Table.HeadCell>
+                                    <Table.HeadCell>Location</Table.HeadCell>
+                                    <Table.HeadCell>Registration Number</Table.HeadCell>
+                                    <Table.HeadCell>Business Certificate</Table.HeadCell>
+                                    <Table.HeadCell>Station Phon No:</Table.HeadCell>
                                     <Table.HeadCell>
                                         <span className="sr-only">Edit</span>
                                     </Table.HeadCell>
@@ -148,103 +148,6 @@ export default function ManageParents() {
                     <Label onClick={toggleHeight} className='text-white bg-cyan-900 p-2 mt-3 rounded-md' gradientDuoTone="pinkToOrange" outline>{showAll?"Show All":"Show Less"}</Label>
                     </div>
                 </div>
-
-                 {/* options div */}
-                                    <div className='bg-gray-100 p-4 rounded-md shadow-sm shadow-gray-400'>
-                                        <div className='bg-cyan-700 p-4 rounded-md'>
-                                            <FaUsers className='text-center text-2xl text-white mx-auto'/>
-                                            <h1 className='text-xl font-semibold text-white'>Total Parents</h1>
-                                            <p className='text-sm text-white font-semibold'>{parentsCount}</p>
-                                        </div>
-                                        <div className='bg-cyan-700 p-4 rounded-md mt-4'>
-                                            <TiMessages className='text-center text-2xl text-white mx-auto'/>
-                                            <Button className='text-xs w-full mt-2' outline onClick={() =>setOpenModal(true)}>Send Message</Button>
-                                        </div>
-                                        <div className='bg-cyan-700 p-4 rounded-md mt-4'>
-                                            <h1 className='text-2xl font-semibold text-center text-white'>+</h1>
-                                            <Button className='text-xs w-full mt-2' outline onClick={() =>setOpenModal(true)}>Add New Parent</Button>
-                                        </div>
-                                    </div>
-
-            </div>
-            {/* add new teacher modal */}
-            <div id='modalholder'>
-            <Modal show={openModal} onClose={()=>setOpenModal(false)}>
-                <Modal.Header>Add New Parent</Modal.Header>
-            <Modal.Body>
-            <div className="w-full">
-            <div className="w-full md:w-10/12 mx-auto bg-gray-800 mt-4 p-3 rounded-md ">
-            <form className="flex flex-col gap-2 " onSubmit={handleSubmit}>
-                <Label value="Full Name" id="parentName" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Full name"
-                type="text"
-                required
-                id='fullName'
-                onChange={handleChange}
-                />
-                
-                <Label value="Email Address" id="email" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Email Address"
-                required
-                type="email"
-                id='email'
-                onChange={handleChange}
-                />
-                <Label value="phone number" id="phoneNo" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Phone No:"
-                required
-                id="phoneNo"
-                type="text"
-                onChange={handleChange}
-                />
-                <Label value='Student Name' id='stdName' className='text-white'/>
-                <TextInput
-                placeholder='Enter Student Name'
-                required
-                id='studentName'
-                type='text'
-                onChange={handleChange}
-                />
-                <Label value='Student Admission No:' id='stdAdmNo' className='text-white'/>
-                <TextInput
-                placeholder='Enter Student Id No:'
-                required
-                id='studentAdmNo'
-                type='text'
-                onChange={handleChange}
-                />
-                <Button className="w-full mt-4" gradientDuoTone="pinkToOrange" outline type='submit' disabled={isloading}>
-                    {
-                        isloading ? 
-                        <>
-                        <Spinner size="sm"/>
-                        <span className='ml-3 text-red-600'>Adding new parent...</span>
-                        </>: "Add Parent"
-                    }
-                </Button>
-                {
-                    error && <Alert color="failure" className='text-black'>
-                        {error.message}
-                    </Alert>
-                }
-                {
-                    addSuccess &&
-                    <Alert className='mt-4' color="success">
-                        New Parent Added Successfully!
-                    </Alert>
-                
-                }
-            </form>
-            </div>
-        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button gradientDuoTone="pinkToOrange" onClick={()=>setOpenModal(false)}>Cancel</Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
         </div>
     );

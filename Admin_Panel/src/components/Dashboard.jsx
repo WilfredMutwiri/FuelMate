@@ -132,7 +132,7 @@ const getWorkersCount=async()=>{
                         <h3 className='text-4xl text-center font-semibold pt-3 text-red-800'>{stationsCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "Pending Emergency Requests"}</p>
-                        <Link to="/manageParents">
+                        <Link to="/EmergencyRequests">
                         <h2 className='text-sm cursor-pointer bg-white text-cyan-700 font-semibold p-2 rounded-md hover:bg-cyan-700 hover:text-white'>View</h2>
                         </Link>
                         </h2>
@@ -146,7 +146,7 @@ const getWorkersCount=async()=>{
                         <h3 className='text-4xl text-center font-semibold pt-3 text-green-800'>{stationsCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs pt-2 font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "All approved stations"}</p>
-                        <Link to="/manageParents">
+                        <Link to="/ApprovedStations">
                         <h2 className='text-sm cursor-pointer bg-white text-cyan-700 font-semibold p-2 rounded-md hover:bg-cyan-700 hover:text-white'>View</h2>
                         </Link>
                         </h2>
@@ -159,7 +159,7 @@ const getWorkersCount=async()=>{
                         <h3 className='text-4xl text-center font-semibold pt-3 text-yellow-500'>{stationsCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs pt-2 font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "Stations awaiting approval"}</p>
-                        <Link to="/manageParents">
+                        <Link to="/PendingApprovals">
                         <h2 className='text-sm cursor-pointer bg-white text-cyan-700 font-semibold p-2 rounded-md hover:bg-cyan-700 hover:text-white'>View</h2>
                         </Link>
                         </h2>

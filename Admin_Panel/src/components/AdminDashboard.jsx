@@ -13,6 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {SERVER_URL} from '../constants/SERVER_URL'
 import { signoutSuccess } from '../../Redux/User/userSlice';
 import Dashboard from './Dashboard';
+import { CiNoWaitingSign } from "react-icons/ci";
 
 
 export default function AdminDashboard() {
@@ -30,21 +31,23 @@ export default function AdminDashboard() {
         setVisibleSection(section)
     }
     const handleSignout=async()=>{
-        try {
-          const res=await fetch(SERVER_URL+'/api/auth/signout',{
-            method:"POST"
-          })
-          const data=await res.json();
-          if(!res.ok){
-            console.log(data.message);
-          }else{
-            dispatch(signoutSuccess());
-          }
-          Navigate('/Landing')
-        }
-        catch (error) {
-          console.log(error.message);
-        }
+        // try {
+        //   const res=await fetch(SERVER_URL+'/api/auth/signout',{
+        //     method:"POST"
+        //   })
+        //   const data=await res.json();
+        //   if(!res.ok){
+        //     console.log(data.message);
+        //   }else{
+        //     dispatch(signoutSuccess());
+        //   }
+        //   Navigate('/Landing')
+        // }
+        // catch (error) {
+        //   console.log(error.message);
+        // }
+
+        Navigate('/Landing')
       }
     return (
         <div className='bg-gray-100'>
@@ -74,19 +77,24 @@ export default function AdminDashboard() {
                         <ul className='flex flex-col gap-5 text-center'>
                             <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdDashboard  className="text-xl"/></span>Dashboard</li>
 
-                            <Link to="/ManageTeachers">
+                            <Link to="/EmergencyRequests">
                             <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdOutlineEmergency className="text-xl"/></span>Emergency Requests</li>
                             </Link>
 
-                            <Link to="/manageParents">
+                            <Link to="/ApprovedStations">
                             <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><FcApproval className="text-xl"/></span>Approved Stations</li>
                             </Link>
+
+
+                            <Link to="/PendingApprovals">
+                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><CiNoWaitingSign className="text-xl"/></span>Pending Approvals</li>
+                            </Link>
                             
-                            <Link to="/manageWorkers">
+                            <Link to="/RegisteredStations">
                             <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
                             </Link>
 
-                            <Link to="/manageStudents">
+                            <Link to="/statistics">
                             <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                             </Link>
                         </ul>

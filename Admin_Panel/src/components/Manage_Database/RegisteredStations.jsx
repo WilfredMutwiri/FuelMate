@@ -10,7 +10,7 @@ import { FaUsers } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 
 
-export default function ManageStudents() {
+export default function RegisteredStations() {
     const [formData,setFormData]=useState({});
     const [isloading,setIsLoading]=useState(false);
     const [isError,setError]=useState(null);
@@ -95,16 +95,16 @@ export default function ManageStudents() {
                     {/* Teachers div */}
                     <div className={`bg-gray-200 p-1 rounded-md`}>
                         <div className='flex justify-between bg-gray-200 rounded-md p-2'>
-                            <h2 className="flex-1 mx-auto p-2 text-left text-l font-semibold text-cyan-700">Available Students</h2>
+                            <h2 className="flex-1 mx-auto p-2 text-left text-l text-cyan-700">All Registered Stations</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <Table hoverable>
                                 <Table.Head>
-                                    <Table.HeadCell>Student's Name</Table.HeadCell>
-                                    <Table.HeadCell>Parent Phone No</Table.HeadCell>
-                                    <Table.HeadCell>Class</Table.HeadCell>
-                                    <Table.HeadCell>Id No:</Table.HeadCell>
-                                    <Table.HeadCell>Record</Table.HeadCell>
+                                    <Table.HeadCell>Station Name</Table.HeadCell>
+                                    <Table.HeadCell>Registration No:</Table.HeadCell>
+                                    <Table.HeadCell>Business Cert</Table.HeadCell>
+                                    <Table.HeadCell>Location</Table.HeadCell>
+                                    <Table.HeadCell>Station Phone No:</Table.HeadCell>
                                     <Table.HeadCell>
                                         <span className="sr-only">Edit</span>
                                     </Table.HeadCell>
@@ -154,106 +154,6 @@ export default function ManageStudents() {
                         </div>
                     </div>
                 </div>
-                {/* options div */}
-                    <div className='bg-gray-100 p-4 rounded-md shadow-sm shadow-gray-400'>
-                        <div className='bg-cyan-700 p-4 rounded-md'>
-                            <FaUsers className='text-center text-2xl text-white mx-auto'/>
-                            <h1 className='text-xl font-semibold text-white'>Total Students</h1>
-                            <p className='text-sm text-white font-semibold'>{studentsAmount}</p>
-                        </div>
-                        <div className='bg-cyan-700 p-4 rounded-md mt-4'>
-                            <h1 className='text-2xl font-semibold text-center text-white'>+</h1>
-                            <Button className='text-xs w-full mt-2' outline onClick={() =>setOpenModal(true)}>Add New Student</Button>
-                        </div>
-                    </div>
-
-            </div>
-            {/* add new worker modal */}
-            <div id='modalholder'>
-            <Modal show={openModal} onClose={()=>setOpenModal(false)}>
-                <Modal.Header>Add New Worker</Modal.Header>
-            <Modal.Body>
-            <div className="w-full">
-            <div className="w-full md:w-10/12 mx-auto bg-gray-800 mt-4 p-3 rounded-md ">
-            <form className="flex flex-col gap-2 " onSubmit={handleSubmit}>
-                <Label value="Full Name" id="studentName" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Student Name"
-                type="text"
-                required
-                id='studentName'
-                onChange={handleChange}
-                />
-                
-                <Label value="Parent Name" id="parentName" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Parent Name"
-                required
-                type="text"
-                id='parentName'
-                onChange={handleChange}
-                />
-                <Label value="parent Email" id="parentEmail" className="text-white"/>
-                <TextInput 
-                placeholder="Enter Parent's Email:"
-                required
-                id="parentEmail"
-                type="email"
-                onChange={handleChange}
-                />
-                <Label value='parent phone no:' id='parentPhoneNo' className='text-white'/>
-                <TextInput
-                placeholder='Parent Phone No:'
-                required
-                id='parentPhoneNo'
-                type='text'
-                onChange={handleChange}
-                />
-                <Label value='StudentID No:' id='studentAdmNo' className='text-white'/>
-                <TextInput
-                placeholder='Student Adm No:'
-                required
-                id='studentAdmNo'
-                type='text'
-                onChange={handleChange}
-                />
-                <Label value='Student Class' id='studentClass' className='text-white'/>
-                <TextInput
-                placeholder='Student Class'
-                required
-                id='studentClass'
-                type='text'
-                onChange={handleChange}
-                />
-                <Button className="w-full mt-4" outline type='submit' disabled={isloading}>
-                    {
-                        isloading ? 
-                        <>
-                        <Spinner size="sm"/>
-                        <span className='ml-3 text-red-600'>Adding new Student...</span>
-                        </>: "Add Student"
-                    }
-                </Button>
-                {
-                    serror && <Alert color="failure" className='text-black'>
-                        {serror.message}
-                    </Alert>
-                }
-                {
-                    addSuccess &&
-                    <Alert className='mt-4' color="success">
-                        New Student Added Successfully!
-                    </Alert>
-                
-                }
-            </form>
-            </div>
-        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button  onClick={()=>setOpenModal(false)}>Cancel</Button>
-                    </Modal.Footer>
-                </Modal>
             </div>
         </div>
     );

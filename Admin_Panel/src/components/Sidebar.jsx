@@ -1,16 +1,16 @@
-import React from 'react'
-import { useSelector,useDispatch } from 'react-redux';
-import { useRef, useState } from "react";
-import logo from '../assets/logo.webp'
-import { Button, ButtonGroup } from "flowbite-react";
-import { FaDatabase } from "react-icons/fa6";
-import { FaUsers } from "react-icons/fa";
-import { GiLovers } from "react-icons/gi";
-import { GrUserWorker } from "react-icons/gr";
+import { useSelector} from 'react-redux';
+import { useState } from "react";
+import { Button} from "flowbite-react";
 import { IoMdClose } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
-import SchoolLogo from '../assets/schoolLogo.webp';
+import logo from '../assets/logo.webp'
+import { MdDashboard } from "react-icons/md";
+import { MdOutlineEmergency } from "react-icons/md";
+import { FcApproval } from "react-icons/fc";
+import { RiGasStationFill } from "react-icons/ri";
+import { IoMdTrendingUp } from "react-icons/io";
+import { CiNoWaitingSign } from "react-icons/ci";
 
 
 const Sidebar = () => {
@@ -24,53 +24,60 @@ const Sidebar = () => {
         setMenuVisible(!menuVisible)
     }
         const handleSignout=async()=>{
-            try {
-              const res=await fetch(SERVER_URL+'/api/auth/signout',{
-                method:"POST"
-              })
-              const data=await res.json();
-              if(!res.ok){
-                console.log(data.message);
-              }else{
-                dispatch(signoutSuccess());
-              }
-              Navigate('/Landing')
-            }
-            catch (error) {
-              console.log(error.message);
-            }
+            // try {
+            //   const res=await fetch(SERVER_URL+'/api/auth/signout',{
+            //     method:"POST"
+            //   })
+            //   const data=await res.json();
+            //   if(!res.ok){
+            //     console.log(data.message);
+            //   }else{
+            //     dispatch(signoutSuccess());
+            //   }
+            //   Navigate('/Landing')
+            // }
+            // catch (error) {
+            //   console.log(error.message);
+            // }
+
+          Navigate('/Landing')
           }
     return (
         <div>
-            <div className={`flex flex-col justify-between mt-4 bg-cyan-700 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
+            <div className={`flex flex-col justify-between mt-4 bg-gray-900 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
                  <div className='p-4'>
                     <div className=''>
-                        <img className='w-20 h-20 rounded-full mx-auto' src={SchoolLogo} alt="profilePic"/>
+                        <img className='w-32 h-32 rounded-full mx-auto' src={logo} alt="profilePic"/>
                     </div>
-                    <h2 className='text-center text-white p-3'>Destinykers High School</h2>
-                    <p className='text-center text-sm italic text-white'>Learn To Inspire</p>
+                    <h2 className='text-center text-white p-3'>FuelMate</h2>
+                    <p className='text-center text-sm italic text-white'>Your Fuel, Delivered Anywhere, Anytime
+</p>
                     </div>
                     
-                    <div className='p-4 border-t-4 bg-cyan-700'>
+                    <div className='p-4 border-t-4 bg-gray-900'>
                     <ul className='flex flex-col gap-5 text-center'>
                         <Link to="/admin">
-                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaDatabase className="text-xl"/></span>Dashboard</li>
+                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdDashboard className="text-xl"/></span>Dashboard</li>
                         </Link>
 
-                        <Link to="/ManageTeachers">
-                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Teachers</li>
+                        <Link to="/EmergencyRequests">
+                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdOutlineEmergency className="text-xl"/></span>Emergency Requests</li>
                         </Link>
 
-                        <Link to="/manageWorkers">
-                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Workers</li>
+                        <Link to="/ApprovedStations">
+                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><FcApproval className="text-xl"/></span>Approved Stations</li>
                         </Link>
 
-                        <Link to="/manageParents">
-                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Parents</li>
+                        <Link to="/PendingApprovals">
+                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><CiNoWaitingSign className="text-xl"/></span>Pending Approvals</li>
                         </Link>
 
-                        <Link to="/manageStudents">
-                        <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-pink-500 cursor-pointer flex gap-3'><span><FaUsers className="text-xl"/></span>Manage Students</li>
+                        <Link to="/RegisteredStations">
+                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
+                        </Link>
+
+                        <Link to="/statistics">
+                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                         </Link>
 
                     </ul>
