@@ -15,7 +15,7 @@ export default function NavBar() {
   const {currentUser}=useSelector(state=>state.user);
   const handleSignout=async()=>{
     try {
-      const res=await fetch(SERVER_URL+'/api/auth/signout',{
+      const res=await fetch(SERVER_URL+'/api/v1/signout',{
         method:"POST"
       })
       const data=await res.json();
@@ -53,11 +53,10 @@ export default function NavBar() {
             }
             >
               <Dropdown.Header>
-                <span className='text-sm block text-cyan-700'>@{currentUser.userName}</span>
-                <span className='text-sm block font-medium truncate text-pink-600'>{currentUser.email}</span>
+                <span className='text-sm block text-cyan-700'>@{currentUser?.user?.username || "Admin"}</span>
+                <span className='text-sm block font-medium truncate text-pink-600'>Admin</span>
               </Dropdown.Header>
               <Link to='#'>
-                <Dropdown.Item>Profile</Dropdown.Item>
                 <Dropdown.Divider/>
                 <Dropdown.Item onClick={handleSignout}>Sign out</Dropdown.Item>
               </Link>

@@ -1,8 +1,8 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { IoTrashOutline } from "react-icons/io5";
 import {SERVER_URL} from '../../constants/SERVER_URL';
 import { Alert, Button, Label, Spinner, TextInput,Table,Modal } from "flowbite-react";
 import Sidebar from '../Sidebar';
+import { Link } from "react-router-dom";
 
 export default function ApprovedStations() {
     const [isError,setError]=useState(null);
@@ -84,7 +84,7 @@ const getStations=useCallback(async()=>{
                                                 {station.phoneNo}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                            <a href="#" className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</a>
+                                                <Link to={`/station/${station._id}`} className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</Link>
                                             </Table.Cell>
                                         </Table.Row>
                                     ))}

@@ -31,24 +31,23 @@ export default function AdminDashboard() {
         setVisibleSection(section)
     }
     const handleSignout=async()=>{
-        // try {
-        //   const res=await fetch(SERVER_URL+'/api/auth/signout',{
-        //     method:"POST"
-        //   })
-        //   const data=await res.json();
-        //   if(!res.ok){
-        //     console.log(data.message);
-        //   }else{
-        //     dispatch(signoutSuccess());
-        //   }
-        //   Navigate('/Landing')
-        // }
-        // catch (error) {
-        //   console.log(error.message);
-        // }
+        try {
+          const res=await fetch(SERVER_URL+'/api/v1/signout',{
+            method:"POST"
+          })
+          const data=await res.json();
+          if(!res.ok){
+            console.log(data.message);
+          }else{
+            dispatch(signoutSuccess());
+          }
+          Navigate('/Landing')
+        }
+        catch (error) {
+          console.log(error.message);
+        }
+    }
 
-        Navigate('/Landing')
-      }
     return (
         <div className='bg-gray-100'>
             <hr />

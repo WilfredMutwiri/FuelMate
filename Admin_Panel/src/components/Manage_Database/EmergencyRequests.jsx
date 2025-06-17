@@ -1,94 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, Label, Modal, Spinner,Table,TextInput} from "flowbite-react";
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchTeachers } from '../../../Redux/User/teacherSlice';
+import React, { useEffect, useCallback, useState } from 'react';
 import { IoTrashOutline } from "react-icons/io5";
 import {SERVER_URL} from '../../constants/SERVER_URL';
-import { addTeacherStart,addTeacherSuccess,addTeacherFailure } from '../../../Redux/User/teacherSlice';
+import { Alert, Button, Label, Spinner, TextInput,Table,Modal } from "flowbite-react";
 import Sidebar from '../Sidebar';
-import { TiMessages } from 'react-icons/ti';
-import { FaUsers } from "react-icons/fa";
-import { Link } from 'react-router-dom';
 
-export default function EmergencyRequests() {
-    const [formData,setFormData]=useState({});
-    const [isloading,setIsLoading]=useState(false);
+export default function ApprovedStations() {
     const [isError,setError]=useState(null);
-    const [addSuccess,setAddSuccess]=useState(false);
-    const dispatch=useDispatch();
-    const [visibleSection, setVisibleSection] = useState('dashboard');
-    const { teachers, loading, error } = useSelector(state => state.teacher);
-    
-    // modal
-    const [openModal,setOpenModal]=useState(false);
-    // teachers count
-    const [teachersCount,setTeachersCount]=useState(0);
-    // handle change function
-    const handleChange=(e)=>{
-        setFormData({...formData,[e.target.id]:e.target.value.trim()})
-    }
-    // handle submit function
-    const handleSubmit=async(e)=>{
-        e.preventDefault();
-        setIsLoading(true);
-        setError(null);
-        setAddSuccess(false);
-        try {
-            dispatch(addTeacherStart())
-            const res=await fetch(SERVER_URL+'/api/users/addTeacher',{
-                method:"POST",
-                headers:{
-                    "Content-Type":"application/json"
-                },
-                body:JSON.stringify(formData)
-            })
-            const data=await res.json();
-            if(data.success===false){
-                dispatch(addTeacherFailure(data.message))
-                return;
-            }
-            if(res.ok){
-                dispatch(addTeacherSuccess(data))
-                setIsLoading(false);
-                setError(false);
-                setAddSuccess(true);
-            }
-        } catch (error) {
-            setError(error.message);
-            setIsLoading(false);
-            setAddSuccess(false);
-            dispatch(addTeacherFailure(error.message))
-        }
-    }
+    const [notApprovedStationsCount,setNotApprovedStationsCount]=useState(0);
+    const [notApprovedStations, setNotApprovedStations] = useState([]);
+    const [loading,setLoading]=useState(false)
+    const [showAll,setShowAll]=useState(false);
 
-    // get number of teachers
-    const getTeachersCount=async()=>{
-        const response=await fetch(`${SERVER_URL}/api/users/teachersCount`);
-        const data=await response.json();
+    //get all approved stations count
+const getNotApprovedStationsCount=useCallback(async()=>{
+    setLoading(true)
 
-        if(response.ok){
-            setTeachersCount(data.teachersCount);
-        }else{
-            throw new data.error || "Error fetching teachers";
-        }
+    try{
+    const response=await fetch(`${SERVER_URL}/api/v1/station/not-approved`);
+    const data=await response.json();
+    if(response.ok){
+        setNotApprovedStationsCount(data.totalStations);
+        setNotApprovedStations(data.stations)
+    }else{
+        throw new data.error || "Error fetching parents";
+        setLoading(false)
     }
-    // useeffect
+}catch(error){
+    setError(error.message)
+    console.log(error.message)
+}finally{
+    setLoading(false)
+}
+},[])
+    // use effect
     useEffect(() => {
-        dispatch(fetchTeachers());
-        getTeachersCount();
-    }, [dispatch]);
+        getNotApprovedStationsCount();
+    }, [getNotApprovedStationsCount]);
 
-    //delete teacher
-    const handleTeacherDelete=async()=>{
-        const response=await fetch(`${SERVER_URL}/api/users/deleteTeacher/${teachers._id}`);
-        const data=response.json();
-        if(response.ok){
-            console.log("Teacher deleted ")
-        }else{
-            console.log(data.error)
-        }
+    //toggle height
+    const toggleHeight=()=>{
+        setShowAll(!showAll)
     }
-
     return (
         <div>
             <div className='flex justify-between gap-4 w-[95%]  mx-auto'>
@@ -97,44 +49,42 @@ export default function EmergencyRequests() {
                 </div>
                 <div className="flex-1 gap-4 mt-4">
                     {/* Teachers div */}
-                    <div className={`bg-gray-200 p-1 rounded-md`}>
+                    <div className={`bg-gray-200 p-1 rounded-md overflow-hidden ${showAll?"h-[500px]":"h-auto"}`}>
                         <div className='flex justify-between bg-gray-200 rounded-md p-2'>
-                            <h2 className="flex-1 mx-auto p-2 text-left text-lg text-cyan-700">Available Emergency Fuel Requests</h2>
+                            <h2 className="flex-1 mx-auto p-2 text-left text-lg text-cyan-700">Emergency Fuel Requests</h2>
                         </div>
                         <div className="overflow-x-auto">
                             <Table hoverable>
                                 <Table.Head>
-                                    <Table.HeadCell>Client Phone No:</Table.HeadCell>
-                                    <Table.HeadCell>Fuel Volume</Table.HeadCell>
-                                    <Table.HeadCell>Urgency</Table.HeadCell>
+                                    <Table.HeadCell>Station Name</Table.HeadCell>
                                     <Table.HeadCell>Location</Table.HeadCell>
-                                    <Table.HeadCell>Nearby Station</Table.HeadCell>
-                                    <Table.HeadCell>Assigned Station</Table.HeadCell>
+                                    <Table.HeadCell>Registration Number</Table.HeadCell>
+                                    <Table.HeadCell>Business Certificate</Table.HeadCell>
+                                    <Table.HeadCell>Station Phone No:</Table.HeadCell>
                                     <Table.HeadCell>
                                         <span className="sr-only">Edit</span>
                                     </Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body className="divide-y">
-                                    {teachers && teachers.map((teacher) => (
-                                        <Table.Row key={teacher._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    {notApprovedStations.length >0 && notApprovedStations.map((station) => (
+                                        <Table.Row key={station._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                {teacher.fullName}
-                                            </Table.Cell>
-                                            <Table.Cell className="text-cyan-700">
-                                                {teacher.email}
+                                                {station.username}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {teacher.phoneNo}
+                                                {station.town}, {station.county}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                            <Link to={`/teacher/${teacher._id}`}>
-                                            <a href="#" className="font-medium text-cyan-700 hover:underline hover:text-red-600">View</a>
-                                            </Link>
+                                                {station.RegNo}
                                             </Table.Cell>
-                                            <Table.Cell onClick={handleTeacherDelete}>
-                                                <a href="#" className="font-medium text-red-600 hover:underline dark:text-cyan-500">
-                                                    <IoTrashOutline/>
-                                                </a>
+                                            <Table.Cell className="text-black">
+                                                {station.BusinessCert}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-black">
+                                                {station.phoneNo}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-black">
+                                            <a href="#" className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</a>
                                             </Table.Cell>
                                         </Table.Row>
                                     ))}
@@ -142,10 +92,7 @@ export default function EmergencyRequests() {
                             </Table>
                         </div>
                         <div className="bg-white p-3">
-                            <hr />
-                            <Label className='text-cyan-700' gradientDuoTone="pinkToOrange" outline>Show More </Label>
-                            <div className="w-10/12 mx-auto mt-3">
-                            </div>
+
                             {loading &&
                                 <>
                                     <Spinner size="sm" />
@@ -153,9 +100,12 @@ export default function EmergencyRequests() {
                                 </>
                             }
                             {
-                                error && <Alert className='mt-4' color="failure">{error}</Alert>
+                                isError && <Alert className='mt-4' color="failure">{isError}</Alert>
                             }
                         </div>
+                    </div>
+                    <div className='z-50 relative p-3 rounded-md border-b-2 border-gray-300'>
+                    <Label onClick={toggleHeight} className='text-white bg-cyan-900 p-2 mt-3 rounded-md' gradientDuoTone="pinkToOrange" outline>{showAll?"Show All":"Show Less"}</Label>
                     </div>
                 </div>
             </div>

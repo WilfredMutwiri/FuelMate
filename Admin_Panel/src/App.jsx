@@ -14,9 +14,8 @@ import Statistics from "./components/Manage_Database/Statistics"
 
 import TeachersSquare from "./components/Messages/TeachersSquare"
 import About from "./components/About"
-import TeacherDetails from "./components/DynamicData/TeacherDetails"
 import WorkerDetails from "./components/DynamicData/WorkerDetails"
-import StudentDetails from "./components/DynamicData/StudentDetails"
+import StationDetails from "./components/DynamicData/StationDetails"
 function App() {
   return (
     <>
@@ -39,9 +38,8 @@ function App() {
         <Route path="/about" element={<About/>}/>
 
         {/* dynamic routes */}
-        <Route path="/teacher/:id" element={<TeacherDetails/>}/>
         <Route path="/worker/:id" element={<WorkerDetails/>}/>
-        <Route path="/student/:id" element={<StudentDetails/>}/>
+        <Route path="/station/:id" element={<StationDetails/>}/>
       </Routes>
       <Footer/>
     </Router>
