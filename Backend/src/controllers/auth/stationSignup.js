@@ -216,9 +216,41 @@ const updateStationStatus=async(req,res)=>{
                 message:error.message
             })
         }
-    
-
 }
+
+// get nearby stations
+const getNearbyStations = async (req, res) => {
+  const { longitude, latitude } = req.query;
+
+  if (!longitude || !latitude) {
+    return res.status(400).json({ message: "Coordinates required" });
+  }
+
+  try {
+    const stations = await Station.find({
+      location: {
+        $near: {
+          $geometry: {
+            type: "Point",
+            coordinates: [parseFloat(longitude), parseFloat(latitude)],
+          },
+          $maxDistance: 10000, // 10km
+        },
+      },
+    });
+
+    return res.status(200).json({ 
+        success: true,
+        stations
+    });
+  } catch (error) {
+    return res.status(500).json({
+        success: false,
+        message: error.message 
+    });
+  }
+};
+
 module.exports={
     stationSignup,
     getAllStations,
@@ -227,5 +259,6 @@ module.exports={
     deleteStation,
     updateStationStatus,
     getAllApprovedStations,
-    getAllNotApprovedStations
+    getAllNotApprovedStations,
+    getNearbyStations
 }

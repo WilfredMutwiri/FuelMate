@@ -4,7 +4,7 @@ const { userSignin, userSignout, getUserInfo } = require("./controllers/auth/use
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
-const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations, deleteStation} = require("./controllers/auth/stationSignup.js");
+const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations, deleteStation, getNearbyStations} = require("./controllers/auth/stationSignup.js");
 const {fileUpload} = require("./controllers/auth/fileUpload.js");
 const {profileUpload,certUpload} = require("./middlewares/multer.js");
 const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer, getDeliveredOrdersByStation, getCanceledOrdersByStation, getApprovedOrdersByStation, getTotalAmountByStation, getTotalVolumeDeliveredByStation, getOrdersByMonth } = require("./controllers/auth/order.js");
@@ -26,6 +26,7 @@ router.post('/admin/signup/',adminSignup);
 router.post('/admin/signin/',adminSignin);
 
 //station
+router.get('/station/nearby/',getNearbyStations);
 router.get('/station/approved/',getAllApprovedStations);
 router.get('/station/not-approved/',getAllNotApprovedStations);
 router.post('/station/signin/',stationSignin)
