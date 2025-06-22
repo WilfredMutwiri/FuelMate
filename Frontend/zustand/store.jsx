@@ -12,8 +12,8 @@ const useAuthStore=create(
             station:null,
 
             //user
-            login:async(username,token,id)=>{
-                set({user:{username,token,id},isUserAuthenticated:true})
+            login:async(username,token,id,phoneNo)=>{
+                set({user:{username,token,id,phoneNo},isUserAuthenticated:true})
             },
             signup:async(email,username)=>{
                 set({user:{email,username},isUserAuthenticated:true})
