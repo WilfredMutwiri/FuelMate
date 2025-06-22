@@ -31,6 +31,7 @@ useEffect(() => {
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/Station/all`);
             const result = response.data;
+            console.log(result.stations)
             if (result.stations) {
                 setStations(result.stations);
                 setSuccess(true);
@@ -105,12 +106,6 @@ useEffect(()=>{
                     {/* map section */}
                     <View style={{flex:1}}>
                         <FuelMap/>
-                    </View>
-                    <View style={styles.SearchContainer}>
-                        <TextInput
-                        placeholder='Search'
-                        style={styles.TextInput}
-                        />
                     </View>
                 </View>
                 {/* nearby stations */}

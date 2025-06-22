@@ -21,15 +21,74 @@ import axios from 'axios';
 import { SERVER_URI } from '../constants/SERVER_URI';
 import ToastComponent from "../components/Toast";
 import useAuthStore from '../zustand/store.jsx';
-
+import * as Location from 'expo-location';
+import Loader from '../components/loader.jsx';
 
 export default function StationSignup(){
     const {signup}=useAuthStore();
     const {user}=useAuthStore();
     const router=useRouter();
+
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const [location,setLocation]=useState(null);
+    const [locationName,setLocationName]=useState(null);
+    const [locationLoaded, setLocationLoaded] = useState(false);
+    const [locationError, setLocationError] = useState(null);
     const [fileUrl,setFileUrl]=useState(null);
     const [certUrl,setCertUrl]=useState(null)
+
+    // get station's current location
+    useEffect(()=>{
+        let timeout;
+        (async () =>{
+        try {
+
+            // Timeout in case location fetching hangs
+            timeout = setTimeout(() => {
+                setLocationError("Location fetch timed out. Please check your internet connection or enable device location.");
+                setLocationLoaded(false);
+            }, 10000); // 10 seconds
+            
+            let {status}=await Location.requestForegroundPermissionsAsync();
+
+            if(status!='granted'){
+                clearTimeout(timeout)
+                Alert.alert("Permission denied","Location is needed register your station");
+                return
+            }
+    
+            let currentLocation=await Location.getCurrentPositionAsync({});
+            setLocation(currentLocation.coords);
+    
+            let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+            if(addressArray.length>0){
+                const address=addressArray[0];
+                const coords = [currentLocation.coords.longitude, currentLocation.coords.latitude];
+
+                const geoLocation = {
+                type: 'Point',
+                coordinates: coords
+                };
+
+                setFormData(prev=>({
+                    ...prev,
+                    county:address.region || '',
+                    town:address.city || address.district || '',
+                    location:geoLocation
+                }));
+                setLocation(geoLocation);
+                setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+            } else {
+                setLocationError("Could not resolve address from location coordinates.");
+            }
+                setLocationLoaded(true);
+            } catch (error) {
+                setLocationError("Error getting location. Please ensure device Location is enabled.");
+            }finally{
+                clearTimeout(timeout)
+            }
+        })();
+    },[])
 
     // profile Image upload
     const handleFileUpload=async()=>{
@@ -141,11 +200,25 @@ export default function StationSignup(){
         return ToastComponent("error","Passwords don't match")
 
     }
+
+    if (!formData.location || !formData.location.coordinates || formData.location.coordinates.length !== 2) {
+    return ToastComponent("error", "Location not ready. Please wait a moment and try again.");
+    }
+
+    console.log("Submitting signup with location:", formData.location);
+
+        const processedFuel = formData.fuel.map(f => ({
+            type: f.toLowerCase(),
+            price: 0 
+        }));
+
     const response=await axios.post(`${SERVER_URI}/api/v1/station/signup`,{
         ...formData,
         profileImg:fileUrl,
         BusinessCert:certUrl,
-        RegNo:parseInt(formData.RegNo),
+        RegNo:formData.RegNo.toString().trim(),
+        location:formData.location,
+        fuel:processedFuel
     });
 
     const result=response.data
@@ -175,12 +248,34 @@ export default function StationSignup(){
                 keyboardShouldPersistTaps="handled"
                 >
                     <SafeAreaView style={styles.container}>
-                        <View style={styles.LogoContainer}>
-                            <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
-                            <Text style={styles.logoText}>Glad you are here <Text style={styles.logoSubText}>Admin!</Text></Text>
-                        </View>
-                        <Text style={styles.welcomeTxt}>Register your fuel station to continue</Text>
-
+                        {
+                            !locationLoaded ?(
+                                <Loader/>
+                            ):locationError?(
+                                <>
+                                <Text style={{ textAlign: 'center', color: 'red', marginTop: 20 }}>
+                                {locationError}
+                                </Text>
+                                <TouchableOpacity 
+                                style={styles.retryBtn}
+                                onPress={() => {
+                                    setLocationError(null);
+                                    setLocationLoaded(false);
+                                    }}>
+                                    <Text style={styles.retryTxt}>
+                                        Retry
+                                    </Text>
+                                </TouchableOpacity>
+                                </>
+                            ):(
+                            <>
+                            <View style={styles.LogoContainer}>
+                                <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
+                                <Text style={styles.logoText}>Glad you are here <Text style={styles.logoSubText}>Admin!</Text></Text>
+                            </View>
+                            
+                            <Text style={styles.welcomeTxt}>Register your fuel station to continue</Text>
+            
                         {/* second container */}
                         <View style={styles.secondContainer}>
                             {/* username button */}
@@ -201,7 +296,6 @@ export default function StationSignup(){
                                 onChangeText={(text)=>handleInputChange('RegNo',text)}
                                 style={styles.inputText}
                                 placeholder='Enter business registration number'
-                                keyboardType='numeric'
                                 />
                             </View>
                             <View style={styles.inputContainer}>
@@ -218,20 +312,22 @@ export default function StationSignup(){
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.inputLabel2}>County</Text>
                                 <TextInput 
-                                value={formData.city}
+                                value={formData.county}
+                                editable={false}
                                 onChangeText={(text)=>handleInputChange('county',text)}
-                                style={styles.inputText}
-                                placeholder='Eldoret'
+                                style={[styles.inputText,{ backgroundColor: '#f2f2f2'}]}
+                                placeholder='County'
                                 />
                             </View>
 
                             <View style={styles.inputContainer2}>
                                 <Text style={styles.inputLabel2}>Town</Text>
                                 <TextInput 
-                                value={formData.postalCode}
+                                value={formData.town}
+                                editable={false}
                                 onChangeText={(text)=>handleInputChange('town',text)}
-                                style={styles.inputText}
-                                placeholder='Eldoret'
+                                style={[styles.inputText,{ backgroundColor: '#f2f2f2' }]}
+                                placeholder='city/town'
                                 />
                             </View>
                             </View>
@@ -329,38 +425,38 @@ export default function StationSignup(){
                                 />
                             </View>
 
-            {/* password btn */}
-            <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Password</Text>
-            <View style={styles.passwordContainer}>
-            <TextInput   
-                placeholder='Enter your password'
-                value={formData.password}
-                onChangeText={(text)=>handleInputChange('password',text)}
-                secureTextEntry={!passwordVisible}
-                />
-            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
-            {
-                passwordVisible ? (
-                    <FontAwesome6 name="eye" size={18} color="black"/>
-                ) : (
-                    <FontAwesome6 name="eye-slash" size={18} color="black"/>
-                )
-            }
-            </TouchableOpacity >            
-            </View>
+                            {/* password btn */}
+                            <View style={styles.inputContainer}>
+                            <Text style={styles.inputLabel}>Password</Text>
+                            <View style={styles.passwordContainer}>
+                            <TextInput   
+                                placeholder='Enter your password'
+                                value={formData.password}
+                                onChangeText={(text)=>handleInputChange('password',text)}
+                                secureTextEntry={!passwordVisible}
+                            />
+                            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+                            {
+                            passwordVisible ? (
+                            <FontAwesome6 name="eye" size={18} color="black"/>
+                            ) : (
+                            <FontAwesome6 name="eye-slash" size={18} color="black"/>
+                            )
+                        }
+                    </TouchableOpacity >            
+                </View>
 
-            {/* confirm password */}
-            <Text style={styles.inputLabel}>Confirm Password</Text>
-            <View style={styles.passwordContainer}>
-            <TextInput   
-                placeholder='Confirm your password'
-                value={formData.confirmPassword}
-                onChangeText={(text)=>handleInputChange("confirmPassword",text)}
-                secureTextEntry={!passwordVisible}
-                />
-            <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
-            {
+                {/* confirm password */}
+                <Text style={styles.inputLabel}>Confirm Password</Text>
+                    <View style={styles.passwordContainer}>
+                    <TextInput   
+                        placeholder='Confirm your password'
+                        value={formData.confirmPassword}
+                        onChangeText={(text)=>handleInputChange("confirmPassword",text)}
+                        secureTextEntry={!passwordVisible}
+                    />
+                    <TouchableOpacity style={styles.eyeIcon} onPress={togglePasswordVisibility}>
+                {
                 passwordVisible ? (
                     <FontAwesome6 name="eye" size={18} color="black"/>
                 ) : (
@@ -387,10 +483,13 @@ export default function StationSignup(){
             </TouchableOpacity>
             </View>
             </View>
-</SafeAreaView>
-                </ScrollView>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+            </>
+            )
+        }
+        </SafeAreaView>
+        </ScrollView>
+        </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
     )
 }
 
@@ -456,7 +555,7 @@ inputText:{
         width:"85%",
         borderWidth:1,
         borderColor:'#05367C',
-        fontSize:16,
+        fontSize:14,
         borderRadius:50,
         fontWeight:'semibold',
         justifyContent:'center',
@@ -538,5 +637,17 @@ inputText:{
         width:'82%',
         borderRadius:10,
         paddingRight:5
+    },
+    retryBtn:{
+        backgroundColor:'#05367C',
+        padding:10,
+        borderRadius:10,
+        width:150,
+        marginTop:20,
+        alignSelf:'center'
+    },
+    retryTxt:{
+        textAlign:'center',
+        color:"#fff"
     }
 })
