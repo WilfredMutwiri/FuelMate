@@ -3,7 +3,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import station1 from '../../assets/images/station1.jpg'
 import Loader from '../../components/loader.jsx';
 import axios from 'axios';
 import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
@@ -20,6 +19,7 @@ const user=useAuthStore((state)=>state.user)
 const [location,setLocation]=useState(null);
 const [locationName,setLocationName]=useState(null)
 const [stations,setStations]=useState([]);
+const [nearbyStations,setNearbyStations]=useState([]);
 const [loading,setLoading]=useState(false);
 const [error,setError]=useState(null);
 const [success,setSuccess]=useState(null);
@@ -31,7 +31,6 @@ useEffect(() => {
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/Station/all`);
             const result = response.data;
-            console.log(result.stations)
             if (result.stations) {
                 setStations(result.stations);
                 setSuccess(true);
@@ -58,6 +57,8 @@ useEffect(()=>{
     setLoading(true);
     (
         async () =>{
+        try {
+        
         let {status}=await Location.requestForegroundPermissionsAsync();
         if(status!='granted'){
             Alert.alert("permission denied","Location is required to show your current location");
@@ -73,6 +74,25 @@ useEffect(()=>{
             const address=addressArray[0];
             setLocationName(`${address.name} | ${address.city} | ${address.region}`)
         }
+
+        // Get nearby stations
+        setLoading(true)
+        const response=await axios.get(`${SERVER_URI}/api/v1/station/nearby`,{
+            params:{
+                latitude:currentLocation.coords.latitude,
+                longitude:currentLocation.coords.longitude,
+            }
+        });
+
+        const result=response.data;
+        if(result.success){
+            setNearbyStations(result.stations);
+        }
+    } catch (error) {
+        console.log("An error occured",error.message);    
+    }finally{
+        setLoading(false)
+    }
     })();
 },[])
 
@@ -125,7 +145,7 @@ useEffect(()=>{
                                 ):error?(
                                     <Text>{message}</Text>
                                 ):(
-                                stations.map((station)=>(
+                                nearbyStations.map((station)=>(
                                     <TouchableOpacity key={station._id} onPress={()=>router.push(`/(stationInfo)/${station._id}`)}>
                                         <Image source={{uri:station?.profileImg}} style={{width:200,height:150,resizeMode:"cover"}}/>
                                         <View style={styles.stationInfoContainer}>
