@@ -36,13 +36,40 @@ clientLocation:{
     type:[Number],
     required:true
   }
-}
-,
-  status: {
+},
+nearbyStations: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Station"
+  }
+],
+status: {
     type: String,
     enum: ["pending", "assigned", "accepted", "rejected", "delivered", "cancelled"],
     default: "pending"
   },
+  assignedStation: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Station"
+  },
+  assignmentHistory: [
+    {
+      station: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Station"
+      },
+      status: {
+        type: String,
+        enum: ["assigned", "declined", "accepted"],
+        default: "assigned"
+      },
+      assignedAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
+
   createdAt: { type: Date, default: Date.now }
 });
 
