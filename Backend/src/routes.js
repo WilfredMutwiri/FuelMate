@@ -11,6 +11,7 @@ const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation,
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
 const { adminSignin } = require("./controllers/auth/adminSignin.js");
+const { createEmergencyOrder } = require("./controllers/emergencyRequest.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
@@ -51,6 +52,9 @@ router.get('/order/approved/station/:id',getApprovedOrdersByStation);
 router.get('/order/revenue/station/:id',getTotalAmountByStation);
 router.get('/order/fuelVolume/station/:id',getTotalVolumeDeliveredByStation);
 router.get('/order/getOrdersByMonth/:stationId/:month/:year',getOrdersByMonth);
+
+// emergency
+router.post('/order/emergency/create/',createEmergencyOrder)
 
 // paystack
 router.post('/paystack/Init/',paystackInit)

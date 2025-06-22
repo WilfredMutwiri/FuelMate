@@ -28,7 +28,7 @@ fuel:[
     {
         type:{
             type:String,
-            required:true,
+            required:false,
             enum:['petrol', 'diesel', 'gasoline', 'kerosene']
         },
         price:{
@@ -54,7 +54,7 @@ rating:{
 //     required:false
 // },
 RegNo:{
-    type:Number,
+    type:String,
     required:true
 },
 physicalAddress:{
@@ -82,11 +82,28 @@ status:{
     enum:['Not Approved','Approved'],
     default:'Not Approved'
 },
+isAvailableForEmergency: {
+    type: Boolean,
+    default: true
+},
+location: {
+    type: {
+        type: String,
+        enum: ['Point'],
+        default: 'Point' 
+    },
+
+    coordinates: {
+        type: [Number],
+        required: true 
+    }
+},
 createdAt:{
     type:Date,
     default:Date.now
 },
 })
 
-const Station=mongoose.model("Station ",stationSignupSchema);
+stationSignupSchema.index({location:"2dsphere"})
+const Station=mongoose.model("Station",stationSignupSchema);
 module.exports=Station;
