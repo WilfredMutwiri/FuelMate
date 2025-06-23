@@ -11,7 +11,7 @@ const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation,
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
 const { adminSignin } = require("./controllers/auth/adminSignin.js");
-const { createEmergencyOrder } = require("./controllers/emergencyRequest.js");
+const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder } = require("./controllers/emergencyRequest.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
@@ -55,7 +55,11 @@ router.get('/order/fuelVolume/station/:id',getTotalVolumeDeliveredByStation);
 router.get('/order/getOrdersByMonth/:stationId/:month/:year',getOrdersByMonth);
 
 // emergency
-router.post('/order/emergency/create/',createEmergencyOrder)
+router.patch('/order/emergency/:orderId/update/',updateEmergencyOrderStatus);
+router.patch('/order/emergency/:orderId/reassign', reassignEmergencyOrder);
+router.post('/order/emergency/create/',createEmergencyOrder);
+router.get('/order/emergency/all',getAllEmergencyRequests);
+router.get('/order/emergency/:orderId',getEmergencyOrder);
 
 // paystack
 router.post('/paystack/Init/',paystackInit)
