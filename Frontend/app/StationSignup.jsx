@@ -233,6 +233,7 @@ export default function StationSignup(){
             console.log(error)
             ToastComponent("error",error.response.data.message || "An error occurred")  
          }else{
+            console.log(error)
             ToastComponent("error",`An error occured ${error.message}`)  
          }
     }
