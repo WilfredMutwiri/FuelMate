@@ -11,6 +11,28 @@ export default function ApprovedStations() {
     const [loading,setLoading]=useState(false)
     const [showAll,setShowAll]=useState(false);
 
+
+//get emergency orders count
+const getEmergencyOrdersCount=async()=>{
+    setLoading(true)
+
+    try {
+    const response=await fetch(`${SERVER_URL}/api/v1/order/emergency/all/`);
+    const data=await response.json();
+    if(response.ok){
+        setOutdatedRecord(false);
+        setEmergencyOrdersCount(data.totalOrders);
+    }else{
+        setOutdatedRecord(true);
+        throw new data.error || "Error fetching students value";
+    }
+    } catch (error) {
+         console.log(error.message)
+    }finally{
+    setLoading(false)
+}
+
+} 
     //get all approved stations count
 const getNotApprovedStationsCount=useCallback(async()=>{
     setLoading(true)

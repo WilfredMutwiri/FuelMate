@@ -20,7 +20,7 @@ export default function Dashboard() {
     const [approvedStationsCount,setApprovedStationsCount]=useState(0);
     const [notApprovedStationsCount,setNotApprovedStationsCount]=useState(0);
 
-    const[studentsAmount,setStudentAmount]=useState(0);
+    const[emergencyOrdersCount,setEmergencyOrdersCount]=useState(0);
     const [outdatedRecord,setOutdatedRecord]=useState(true);
 
         const [date,setDate]=useState(new Date());
@@ -73,7 +73,6 @@ const getApprovedStationsCount=async()=>{
 const getNotApprovedStationsCount=async()=>{
     const response=await fetch(`${SERVER_URL}/api/v1/station/not-approved`);
     const data=await response.json();
-    console.log(data.totalStations);
     if(response.ok){
         setOutdatedRecord(false);
         setNotApprovedStationsCount(data.totalStations);
@@ -83,39 +82,54 @@ const getNotApprovedStationsCount=async()=>{
     }
 
 }
-    //get students count
-    const getStudents=async()=>{
-        const response=await fetch(`${SERVER_URL}/api/users/studentsCount`);
-        const data=await response.json();
-        if(response.ok){
-            setOutdatedRecord(false);
-            setStudentAmount(data);
+
+//get students count
+const getStudents=async()=>{
+    const response=await fetch(`${SERVER_URL}/api/users/studentsCount`);
+    const data=await response.json();
+    if(response.ok){
+        setOutdatedRecord(false);
+        setStudentAmount(data);
+    }else{
+        setOutdatedRecord(true);
+        throw new data.error || "Error fetching students value";
+    }
+}
+
+//get emergency orders count
+const getEmergencyOrdersCount=async()=>{
+    const response=await fetch(`${SERVER_URL}/api/v1/order/emergency/all/`);
+    const data=await response.json();
+    if(response.ok){
+        setOutdatedRecord(false);
+        setEmergencyOrdersCount(data.totalOrders);
+    }else{
+        setOutdatedRecord(true);
+        throw new data.error || "Error fetching students value";
+    }
+} 
+
+
+
+useEffect(()=>{
+    const getTimeOfDay=()=>{
+        const hours=new Date().getHours();
+        if(hours<12){
+            return 'Good Morning'
+        }else if(hours<18){
+            return 'Good Afternoon'
         }else{
-            setOutdatedRecord(true);
-            throw new data.error || "Error fetching students value";
+            return 'Good Evening'
         }
-    } 
-
-
-
-    useEffect(()=>{
-        const getTimeOfDay=()=>{
-            const hours=new Date().getHours();
-            if(hours<12){
-                return 'Good Morning'
-            }else if(hours<18){
-                return 'Good Afternoon'
-            }else{
-                return 'Good Evening'
-            }
-        }
+    }
         setWelcomeText(getTimeOfDay())
         getStationsCount();
         getOrdersCount();
         getApprovedStationsCount();
         getNotApprovedStationsCount();
         getStudents();
-    },[]);
+        getEmergencyOrdersCount();
+},[]);
 
 
   return (
@@ -147,7 +161,7 @@ const getNotApprovedStationsCount=async()=>{
                     <div className='p-3 rounded-md flex-1 bg-red-200 shadow-md hover:shadow-none shadow-gray-400'>
                         <GoAlert  className='text-xl mx-auto w-auto h-10 text-red-700'/>
                         <h2 className='font-semibold text-lg pt-3 text-black text-center'>Emergency Requests</h2>
-                        <h3 className='text-4xl text-center font-semibold pt-3 text-red-800'>{stationsCount}</h3>
+                        <h3 className='text-4xl text-center font-semibold pt-3 text-red-800'>{emergencyOrdersCount}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs font-semibold ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Outdated Record!" : "Pending Emergency Requests"}</p>
                         <Link to="/EmergencyRequests">
