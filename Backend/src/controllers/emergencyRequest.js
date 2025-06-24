@@ -2,6 +2,8 @@ const Station = require("../models/auth/stationSignup");
 const EmergencyOrder = require("../models/emergencyOrder");
 
 const createEmergencyOrder = async (req, res) => {
+  const {userId}=req.params;
+
   try {
     let {
       clientName,
@@ -27,7 +29,8 @@ const createEmergencyOrder = async (req, res) => {
       urgency,
       message,
       clientLocation,
-      status: "pending"
+      status: "pending",
+      user: userId,
     });
 
     const placedOrder = await newOrder.save();
@@ -269,11 +272,62 @@ const getEmergencyOrdersByStatus=async(req,res)=>{
     }
 }
 
+// Get emergency orders assigned to a specific station
+const getEmergencyOrdersForStation = async (req, res) => {
+  const { stationId } = req.params;
+
+  try {
+    const orders = await EmergencyOrder.find({ assignedStation: stationId })
+      .sort({ createdAt: -1 })
+      .populate('assignedStation');
+
+    res.status(200).json({
+      message: 'Emergency Orders for this station fetched successfully!',
+      orders,
+      total: orders.length,
+      success: true
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Failed to fetch orders for the station.',
+      error: error.message,
+      success: false
+    });
+  }
+};
+
+// get user emergency orders
+const getEmergencyOrdersForUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const orders = await EmergencyOrder.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .populate('assignedStation nearbyStations assignmentHistory.station');
+
+    return res.status(200).json({
+      message: "Emergency orders for the user fetched successfully!",
+      orders,
+      totalOrders: orders.length,
+      success: true
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch emergency orders for user",
+      success: false,
+      error: error.message
+    });
+  }
+};
+
 module.exports={
   createEmergencyOrder,
   getAllEmergencyRequests,
   getEmergencyOrder,
   updateEmergencyOrderStatus,
   reassignEmergencyOrder,
-  getEmergencyOrdersByStatus
+  getEmergencyOrdersByStatus,
+  getEmergencyOrdersForStation,
+  getEmergencyOrdersForUser
 }

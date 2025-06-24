@@ -14,17 +14,21 @@ const EmergencyFuelRequestSchema = new mongoose.Schema({
     required: true,
     enum:['petrol','diesel','gasoline','kerosene']
 },
-  fuelVolume: {
-    type: Number,
-    required: true
+user: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User'
 },
-  urgency: {
-    type: String,
-    enum: ["immediate", "1_hour", "2_hours"],
-    required: true
-  },
-  message: {
-    type: String
+fuelVolume: {
+  type: Number,
+  required: true
+},
+urgency: {
+  type: String,
+  enum: ["immediate", "1_hour", "2_hours"],
+  required: true
+},
+message: {
+  type: String
 },
 clientLocation:{
   type:{

@@ -11,7 +11,7 @@ const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation,
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
 const { adminSignin } = require("./controllers/auth/adminSignin.js");
-const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus } = require("./controllers/emergencyRequest.js");
+const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus, getEmergencyOrdersForStation, getEmergencyOrdersForUser } = require("./controllers/emergencyRequest.js");
 // const fileUpload = require("./fileUpload.js");
 const router=express.Router();
 
@@ -60,10 +60,9 @@ router.get('/order/emergency/status/:status', getEmergencyOrdersByStatus);
 router.patch('/order/emergency/:orderId/reassign', reassignEmergencyOrder); 
 router.patch('/order/emergency/:orderId/update', updateEmergencyOrderStatus);
 router.get('/order/emergency/:orderId', getEmergencyOrder);
-router.post('/order/emergency/create', createEmergencyOrder);
-
-
-
+router.post('/order/emergency/create/:userId', createEmergencyOrder);
+router.get('/order/emergency/station/:stationId',getEmergencyOrdersForStation)
+router.get('/order/emergency/user/:userId',getEmergencyOrdersForUser)
 
 // paystack
 router.post('/paystack/Init/',paystackInit)
