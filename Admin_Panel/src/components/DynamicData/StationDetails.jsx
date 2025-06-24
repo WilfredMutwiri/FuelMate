@@ -3,9 +3,11 @@ import { useParams } from "react-router-dom";
 import {SERVER_URL} from '../../constants/SERVER_URL';
 import { Spinner } from "../spinner";
 import {Button} from "flowbite-react";
+import useToast from '../../components/Toast'
 
 
 const StationDetails=()=>{
+    const {show}=useToast()
     const {id}=useParams();
     const [station,setStation]=useState(null);
     const [loading,setIsLoading]=useState(true);
@@ -45,10 +47,14 @@ const StationDetails=()=>{
             if (res.ok) {
                 setStation((prev) => ({ ...prev, station: { ...prev.station, newStatus } }));
                 window.location.reload();
+                show("Station updated successfully","success");
+
             } else {
+                show("Error updating station status","error");
                 throw new Error(data.message || "Error updating station status");
             }
         } catch (error) {
+            show(error.message,"error");
             setError(error.message);
         }
     }
@@ -62,13 +68,14 @@ const StationDetails=()=>{
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    alert("Station deleted successfully");
+                    show("Station deleted successfully","success");
                     window.location.href = '/RegisteredStations';
                 } else {
+                    show("Error deleting station","error");
                     throw new Error(data.message || "Error deleting station");
                 }
             } catch (error) {
-                setError(error.message);
+                show(error.message,"error");
             }
         }
     }

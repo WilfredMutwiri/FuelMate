@@ -12,7 +12,7 @@ import { Button} from "flowbite-react";
 import { Link, useNavigate } from 'react-router-dom';
 import {SERVER_URL} from '../constants/SERVER_URL'
 import { signoutSuccess } from '../../Redux/User/userSlice';
-import Dashboard from './Dashboard';
+import DashboardView from './DashboardView.jsx';
 import { CiNoWaitingSign } from "react-icons/ci";
 
 
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
                     <div className=''>
                     {/* dashboard */}
                     <div className={visibleSection==='dashboard'?'':'hidden'}>
-                        <Dashboard/>
+                        <DashboardView/>
                     </div>
                     </div>
                 </div>

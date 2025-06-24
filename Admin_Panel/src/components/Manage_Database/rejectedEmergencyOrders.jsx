@@ -1,46 +1,48 @@
 import React, { useEffect, useCallback, useState } from 'react';
+import { IoTrashOutline } from "react-icons/io5";
 import {SERVER_URL} from '../../constants/SERVER_URL';
 import { Alert, Button, Label, Spinner, TextInput,Table,Modal } from "flowbite-react";
 import Sidebar from '../Sidebar';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
-export default function ApprovedStations() {
+export default function RejectedEmergencyOrders() {
     const [isError,setError]=useState(null);
-    const [StationsCount,setStationsCount]=useState(0);
-    const [allStations, setAllStations] = useState([]);
+    const [emergencyOrders,setEmergencyOrders]=useState([]);
     const [loading,setLoading]=useState(false)
     const [showAll,setShowAll]=useState(false);
 
-    //get all approved stations count
-const getStations=useCallback(async()=>{
-    setLoading(true)
 
-    try{
-    const response=await fetch(`${SERVER_URL}/api/v1/station/all`);
+//get emergency orders count
+const getRejectedEmergencyOrders=async()=>{
+    
+    setLoading(true)
+    
+    try {
+    const response=await fetch(`${SERVER_URL}/api/v1/order/emergency/status/rejected`);
     const data=await response.json();
+    console.log(data);
     if(response.ok){
-        setStationsCount(data.totalStations);
-        setAllStations(data.stations)
+        setEmergencyOrders(data.Orders);
     }else{
-        throw new data.error || "Error fetching parents";
-        setLoading(false)
+        setOutdatedRecord(true);
+        throw new data.error || "Error fetching students value";
     }
-}catch(error){
-    setError(error.message)
-    console.log(error.message)
-}finally{
+    } catch (error) {
+         console.log(error.message)
+    }finally{
     setLoading(false)
 }
-},[])
-    // use effect
-    useEffect(() => {
-        getStations();
-    }, [getStations]);
+} 
+// use effect
+useEffect(() => {
+    getRejectedEmergencyOrders();
+}, []);
 
-    //toggle height
-    const toggleHeight=()=>{
-        setShowAll(!showAll)
-    }
+//toggle height
+const toggleHeight=()=>{
+    setShowAll(!showAll)
+}
+
     return (
         <div>
             <div className='flex justify-between gap-4 w-[95%]  mx-auto'>
@@ -51,40 +53,41 @@ const getStations=useCallback(async()=>{
                     {/* Teachers div */}
                     <div className={`bg-gray-200 p-1 rounded-md overflow-hidden ${showAll?"h-[500px]":"h-auto"}`}>
                         <div className='flex justify-between bg-gray-200 rounded-md p-2'>
-                            <h2 className="flex-1 mx-auto p-2 text-left text-lg text-cyan-700">All Registered Stations</h2>
+                            <h2 className="mx-auto p-2 text-left text-lg text-red-700">Rejected Emergency Orders <span className='pl-10 text-red-700'> ( {emergencyOrders?.length} )</span></h2>
                         </div>
                         <div className="overflow-x-auto">
                             <Table hoverable>
                                 <Table.Head>
-                                    <Table.HeadCell>Station Name</Table.HeadCell>
-                                    <Table.HeadCell>Location</Table.HeadCell>
-                                    <Table.HeadCell>Registration Number</Table.HeadCell>
-                                    <Table.HeadCell>Business Certificate</Table.HeadCell>
-                                    <Table.HeadCell>Station Phone No:</Table.HeadCell>
-                                    <Table.HeadCell>
-                                        <span className="sr-only">Edit</span>
-                                    </Table.HeadCell>
+                                    <Table.HeadCell>Client Name</Table.HeadCell>
+                                    <Table.HeadCell>Client Phone</Table.HeadCell>
+                                    <Table.HeadCell>Fuel Type</Table.HeadCell>
+                                    <Table.HeadCell>Fuel Volume</Table.HeadCell>
+                                    <Table.HeadCell>Urgency</Table.HeadCell>
+                                    <Table.HeadCell>Status</Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body className="divide-y">
-                                    {allStations.length >0 && allStations.map((station) => (
-                                        <Table.Row key={station._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    {emergencyOrders.length >0 && emergencyOrders.map((order) => (
+                                        <Table.Row key={order._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                {station.username}
+                                                {order.clientName}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.town}, {station.county}
+                                                {order.clientPhone}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.RegNo}
+                                                {order.fuelType}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                <a href={station?.BusinessCert} target="_blank" rel="noopener noreferrer" className="demographyLi cursor-pointer">Reg_Certificate</a>
+                                                {order.fuelVolume}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.phoneNo}
+                                                {order.urgency}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                <Link to={`/station/${station._id}`} className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</Link>
+                                                {order.status}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-black">
+                                                <Link to={`/order/${order._id}`} className="font-medium text-red-700 hover:text-cyan-700 hover:underline">View</Link>
                                             </Table.Cell>
                                         </Table.Row>
                                     ))}

@@ -45,7 +45,7 @@ nearbyStations: [
 ],
 status: {
     type: String,
-    enum: ["pending", "assigned", "accepted", "rejected", "delivered", "cancelled"],
+    enum: ["pending", "assigned", "accepted", "rejected", "delivered"],
     default: "pending"
   },
   assignedStation: {
@@ -60,7 +60,7 @@ status: {
       },
       status: {
         type: String,
-        enum: ["assigned", "declined", "accepted"],
+        enum: ["assigned","reassigned"],
         default: "assigned"
       },
       assignedAt: {

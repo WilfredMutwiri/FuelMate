@@ -131,7 +131,7 @@ const getEmergencyOrder=async(req,res)=>{
 const updateEmergencyOrderStatus=async(req,res)=>{
   const {orderId}=req.params;
   let {newStatus}=req.body;
-  const validStatus=["pending", "assigned", "accepted", "rejected", "delivered", "cancelled"];
+  const validStatus=["pending", "assigned", "accepted", "rejected", "delivered", "cancelled","reassigned"];
   if(!validStatus.includes(newStatus)){
     return res.status(400).json({
         message:"Invalid order status",
@@ -226,7 +226,7 @@ const reassignEmergencyOrder = async (req, res) => {
     order.assignmentHistory.push({
       station: newStation._id,
       status: "reassigned",
-    });
+    }).sort('createdAt');
 
     await order.save();
 
@@ -246,10 +246,34 @@ const reassignEmergencyOrder = async (req, res) => {
   }
 };
 
+// get emergency order by status
+const getEmergencyOrdersByStatus=async(req,res)=>{
+    const status=req.params.status;
+
+    try {
+        const Orders=await EmergencyOrder.find({
+          status:status
+        }).sort({createdAt:-1})
+
+        return res.status(200).json({
+            message:"Emergency orders fetched successfully!",
+            Orders,
+            totalOrders:Orders.length,
+            success:true
+        })
+    } catch (error) {
+        return res.status(500).json({
+            message:error.message,
+            success:false
+        })
+    }
+}
+
 module.exports={
   createEmergencyOrder,
   getAllEmergencyRequests,
   getEmergencyOrder,
   updateEmergencyOrderStatus,
-  reassignEmergencyOrder
+  reassignEmergencyOrder,
+  getEmergencyOrdersByStatus
 }

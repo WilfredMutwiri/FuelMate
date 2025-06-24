@@ -3,25 +3,26 @@ import { IoTrashOutline } from "react-icons/io5";
 import {SERVER_URL} from '../../constants/SERVER_URL';
 import { Alert, Button, Label, Spinner, TextInput,Table,Modal } from "flowbite-react";
 import Sidebar from '../Sidebar';
+import { Link } from 'react-router-dom';
 
 export default function ApprovedStations() {
     const [isError,setError]=useState(null);
-    const [notApprovedStationsCount,setNotApprovedStationsCount]=useState(0);
-    const [notApprovedStations, setNotApprovedStations] = useState([]);
+    const [emergencyOrders,setEmergencyOrders]=useState([]);
     const [loading,setLoading]=useState(false)
     const [showAll,setShowAll]=useState(false);
 
 
 //get emergency orders count
 const getEmergencyOrdersCount=async()=>{
+    
     setLoading(true)
-
+    
     try {
     const response=await fetch(`${SERVER_URL}/api/v1/order/emergency/all/`);
     const data=await response.json();
+    console.log(data);
     if(response.ok){
-        setOutdatedRecord(false);
-        setEmergencyOrdersCount(data.totalOrders);
+        setEmergencyOrders(data.orders);
     }else{
         setOutdatedRecord(true);
         throw new data.error || "Error fetching students value";
@@ -31,38 +32,17 @@ const getEmergencyOrdersCount=async()=>{
     }finally{
     setLoading(false)
 }
-
 } 
-    //get all approved stations count
-const getNotApprovedStationsCount=useCallback(async()=>{
-    setLoading(true)
+// use effect
+useEffect(() => {
+    getEmergencyOrdersCount();
+}, []);
 
-    try{
-    const response=await fetch(`${SERVER_URL}/api/v1/station/not-approved`);
-    const data=await response.json();
-    if(response.ok){
-        setNotApprovedStationsCount(data.totalStations);
-        setNotApprovedStations(data.stations)
-    }else{
-        throw new data.error || "Error fetching parents";
-        setLoading(false)
-    }
-}catch(error){
-    setError(error.message)
-    console.log(error.message)
-}finally{
-    setLoading(false)
+//toggle height
+const toggleHeight=()=>{
+    setShowAll(!showAll)
 }
-},[])
-    // use effect
-    useEffect(() => {
-        getNotApprovedStationsCount();
-    }, [getNotApprovedStationsCount]);
 
-    //toggle height
-    const toggleHeight=()=>{
-        setShowAll(!showAll)
-    }
     return (
         <div>
             <div className='flex justify-between gap-4 w-[95%]  mx-auto'>
@@ -78,35 +58,36 @@ const getNotApprovedStationsCount=useCallback(async()=>{
                         <div className="overflow-x-auto">
                             <Table hoverable>
                                 <Table.Head>
-                                    <Table.HeadCell>Station Name</Table.HeadCell>
-                                    <Table.HeadCell>Location</Table.HeadCell>
-                                    <Table.HeadCell>Registration Number</Table.HeadCell>
-                                    <Table.HeadCell>Business Certificate</Table.HeadCell>
-                                    <Table.HeadCell>Station Phone No:</Table.HeadCell>
-                                    <Table.HeadCell>
-                                        <span className="sr-only">Edit</span>
-                                    </Table.HeadCell>
+                                    <Table.HeadCell>Client Name</Table.HeadCell>
+                                    <Table.HeadCell>Client Phone</Table.HeadCell>
+                                    <Table.HeadCell>Fuel Type</Table.HeadCell>
+                                    <Table.HeadCell>Fuel Volume</Table.HeadCell>
+                                    <Table.HeadCell>Urgency</Table.HeadCell>
+                                    <Table.HeadCell>Status</Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body className="divide-y">
-                                    {notApprovedStations.length >0 && notApprovedStations.map((station) => (
-                                        <Table.Row key={station._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                    {emergencyOrders.length >0 && emergencyOrders.map((order) => (
+                                        <Table.Row key={order._id} className="bg-white dark:border-gray-700 dark:bg-gray-800">
                                             <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                {station.username}
+                                                {order.clientName}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.town}, {station.county}
+                                                {order.clientPhone}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.RegNo}
+                                                {order.fuelType}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.BusinessCert}
+                                                {order.fuelVolume}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                                {station.phoneNo}
+                                                {order.urgency}
                                             </Table.Cell>
                                             <Table.Cell className="text-black">
-                                            <a href="#" className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</a>
+                                                {order.status}
+                                            </Table.Cell>
+                                            <Table.Cell className="text-black">
+                                                <Link to={`/order/${order._id}`} className="font-medium text-cyan-700 hover:text-red-600 hover:underline">View</Link>
                                             </Table.Cell>
                                         </Table.Row>
                                     ))}
