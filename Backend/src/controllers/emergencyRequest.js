@@ -12,6 +12,7 @@ const createEmergencyOrder = async (req, res) => {
       fuelVolume,
       urgency,
       message,
+      readableLocation,
       clientLocation
     } = req.body;
 
@@ -29,6 +30,7 @@ const createEmergencyOrder = async (req, res) => {
       urgency,
       message,
       clientLocation,
+      readableLocation,
       status: "pending",
       user: userId,
     });

@@ -30,6 +30,10 @@ urgency: {
 message: {
   type: String
 },
+readableLocation:{
+  type:String,
+  required:true
+},
 clientLocation:{
   type:{
     type:String,
