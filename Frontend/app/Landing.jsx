@@ -16,12 +16,6 @@ export default function Landing(){
             <View style={styles.LogoContainer}>
                 <Image source={require('../assets/images/logo.png')} style={styles.logo}/>
                 <Text style={styles.logoText}>Your Fuel, Delivered Anywhere, Anytime</Text>
-
-                {/* google btn */}
-            <TouchableOpacity style={styles.googleContainer}>
-                <Image source={require('../assets/images/googleIcon.png')} style={styles.googleIcon}/>
-                <Text style={styles.googleText}>Continue with Google</Text>
-            </TouchableOpacity>
             {/* login btn */}
             <TouchableOpacity style={styles.buttonContainer} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Login</Text>

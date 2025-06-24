@@ -14,6 +14,7 @@ export default function Alert(){
     const [loading,setLoading]=useState(false);
     const [nearbyStations,setNearbyStations]=useState([]);
     const [location,setLocation]=useState(null);
+    const [locationName,setLocationName]=useState(null);
     
 
     const [formData,setFormData]=useState({
@@ -23,7 +24,8 @@ export default function Alert(){
         fuelVolume:'',
         urgency:'',
         message:'',
-        clientLocation:''
+        clientLocation:'',
+        readableLocation:''
     });
 
     // get user's current location
@@ -48,10 +50,19 @@ export default function Alert(){
             };
             setLocation(coords);
 
+            let addressArray=await Location.reverseGeocodeAsync(currentLocation.coords);
+            if(addressArray.length>0){
+                const address=addressArray[0];
+                setLocationName(`${address.name} | ${address.city} | ${address.region}`)
+            }
+
+            console.log("current location nam",locationName)
+
             setFormData(prev => ({
                 ...prev,
                 clientName: user?.username || '',
                 clientPhone: user?.phoneNo || '',
+                readableLocation:locationName || '',
                 clientLocation: {
                     type: 'Point',
                     coordinates: [coords.longitude, coords.latitude]
@@ -87,6 +98,7 @@ export default function Alert(){
         [name]: value,
         clientName: user?.username || prev.clientName,
         clientPhone: user?.phoneNo || prev.clientPhone,
+        readableLocation:locationName || '',
         clientLocation: {
         type: 'Point',
         coordinates: [location?.longitude, location?.latitude]
@@ -106,7 +118,8 @@ export default function Alert(){
             fuelVolume,
             urgency,
             message,
-            clientLocation
+            clientLocation,
+            readableLocation
         } = formData;
 
         if (
@@ -131,7 +144,7 @@ export default function Alert(){
                 return ToastComponent("error", "Location not ready. Please wait a moment and try again.");
             }            
                 
-            const response=await axios.post(`${SERVER_URI}/api/v1/order/emergency/create/`,{
+            const response=await axios.post(`${SERVER_URI}/api/v1/order/emergency/create/${user.id}`,{
                 ...formData
             })
 

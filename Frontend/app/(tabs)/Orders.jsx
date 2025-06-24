@@ -9,20 +9,22 @@ import Loader from '../../components/loader.jsx';
 
 export default function Orders(){
     const user=useAuthStore((state)=>state.user)
-    console.log(user.id)
     const [customerData,setCustomerData]=useState(null);
     const [Loading,setLoading]=useState(false);
-    const [apiResponse,setAPIResponse]=useState(null)
+    const [apiResponse,setAPIResponse]=useState(null);
+    const [userEmergencyOrders,setUserEmergencyOrders]=useState([]);
+    const [emergencyOrders,setEmergencyOrders]=useState(0);
 
-    useEffect(() => {
+
+
+    // get all user's normal orders
     const getOrders = async () => {
-
         try {
             console.log("initiating orders fetch")
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/order/customer/${user.id}`);
+            // console.log("order response",response)
             const result = response.data;
-            console.log(result)
             if (result.customerOrders) {
                 setAPIResponse(result)
                 setCustomerData(result.customerOrders);
@@ -36,12 +38,32 @@ export default function Orders(){
         }
     };
 
-    getOrders();
+    // get all user's emergency orders
+    const getEmergencyOrders = async () => {
+        try {
+            console.log("initiating emergency orders fetch")
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/user/${user.id}`);
+            const result = response.data;
+            if (result.success) {
+                setEmergencyOrders(result.totalOrders)
+                setUserEmergencyOrders(result.orders);
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("API fetch error:", error.response?.data || error.message);
+        }finally{
+            setLoading(false);
+        }
+    };
 
-}, []);
+    useEffect(() => {
+        getOrders();
+        getEmergencyOrders();
+    }, []);
 
 useEffect(()=>{
-console.log(customerData)
 },[customerData])
 
 
@@ -54,9 +76,12 @@ console.log(customerData)
                 <View style={styles.orderCont}>
                     <View>
                         <Text style={styles.orderID}>Hello <Text style={styles.subTxt}>{user?.username}</Text></Text>
-                        <Text>Total orders placed : <Text style={styles.subTxt}>{apiResponse?.totalOrders || 0}</Text></Text>
+                        <View style={styles.ordersSummary}>
+                            <Text>Normal orders : <Text>{apiResponse?.totalOrders || 0}</Text></Text>
+                            <Text style={styles.subTxt}>Emergency orders : <Text>{emergencyOrders || 0}</Text></Text>
+                        </View>
                     </View>
-                    {/* orders*/}
+                    {/* emergency orders */}
                     <View>
                         {
                             Loading?(
@@ -64,7 +89,36 @@ console.log(customerData)
                                 <Loader/>
                             </View>
                         ):(
-                            <View style={{gap:10,marginTop:20}}>
+                            <View style={{gap:10,marginTop:20,paddingBottom:4}}>
+                            {
+                                userEmergencyOrders.map((order)=>(
+                                <View key={order._id} style={styles.orderContainer}>
+                                    <Text style={styles.subTxt}>Order ID: {order._id}</Text>
+                                    <Text>Delivery Location: {order?.readableLocation}</Text>
+                                    <Text>Fuel Type: {order?.fuelType}</Text>
+                                    <Text>Fuel Volume: {order?.fuelVolume} L</Text>
+                                    <Text>Assigned Station : {order?.assignedStation.stationName}</Text>                        
+                                    <View style={styles.StatusContainer}>
+                                        <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
+                                    </View>
+                                    <Text style={{paddingTop:4,color:'#05367C'}}>~emergency order~</Text>
+                                </View>
+                                ))
+                            }
+                        </View>
+                        )
+                    }
+                </View>
+                <Text> - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</Text>
+                    {/* normal orders*/}
+                    <View>
+                        {
+                            Loading?(
+                            <View>
+                                <Loader/>
+                            </View>
+                        ):(
+                            <View style={{gap:10,marginTop:10}}>
                             {
                                 customerData?.map((order,index)=>(
                                 <View key={index._id || index} style={styles.orderContainer}>
@@ -73,10 +127,10 @@ console.log(customerData)
                                     <Text>Fuel Type: {order?.fuelType}</Text>
                                     <Text>Fuel Volume: {order?.fuelVolume} L</Text>
                                     <Text>Amount Charged : {order?.amount}</Text>
-                        
                                     <View style={styles.StatusContainer}>
                                         <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
                                     </View>
+                                    <Text style={{paddingTop:4,color:'#05367C'}}>~normal order~</Text>
                                 </View>
                                 ))
                             }
@@ -94,9 +148,14 @@ const styles=StyleSheet.create({
     container:{
         flex:1,
     },
+    ordersSummary:{
+        flexDirection:'row',
+        justifyContent:"space-between"
+    },
     orderCont:{
         width:'85%',
         alignSelf:'center',
+        paddingBottom:25
     },
     orderID:{
         fontSize:19,
