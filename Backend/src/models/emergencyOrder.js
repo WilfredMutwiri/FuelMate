@@ -24,7 +24,6 @@ fuelVolume: {
 },
 urgency: {
   type: String,
-  enum: ["immediate", "1_hour", "2_hours"],
   required: true
 },
 message: {

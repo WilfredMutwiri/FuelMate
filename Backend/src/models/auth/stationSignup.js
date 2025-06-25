@@ -45,14 +45,6 @@ rating:{
     type:Number,
     required:false
 },
-// latitude:{
-//     type:Number,
-//     required:false
-// },
-// longitude:{
-//     type:Number,
-//     required:false
-// },
 RegNo:{
     type:String,
     required:true

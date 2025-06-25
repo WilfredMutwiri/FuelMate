@@ -1,6 +1,8 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const Station=require("../../models/auth/stationSignup");
+const Order=require("../../models/ordersModel");
+const EmergencyOrder = require("../../models/emergencyOrder");
 
 const stationSignup=async(req,res)=>{
     try {
@@ -171,6 +173,8 @@ const deleteStation=async(req,res)=>{
         if(!station){
             return res.status(404).json({message:"Station not found"});
         }
+        await Order.deleteMany({ station: id });
+        await EmergencyOrder.deleteMany({assignedStation:id});
         await Station.findByIdAndDelete(id);
         return res.status(200).json({
             message:"Station deleted successfully"
