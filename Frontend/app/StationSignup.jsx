@@ -351,6 +351,7 @@ export default function StationSignup(){
                                 value={formData.phoneNo}
                                 onChangeText={(text)=>handleInputChange('phoneNo',text)}
                                 style={styles.inputText}
+                                keyboardType='numeric'
                                 placeholder='B/S Phone'
                                 />
                             </View>

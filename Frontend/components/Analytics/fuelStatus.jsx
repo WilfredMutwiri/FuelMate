@@ -18,9 +18,12 @@ export const FuelStatusBarGraph = () => {
     const [deliveredOrders,setDeliveredOrders]=useState(0)
     const [declinedOrders,setDeclinedOrders]=useState(0)
     const [Loading,setLoading]=useState(false);
+    const [emergencyOrders,setEmergencyOrders]=useState(0)
+    const [receivedOrders,setReceivedOrders]=useState(0)
 
     // fetch received orders
         useEffect(() => {
+
         const getStation = async () => {
         if (!station?.id) {
         console.log("station.id not yet available");
@@ -77,6 +80,34 @@ export const FuelStatusBarGraph = () => {
         getDeliveredOrders();
     }, []);
 
+    // get received orders
+    useEffect(() => {
+        const getReceivedOrders = async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/station/${station.id}`);
+            const result = response.data;
+            // console.log(result)
+            if (result.success) {
+                setReceivedOrders(result.totalOrders);
+                setLoading(false);
+            } else {
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getReceivedOrders();
+    }, []);
 
     // get declined/canceled orders
             useEffect(() => {
@@ -107,13 +138,41 @@ export const FuelStatusBarGraph = () => {
             getDeclinedrders();
         }, []);
 
+        // get emergency orders
+        useEffect(() => {
+            const getEmergencyOrders = async () => {
+            if (!station?.id) {
+            console.log("station.id not yet available");
+            return;
+            }
+    
+            try {
+                setLoading(true);
+                const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/station/${station.id}`);
+                const result = response.data;
+                console.log(result.total)
+                if (result.success) {
+                    setEmergencyOrders(result.total);
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                }
+            }
+            catch (error) {
+                console.log("an error occured",error.message);
+                ToastComponent("error",error.message)
+            }
+            setLoading(false);
+            };
+            getEmergencyOrders();
+        }, []);
 
 
 const statusData = {
-  labels: ["Received","Delivered","Canceled"],
+labels: ["Received","Delivered","Canceled"],
   datasets: [
     {
-      data: [apiResponse,deliveredOrders,declinedOrders,]
+      data: [apiResponse,deliveredOrders,declinedOrders,emergencyOrders,receivedOrders]
     }
   ]
 };
@@ -138,36 +197,81 @@ const chartConfig = {
       deliveredOrders={deliveredOrders}
       declinedOrders={declinedOrders}
       apiResponse={apiResponse}
+      emergencyOrders={emergencyOrders}
+      receivedOrders={receivedOrders}
     />
+    
     </View>
   );
 };
 
 
 
-export const SalesPieChart=({deliveredOrders,declinedOrders,apiResponse})=>{
+export const SalesPieChart=({deliveredOrders,declinedOrders,emergencyOrders,receivedOrders})=>{
 // sales pie chart
 const salesData = [
+    {
+    name: "Received",
+    population:receivedOrders,
+    color: "#F29339",
+    legendFontColor: "#333",
+    legendFontSize: 12
+  },
   {
     name: "Delivered",
     population:deliveredOrders,
-    color: "#4CAF50",
+    color: "#2ECC71",
     legendFontColor: "#333",
     legendFontSize: 12
   },
   {
     name: "Canceled",
     population:declinedOrders,
-    color: "#F44336",
+    color: "#CD5C5C",
     legendFontColor: "#333",
     legendFontSize: 12
   },
 ];
 
+const ordersData = [
+  {
+    name: "Normal Orders",
+    population:receivedOrders,
+    color: "#F29339",
+    legendFontColor: "#333",
+    legendFontSize: 12
+  },
+  {
+    name: "Emergency",
+    population:emergencyOrders,
+    color: "#DC143C",
+    legendFontColor: "#333",
+    legendFontSize: 12
+  },
+];
 return(
     <View>
+      {/* chart one */}
         <PieChart
         data={salesData}
+        width={screenWidth - 42}
+        height={220}
+        chartConfig={{
+          backgroundColor: "#fff",
+          backgroundGradientFrom: "#fff",
+          backgroundGradientTo: "#fff",
+          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          labelColor: () => "#000",
+        }}
+        accessor="population"
+        backgroundColor="transparent"
+        paddingLeft="15"
+        absolute
+      />
+
+      {/* chart two */}
+      <PieChart
+        data={ordersData}
         width={screenWidth - 42}
         height={220}
         chartConfig={{

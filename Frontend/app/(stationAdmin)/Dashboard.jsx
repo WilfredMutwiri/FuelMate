@@ -21,8 +21,11 @@ export default function StationInfoScreen() {
         const [deliveredFuel,setDeliveredFuel]=useState(0);
         const [totalSales,setTotalSales]=useState(0);
         const [declinedOrders,setDeclinedOrders]=useState(0)
-        const [approvedOrders,setApprovedOrders]=useState(0);
+        const [emergencyOrders,setEmergencyOrders]=useState(0);
         const [deliveredOrders,setDeliveredOrders]=useState(0)
+
+        const [emergencyData,setEmergencyData]=useState([])
+        const [normalOrders, setNormalOrders] = useState([]);
 
         // fetch station orders
         useEffect(() => {
@@ -39,7 +42,7 @@ export default function StationInfoScreen() {
             // console.log(result)
             if (result.stationOrders) {
                 setAPIResponse(result)
-                setStationData(result.stationOrders);
+                setNormalOrders(result.stationOrders);
                 setLoading(false);
             } else {
                 setLoading(false);
@@ -145,9 +148,10 @@ export default function StationInfoScreen() {
         getDeclinedrders();
     }, []);
 
-    // get approved orders
+
+    // get emergency orders
         useEffect(() => {
-        const getApprovedOrders= async () => {
+        const getEmergencyOrders= async () => {
         if (!station?.id) {
         console.log("station.id not yet available");
         return;
@@ -155,11 +159,12 @@ export default function StationInfoScreen() {
 
         try {
             setLoading(true);
-            const response = await axios.get(`${SERVER_URI}/api/v1/order/approved/station/${station.id}`);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/station/${station.id}`);
             const result = response.data;
             // console.log(result)
             if (result.success) {
-                setApprovedOrders(result.totalOrders);
+                setEmergencyOrders(result.total);
+                setEmergencyData(result.orders)
                 setLoading(false);
             } else {
                 setLoading(false);
@@ -171,7 +176,7 @@ export default function StationInfoScreen() {
         }
         setLoading(false);
         };
-        getApprovedOrders();
+        getEmergencyOrders();
     }, []);
 
 
@@ -228,7 +233,7 @@ export default function StationInfoScreen() {
                 <TouchableOpacity style={styles.Tcontainer102}
                     onPress={()=>router.push("/Orders")}
                 >
-                    <Text style={styles.TopTxt}>Received Orders</Text>
+                    <Text style={styles.TopTxt}>Received Orders (Normal)</Text>
                     {
                         Loading?(
                             <Loader/>
@@ -255,12 +260,12 @@ export default function StationInfoScreen() {
                 <TouchableOpacity style={styles.Tcontainer203}
                     onPress={()=>router.push("/Orders")}
                 >
-                    <Text style={styles.TopTxt}>Approved Orders</Text>
+                    <Text style={styles.TopTxt}>Emergency Orders</Text>
                     {
                         Loading ? (
                             <Loader/>
                         ):(
-                    <Text style={styles.TopSubTxt}>{approvedOrders || 0}</Text>
+                    <Text style={styles.TopSubTxt}>{emergencyOrders || 0}</Text>
                         )
                     }
                 </TouchableOpacity>
@@ -312,16 +317,25 @@ export default function StationInfoScreen() {
                         <Text style={styles.subTxt}>View All</Text>
                     </TouchableOpacity>
                 </View>
+                
+                {/* orders */}
                 <View style={{gap:10,borderBottomColor:"#077E8C",height:550,borderBottomWidth:2,overflow:"hidden"}}>
+                
+                {/* emergency orders */}
+
                 {
-                    Loading?(
+                Loading?(
+
                 <View>
                     <Loader/>
                 </View>
+
                 ):(
+                <>
+                {/* emergency orders */}
                 <View style={{gap:10,}}>
                 {
-                    stationData?.map((order,index)=>(
+                    emergencyData?.map((order,index)=>(
                     <View key={index._id || index} style={styles.orderContainer}>
                         <Text style={styles.subTxt}>Order ID: {order._id}</Text>
                         <Text>Customer Location: {order?.location}</Text>
@@ -333,10 +347,35 @@ export default function StationInfoScreen() {
                         <View style={styles.StatusContainer}>
                             <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
                         </View>
+                        
+                        <Text style={{paddingTop:10,color:'#077E8C'}}>~emergency order~</Text>
                     </View>
                 ))
                 }
                 </View>
+                
+                <Text> - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</Text>
+                
+                {/* normal orders */}
+                <View style={{gap:10,}}>
+                {
+                    normalOrders?.map((order,index)=>(
+                    <View key={index._id || index} style={styles.orderContainer}>
+                        <Text style={styles.subTxt}>Order ID: {order._id}</Text>
+                        <Text>Customer Location: {order?.location}</Text>
+                        <Text>Customer Contact: {order?.clientPhoneNo}</Text>
+                        <Text>Fuel Type: {order?.fuelType}</Text>
+                        <Text>Fuel Volume: {order?.fuelVolume} L</Text>
+                        <Text>Amount Charged : {order?.amount}</Text>     
+                        <View style={styles.StatusContainer}>
+                            <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
+                        </View>
+                        <Text style={{paddingTop:10,color:'#077E8C'}}>~normal order~</Text>
+                    </View>
+                ))
+                }
+                </View>
+                </>
                 )
                 }
             </View>

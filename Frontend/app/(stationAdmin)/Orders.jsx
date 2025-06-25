@@ -13,11 +13,20 @@ import ToastComponent from "../../components/Toast";
 export default function OrdersScreen() {
 
     const station=useAuthStore((state)=>state.station)
+
     const [stationData,setStationData]=useState(null);
+    const [normalOrders, setNormalOrders] = useState([]);
+    const [emergencyData,setEmergencyData]=useState([])
+
     const [Loading,setLoading]=useState(false);
     const [modalOpen,setModalOpen]=useState(false);
+    const [modal2Open,setModal2Open]=useState(false)
     const [orderStatus, setOrderStatus] = useState('received');
     const [selectedOrderId, setSelectedOrderId] = useState(null);
+    const [emergencyOrders,setEmergencyOrders]=useState(null);
+    const [apiResponse,setAPIResponse]=useState(0);
+
+
 
 
     useEffect(() => {
@@ -32,7 +41,8 @@ export default function OrdersScreen() {
             const response = await axios.get(`${SERVER_URI}/api/v1/order/station/${station.id}`);
             const result = response.data;
             if (result.stationOrders) {
-                setStationData(result.stationOrders);
+                setNormalOrders(result.stationOrders);
+                setAPIResponse(result.totalOrders)
                 setLoading(false);
             } 
         }
@@ -82,7 +92,71 @@ export default function OrdersScreen() {
         }
     };
 
-    console.log(orderStatus)
+    // update emergency order
+    const updateEmergencyOrder = async () => {
+        try {
+            if(!selectedOrderId) return;
+
+            setLoading(true);
+            const response = await axios.patch(`${SERVER_URI}/api/v1/order/emergency/${selectedOrderId}/update/`,{
+                newStatus:orderStatus
+            });
+            const result = response.data;
+            console.log(result)
+            if (result.success) {
+                setLoading(true)
+                const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/station/${station.id}`);
+                const result = response.data;
+                // console.log(result)
+                if (result.success) {
+                    setEmergencyOrders(result.total);
+                    setEmergencyData(result.orders)
+                    setLoading(false);
+                } else {
+                setLoading(false);
+                }
+            } else {
+                console.log("Update Failed")
+            }
+        }
+        catch (error) {
+            ToastComponent("error",error.message)
+            console.log(error)
+        }finally{
+            setLoading(false);
+            setModal2Open(false)
+            setSelectedOrderId(null)
+        }
+    };
+
+    // get emergency orders
+        useEffect(() => {
+        const getEmergencyOrders= async () => {
+        if (!station?.id) {
+        console.log("station.id not yet available");
+        return;
+        }
+
+        try {
+            setLoading(true);
+            const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/station/${station.id}`);
+            const result = response.data;
+            if (result.success) {
+                setEmergencyOrders(result.total);
+                setEmergencyData(result.orders)
+                setLoading(false);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }
+        setLoading(false);
+        };
+        getEmergencyOrders();
+    }, []);
+
+
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -90,15 +164,50 @@ export default function OrdersScreen() {
         contentContainerStyle={{paddingBottom:50}}
         >
             <View style={styles.historyContainer}>
+            <View style={styles.ordersSummary}>
+                <Text>Normal orders : <Text>{apiResponse || 0}</Text></Text>
+                <Text style={styles.subTxt}>Emergency orders : <Text>{emergencyOrders || 0}</Text></Text>
+            </View>
                 {
                     Loading?(
                         <View>
                             <Loader/>
                         </View>
                     ):(
+                        <>
                         <View style={{gap:10,}}>
+                        
+                        {/* emergency orders */}
+                            {
+                                emergencyData?.map((order,index)=>(
+                                <View key={index._id || index} style={styles.orderContainer}>
+                                    <Text style={styles.subTxt}>Order ID: {order._id}</Text>
+                                    <Text>Customer Location: {order?.location}</Text>
+                                    <Text>Customer Contact: {order?.clientPhoneNo}</Text>
+                                    <Text>Fuel Type: {order?.fuelType}</Text>
+                                    <Text>Fuel Volume: {order?.fuelVolume} L</Text>
+                                    <Text>Amount Charged : {order?.amount}</Text>     
+                                    <Text style={{paddingTop:10,color:'#077E8C'}}>~emergency order~</Text>
+                                    
+                                    <View style={styles.StatusContainer}>
+                                        <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
+                                        <TouchableOpacity style={styles.BTNContainer} 
+                                        onPress={()=>{
+                                            setSelectedOrderId(order._id)
+                                            setModal2Open(!modal2Open)
+                                        }
+                                        }>
+                                            <Text style={styles.BtnTxt}>Update</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                ))
+                            }                                    
+                    <Text> - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</Text>
+                                    
+                    {/* normal order */}
                     {
-                        stationData?.map((order,index)=>(
+                        normalOrders?.map((order,index)=>(
                             <View key={index._id || index} style={styles.orderContainer}>
                                     <Text style={styles.subTxt}>Order ID: {order._id}</Text>
                                     <Text>Customer Location: {order?.location}</Text>
@@ -106,6 +215,9 @@ export default function OrdersScreen() {
                                     <Text>Fuel Type: {order?.fuelType}</Text>
                                     <Text>Fuel Volume: {order?.fuelVolume} L</Text>
                                     <Text>Amount Charged : {order?.amount}</Text>
+                                    
+                                    <Text style={{paddingTop:10,color:'#077E8C'}}>~normal order~</Text>
+
 
                                     <View style={styles.StatusContainer}>
                                             <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
@@ -123,6 +235,7 @@ export default function OrdersScreen() {
                     }
 
                     {/* modal section */}
+                    {/* modal one */}
                     <View>
                     <Modal
                         visible={modalOpen}
@@ -159,7 +272,45 @@ export default function OrdersScreen() {
                     </TouchableWithoutFeedback>    
                     </Modal>
                     </View>
+
+                    {/* modal two */}
+                    <View>
+                    <Modal
+                        visible={modal2Open}
+                        animationType='slide'
+                        transparent={true}
+                        onRequestClose={()=>setModal2Open(!modal2Open)}
+                        >
+                        <TouchableWithoutFeedback onPress={()=>setModal2Open(!modal2Open)}>
+                            <View style={styles.modalOverlay}>
+                            {
+                                Loading?(
+                                    <Loader/>
+                                ):(
+                                    <>
+                            <Text style={styles.modalText}>Update Emergency Order</Text>
+                            <Text style={styles.introText}>Select Order status</Text>
+                        <Picker
+                        selectedValue={orderStatus}
+                        onValueChange={(itemValue) => setOrderStatus(itemValue)}
+                        style={styles.picker}
+                        >
+                            <Picker.Item label="Accepted" value="accepted"/>
+                            <Picker.Item label="Rejected" value="rejected"/>
+                            <Picker.Item label="Delivered" value="delivered"/>
+                        </Picker>
+                        <TouchableOpacity onPress={updateEmergencyOrder} style={styles.updateBtn}>
+                            <Text style={styles.updateTxt}>Update Order</Text>
+                        </TouchableOpacity>
+                        </>
+                        )
+                    }
+                    </View>
+                    </TouchableWithoutFeedback>    
+                    </Modal>
+                    </View>
                 </View>
+                </>
                 )
             }
             </View>
@@ -240,5 +391,10 @@ const styles=StyleSheet.create({
   updateTxt:{
     textAlign:'center',
     color:"#ffff"
-  }
+  },
+    ordersSummary:{
+        flexDirection:'row',
+        justifyContent:"space-between",
+        paddingBottom:20
+    }
 })

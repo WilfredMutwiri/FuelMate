@@ -92,12 +92,12 @@ useEffect(()=>{
                             <View style={{gap:10,marginTop:20,paddingBottom:4}}>
                             {
                                 userEmergencyOrders.map((order)=>(
-                                <View key={order._id} style={styles.orderContainer}>
-                                    <Text style={styles.subTxt}>Order ID: {order._id}</Text>
+                                <View key={order?._id} style={styles.orderContainer}>
+                                    <Text style={styles.subTxt}>Order ID: {order?._id}</Text>
                                     <Text>Delivery Location: {order?.readableLocation}</Text>
                                     <Text>Fuel Type: {order?.fuelType}</Text>
                                     <Text>Fuel Volume: {order?.fuelVolume} L</Text>
-                                    <Text>Assigned Station : {order?.assignedStation.stationName}</Text>                        
+                                    <Text>Assigned Station : {order?.assignedStation?.stationName}</Text>                        
                                     <View style={styles.StatusContainer}>
                                         <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
                                     </View>

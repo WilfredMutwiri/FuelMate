@@ -7,6 +7,7 @@ import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
 import axios from 'axios'
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 
 export default function Alert(){
     const router=useRouter();
@@ -165,7 +166,12 @@ export default function Alert(){
 
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
-            <ScrollView
+        <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'android' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'android' ? 0 : 20}
+        >
+        <ScrollView
             style={{flex:1}}
             contentContainerStyle={{flexGrow:1}}
             >
@@ -232,6 +238,7 @@ export default function Alert(){
                     </View>
                 </View>
             </ScrollView>
+        </KeyboardAvoidingView>
         </SafeAreaView>
     )
 }
