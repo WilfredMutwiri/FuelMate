@@ -20,8 +20,9 @@ export default function StationInfoScreen() {
     const [station, setStation] = useState(null);
     const [loading, setLoading] = useState(false);
     const [modalOpen,setModalOpen]=useState(false);
+
     const router=useRouter();
-    
+
     const [formData,setFormData]=useState({
     location:'',
 	clientPhoneNo:'',
@@ -38,7 +39,8 @@ export default function StationInfoScreen() {
     const [locationName,setLocationName]=useState(null)
     const [location,setLocation]=useState(null);
     const [orderPayLoad,setOrderPayLoad]=useState(null)
-    
+    const [stationStats,setStationStats]=useState([])
+
     // get user's current location
     useEffect(()=>{
         setLoading(true);
@@ -82,10 +84,85 @@ export default function StationInfoScreen() {
         getStation();
     },[id])
 
-    // useEffect(() => {
-    //     console.log("id station data",station);
-    // },[station])
+//fetching the station stats-likes-dislikes
+    useEffect(() => {
+        const getStationStats = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`${SERVER_URI}/api/v1/station/${id}/stats`);
+                const result = response.data;
+                if (result.success) {
+                    setStationStats(result);
+                }
+            }
+            catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        getStationStats();
+    },[id])
 
+    // like station
+    const handleLikeStation= async () => {
+        try {
+            const response = await axios.post(`${SERVER_URI}/api/v1/station/${id}/like/${user.id}`);
+            const result = response.data;
+            if (result.success) {
+                ToastComponent("success",result.message);
+                setLoading(true)
+                setStationStats(prev => ({
+                ...prev,
+                likes: result.likes,
+                dislikes: result.dislikes,
+                starsRating: result.starsRating
+            }));
+            }else{
+                ToastComponent("error",result.message)
+            }
+        }
+        catch (error) {
+        if (error.response) {
+            ToastComponent("error",error.response.data.message);
+        } else {
+            ToastComponent("error",error.response.data.message)
+         }
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // dislike station
+    const handleDisLikeStation= async () => {
+        try {
+            setLoading(true);
+            const response = await axios.post(`${SERVER_URI}/api/v1/station/${id}/dislike/${user.id}`);
+            console.log(response)
+            const result = response.data;
+            if (result.success) {
+                ToastComponent("success",result.message);
+                setStationStats(prev => ({
+                ...prev,
+                likes: result.likes,
+                dislikes: result.dislikes,
+                starsRating: result.starsRating
+            }));
+            setLoading(true)
+            }else{
+                ToastComponent("error",result.message)
+            }
+        }
+        catch (error) {
+        if (error.response) {
+            ToastComponent("error",error.response.data.message);
+        } else {
+            ToastComponent("error",error.response.data.message)
+         }
+        } finally {
+            setLoading(false);
+        }
+    }
 
     // order placement
     const handleInputChange=(name,value)=>{
@@ -159,7 +236,6 @@ export default function StationInfoScreen() {
     }
     },[orderInitiated,orderPayLoad])
 
-    console.log(station)
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -180,19 +256,19 @@ export default function StationInfoScreen() {
                                 <Text style={styles.stationName}>{station?.username}</Text>
                                 {/* rating */}
                                 <TouchableOpacity style={styles.ratingContainer}>
+                                    <Text style={styles.ratingTxt}>{stationStats?.starsRating}</Text>
                                     <FontAwesome6 name="star" size={18} color="#ff6d1f"/>
-                                    <Text style={styles.ratingTxt}>{station?.rating}</Text>
                                 </TouchableOpacity>
                             </View>
                             {/* likes */}
                             <View style={styles.likesContainer}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={handleLikeStation}>
                                     <FontAwesome6 name="thumbs-up" size={18} color="#ff6d1f"/>
-                                    <Text>{200}</Text>
+                                    <Text>{stationStats?.likes || 0}</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={handleDisLikeStation}>
                                     <FontAwesome6 name="thumbs-down" size={18} color="red"/>
-                                    <Text>{20}</Text>
+                                    <Text>{stationStats?.dislikes || 0}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -217,14 +293,22 @@ export default function StationInfoScreen() {
                                     <Text style={styles.subTxt}>{station?.phoneNo}</Text>
                                 </View>
                             </View>
-
-                            <View style={styles.MetaInfo}>
-                                <FontAwesome6 name="clock" size={18} color="#ff6d1f"/>
-                                <View>
-                                    <Text>Opening</Text>
-                                    <Text style={styles.subTxt}>24/7</Text>
-                                </View>
+                        <View style={styles.MetaInfo2}>
+                            <FontAwesome6
+                            name={station?.isOpen ? "door-open" : "door-closed"}
+                            size={18}
+                            color={station?.isOpen ? "#28a745" : "#dc3545"}
+                            />
+                            <View>
+                                <Text style={{ fontWeight: "semibold" }}>
+                                    {station?.isOpen ? "Open Now" : "Closed"}
+                                </Text>
+                                <Text style={styles.subTxt}>
+                                    {station?.isOpen ? "We're currently serving customers" : "We'll be back soon"}
+                                </Text>
                             </View>
+                        </View>
+
                         </View>
                         {/* gas types */}
                         <View>
@@ -408,7 +492,8 @@ const styles=StyleSheet.create({
         color:'#525151'
     },
     MetaConatiner:{
-        flexDirection:'row',
+        flexDirection:'column',
+        gap:20,
         justifyContent:'space-between',
     },
     MetaInfo:{
@@ -417,6 +502,14 @@ const styles=StyleSheet.create({
         backgroundColor:'#E3E2E2',
         padding:10,
         width:'43%',
+        borderRadius:10
+    },
+        MetaInfo2:{
+        flexDirection:'row',
+        gap:20,
+        backgroundColor:'#E3E2E2',
+        padding:10,
+        width:'auto',
         borderRadius:10
     },
     gasContainer:{

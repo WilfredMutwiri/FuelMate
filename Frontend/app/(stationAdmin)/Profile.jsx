@@ -18,6 +18,7 @@ export default function Profile(){
     const [newFuelType, setNewFuelType] = useState('');
     const [newFuelPrice, setNewFuelPrice] = useState('');
     const [newService, setNewService] = useState('');
+    const [stationStats,setStationStats]=useState([])
 
 
     console.log(station.id)
@@ -154,6 +155,43 @@ const handleDeleteService = async (serviceToDelete) => {
   }
 };
 
+// close/open station
+const toggleOpenStatus = async () => {
+  try {
+    setLoading(true);
+    const response = await axios.patch(`${SERVER_URI}/api/v1/station/${station.id}/toggle-open`);
+    ToastComponent("success", response.data.message);
+
+    // Refresh stationData
+    const updatedStation = await axios.get(`${SERVER_URI}/api/v1/station/${station.id}`);
+    setStationData(updatedStation.data.station);
+  } catch (error) {
+    ToastComponent("error", error.response?.data?.message || "Could not toggle open status");
+  } finally {
+    setLoading(false);
+  }
+};
+
+//fetching the station stats-likes-dislikes
+    useEffect(() => {
+        const getStationStats = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`${SERVER_URI}/api/v1/station/${station.id}/stats`);
+                const result = response.data;
+                if (result.success) {
+                    setStationStats(result);
+                }
+            }
+            catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        getStationStats();
+    },[station.id])
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView
@@ -176,9 +214,68 @@ const handleDeleteService = async (serviceToDelete) => {
                         </View>
                         {/* status container */}
                         <View style={styles.statusContainer}>
-                            <Text style={styles.statusTxt}>Status <Text style={styles.subTitle}>Approved</Text></Text>
+                            <Text style={styles.statusTxt}>Status <Text style={styles.subTitle}>{stationData?.status}</Text></Text>
+                            {
+                            stationData?.status === "Approved" ? null : (
+                            
+                            <Text style={{ color: "red", marginTop: 10 }}>
+                                To have your station approved and visible to users, please ensure you’ve added{' '}
+                                <Text style={{ fontWeight: 'bold' }}>at least one fuel type with a valid price</Text> and{' '}
+                                <Text style={{ fontWeight: 'bold' }}>a valid business registration certificate</Text>.
+                            </Text>
+                            )}
                         </View>
+
+                        {/* station open/close status */}
+                        <View style={styles.MetaInfo2}>
+                        <FontAwesome6
+                            name={stationData?.isOpen ? "door-open" : "door-closed"}
+                            size={18}
+                            color={stationData?.isOpen ? "#28a745" : "#dc3545"}
+                            style={{ marginRight: 10 }}
+                        />
+                        <View>
+                        <Text style={{ fontWeight: "600", fontSize: 16 }}>
+                            {stationData?.isOpen ? "Open Now" : "Closed"}
+                        </Text>
+                        <Text style={styles.subTxt}>
+                            {stationData?.isOpen ? "We're currently serving customers" : "We'll be back soon"}
+                        </Text>
+                        </View>
+                    </View>
+
+                    {/* close/open station */}
+                    <TouchableOpacity
+                        style={{
+                        backgroundColor: stationData?.isOpen ? '#dc3545' : '#28a745',
+                        padding: 12,
+                        borderRadius: 8,
+                        marginTop: 10,
+                        marginBottom:10,
+                        alignItems: 'center'
+                    }}
+                        onPress={toggleOpenStatus}
+                    >
+                        <Text style={{ color: 'white', fontWeight: 'bold' }}>
+                            {stationData?.isOpen ? "Close Station" : "Open Station"}
+                        </Text>
+                    </TouchableOpacity>
                         {/* data section */}
+                        {/* ratings */}
+                        <View style={styles.likesContainer}>
+                            <View style={styles.ratingContainer}>
+                                <Text style={styles.ratingTxt}>{stationStats.starsRating}</Text>
+                                <FontAwesome6 name="star" size={18} color="#ff6d1f"/>
+                            </View>
+                            <View style={styles.ratingContainer}>
+                                <FontAwesome6 name="thumbs-up" size={18} color="#ff6d1f"/>
+                                <Text>{stationStats.likes || 0}</Text>
+                            </View>
+                            <View style={styles.ratingContainer}>
+                                <FontAwesome6 name="thumbs-down" size={18} color="red"/>
+                                <Text>{stationStats.dislikes || 0}</Text>
+                                </View>
+                            </View>
                         <View>
                             <View style={styles.dataContainer}>
                                 <Text style={styles.label}>Phone Number</Text>
@@ -252,7 +349,7 @@ const handleDeleteService = async (serviceToDelete) => {
                                         value={String(item.price)}
                                         onChangeText={(text) => {
                                         const updatedFuel = [...stationData.fuel];
-                                        updatedFuel[index].price = parseFloat(text);
+                                        updatedFuel[index].price = text === '' ? '' : parseFloat(text);
                                         setStationData({ ...stationData, fuel: updatedFuel });
                                         }}
                                         />
@@ -375,18 +472,15 @@ const styles=StyleSheet.create({
     },
     BTNsContainer:{
         flexDirection:'column',
-        alignItems:'center',
         justifyContent:'center',
         marginTop:20,
         justifyContent:'space-between',
-        marginTop:"50%"
+        marginTop:"10%"
     },
     signoutBtn:{
         backgroundColor:'#E42629',
-        width:'85%',
-        alignSelf:'center',
+        width:'45%',
         padding:13,
-        marginTop:10,
         borderRadius:10,
         flexDirection:'row',
         justifyContent:'space-between',
@@ -407,7 +501,7 @@ const styles=StyleSheet.create({
     },
     statusContainer:{
         alignItems:'center',
-        paddingBottom:10
+        paddingBottom:15
     },
     priceInput: {
     borderWidth: 1,
@@ -430,4 +524,15 @@ deleteText: {
     paddingHorizontal: 10,
     paddingVertical: 4
 },
+likesContainer:{
+    flexDirection:'row',
+    gap:20,
+    paddingTop:10,
+    paddingBottom:10,
+    alignSelf:'center'
+},
+ratingContainer:{
+    flexDirection:'row',
+    gap:5
+}
 })

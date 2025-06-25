@@ -29,7 +29,7 @@ useEffect(() => {
     const getAStations = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${SERVER_URI}/api/v1/Station/all`);
+            const response = await axios.get(`${SERVER_URI}/api/v1/Station/approved/`);
             const result = response.data;
             if (result.stations) {
                 setStations(result.stations);
@@ -153,14 +153,14 @@ useEffect(()=>{
                                                 <Text>{station?.username}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station?.rating || 1.5}</Text>
+                                                    <Text>{station?.starsRating || 0}</Text>
                                                 </View>
                                             </View>
                                             <View>
                                                 {
                                                     station?.fuel.map((fuelType, index) => (
                                                     <Text key={index}>
-                                                    {fuelType.type} : Ksh{parseFloat(fuelType.price).toFixed(2)} /Ltr
+                                                    {fuelType.type} : Ksh {parseFloat(fuelType.price).toFixed(2)} /Ltr
                                                     </Text>
                                                 ))
                                                 }
@@ -196,14 +196,14 @@ useEffect(()=>{
                                                 <Text>{station?.username}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station?.rating || 1.5}</Text>
+                                                    <Text>{station?.starsRating || 1.5}</Text>
                                                 </View>
                                             </View>
                                                 <View>
                                                 {
                                                     station?.fuel.map((fuelType, index) => (
                                                     <Text key={index}>
-                                                    {fuelType.type} : Ksh{parseFloat(fuelType.price).toFixed(2)} /Ltr
+                                                    {fuelType.type} : Ksh {parseFloat(fuelType.price).toFixed(2)} /Ltr
                                                     </Text>
                                                 ))
                                                 }
