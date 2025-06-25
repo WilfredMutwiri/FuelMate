@@ -7,6 +7,10 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Loader from '../../components/loader.jsx';
 
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { Alert,Platform } from 'react-native'
+
 export default function Orders(){
     const user=useAuthStore((state)=>state.user)
     const [customerData,setCustomerData]=useState(null);
@@ -67,6 +71,59 @@ useEffect(()=>{
 },[customerData])
 
 
+
+const handleReceiptDownload = async (orderId) => {
+  try {
+    const url = `${SERVER_URI}/api/v1/order/${orderId}/receipt`;
+    const fileUri = FileSystem.documentDirectory + `fuelmate_receipt_${orderId}.pdf`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/pdf',
+      },
+    });
+
+    const blob = await response.blob();
+
+    const reader = new FileReader();
+
+    // Set up the onloadend callback
+    reader.onloadend = async () => {
+      try {
+        const base64data = reader.result.split(',')[1];
+
+        // Save the base64 PDF to local file
+        await FileSystem.writeAsStringAsync(fileUri, base64data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        // Share or alert
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(fileUri);
+        } else {
+        ToastComponent("success","Receipt downloaded successfully!")
+        }
+      } catch (err) {
+        console.error("Error saving PDF:", err.message);
+        ToastComponent("error","Failed to save or share receipt")
+      }
+    };
+
+    reader.onerror = (err) => {
+      console.error("FileReader error:", err);
+      Alert.alert("Error", "Failed to read PDF blob.");
+    };
+
+    // Start reading the blob
+    reader.readAsDataURL(blob);
+
+  } catch (error) {
+    console.error("Receipt download failed:", error.message);
+    Alert.alert("Download Error", "Failed to generate or open the receipt.");
+  }
+};
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
             <ScrollView
@@ -102,6 +159,12 @@ useEffect(()=>{
                                         <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
                                     </View>
                                     <Text style={{paddingTop:4,color:'#05367C'}}>~emergency order~</Text>
+
+                                    <TouchableOpacity style={styles.BTNContainer} 
+                                        onPress={() => handleReceiptDownload(order._id)}
+                                    >
+                                        <Text style={styles.BTNTxt}>Download Receipt</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 ))
                             }
@@ -131,6 +194,12 @@ useEffect(()=>{
                                         <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
                                     </View>
                                     <Text style={{paddingTop:4,color:'#05367C'}}>~normal order~</Text>
+
+                                    <TouchableOpacity style={styles.BTNContainer} 
+                                        onPress={() => handleReceiptDownload(order._id)}
+                                    >
+                                        <Text style={styles.BTNTxt}>Download Receipt</Text>
+                                    </TouchableOpacity>
                                 </View>
                                 ))
                             }
@@ -171,5 +240,17 @@ const styles=StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.1)',
         borderRadius:10,
         padding:10
+    },
+        BTNContainer:{
+        backgroundColor:'#077E8C',
+        padding:6,
+        borderRadius:10,
+        width:"auto",
+        marginTop:10
+    },
+    BTNTxt:{
+        color:"#ffff",
+        textAlign:"center"
     }
+
 })
