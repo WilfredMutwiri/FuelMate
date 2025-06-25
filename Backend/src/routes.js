@@ -4,7 +4,7 @@ const { userSignin, userSignout, getUserInfo } = require("./controllers/auth/use
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
-const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations, deleteStation, getNearbyStations} = require("./controllers/auth/stationSignup.js");
+const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations, deleteStation, getNearbyStations, updateStationFuel, addStationService, deleteStationService} = require("./controllers/auth/stationSignup.js");
 const {fileUpload} = require("./controllers/auth/fileUpload.js");
 const {profileUpload,certUpload} = require("./middlewares/multer.js");
 const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer, getDeliveredOrdersByStation, getCanceledOrdersByStation, getApprovedOrdersByStation, getTotalAmountByStation, getTotalVolumeDeliveredByStation, getOrdersByMonth } = require("./controllers/auth/order.js");
@@ -35,6 +35,10 @@ router.get('/station/all',getAllStations)
 router.get('/station/:id',getStationById)
 router.patch('/station/update/:id',updateStationStatus);
 router.delete('/station/delete/:id',deleteStation);
+router.patch("/station/:id/update-fuel", updateStationFuel);
+router.patch('/station/:id/add-service', addStationService);
+router.patch('/station/:id/delete-service', deleteStationService);
+
 
 // file uploads
 router.post('/upload/images/',profileUpload.single('file'),fileUpload);

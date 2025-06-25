@@ -29,7 +29,8 @@ fuel:[
         type:{
             type:String,
             required:false,
-            enum:['petrol', 'diesel', 'gasoline', 'kerosene']
+            enum: ['petrol', 'diesel', 'kerosene', 'lpg', 'cng', 'electric', 'biodiesel', 'ethanol'],
+            set: v => v.trim().toLowerCase()
         },
         price:{
             type:Number,

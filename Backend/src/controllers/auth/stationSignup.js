@@ -27,6 +27,7 @@ const stationSignup=async(req,res)=>{
         }=req.body;
         
         username=username.trim().toLowerCase();
+        fuel=fuel.trim().toLowerCase();
 
         if(!(username && email && password && phoneNo)){
             return res.status(400).json({message: 'All fields are required'});
@@ -256,6 +257,105 @@ const getNearbyStations = async (req, res) => {
   }
 };
 
+// update/add an new fuel type  and price
+const updateStationFuel = async (req, res) => {
+    const { id } = req.params;
+    const { fuel } = req.body;
+
+    if (!fuel || !Array.isArray(fuel)) {
+        return res.status(400).json({ message: "Fuel data must be an array." });
+    }
+
+    try {
+        const station = await Station.findById(id);
+        if (!station) {
+            return res.status(404).json({ message: "Station not found" });
+        }
+
+        // Overwrite the entire fuel array with what's sent from frontend
+
+        station.fuel = fuel;
+        await station.save();
+
+        return res.status(200).json({
+            message: "Fuel types updated successfully",
+            fuel: station.fuel,
+            success: true
+        });
+    } catch (error) {
+        console.error("Fuel update error:", error.message);
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// update station services
+const addStationService = async (req, res) => {
+    const { id } = req.params;
+    const { services } = req.body;
+
+    if (!Array.isArray(services)) {
+        return res.status(400).json({ message: "Services must be an array." });
+    }
+
+    try {
+        const station = await Station.findById(id);
+        if (!station) {
+            return res.status(404).json({ message: "Station not found" });
+        }
+
+        const currentServices = station.services || [];
+
+        // Merge and deduplicate
+        const updatedServices = Array.from(new Set([...currentServices, ...services.map(s => s.trim().toLowerCase())]));
+
+        station.services = updatedServices;
+        await station.save();
+
+        res.status(200).json({
+            message: "Services updated successfully",
+            services: station.services,
+            success: true
+        });
+    } catch (error) {
+        console.error("Add service error:", error.message);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// delete station service
+const deleteStationService = async (req, res) => {
+    const { id } = req.params;
+    const { services } = req.body;
+
+    if (!Array.isArray(services)) {
+        return res.status(400).json({ message: "Services must be an array." });
+    }
+
+    try {
+        const station = await Station.findById(id);
+        if (!station) {
+            return res.status(404).json({ message: "Station not found" });
+        }
+
+        const updatedServices = station.services.filter(
+            s => !services.map(item => item.trim().toLowerCase()).includes(s.toLowerCase())
+        );
+
+        station.services = updatedServices;
+        await station.save();
+
+        res.status(200).json({
+            message: "Service(s) deleted successfully",
+            services: station.services,
+            success: true
+        });
+    } catch (error) {
+        console.error("Delete service error:", error.message);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
 module.exports={
     stationSignup,
     getAllStations,
@@ -265,5 +365,8 @@ module.exports={
     updateStationStatus,
     getAllApprovedStations,
     getAllNotApprovedStations,
-    getNearbyStations
+    getNearbyStations,
+    updateStationFuel,
+    addStationService,
+    deleteStationService
 }
