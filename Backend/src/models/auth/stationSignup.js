@@ -42,9 +42,21 @@ services:{
     type:Array,
     required:true
 },
-rating:{
-    type:Number,
-    required:false
+likedBy: [
+    { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: []
+    }],
+dislikedBy: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: []
+    }],
+starsRating: {
+    type: Number,
+    default: 0
 },
 RegNo:{
     type:String,
@@ -90,6 +102,10 @@ location: {
         type: [Number],
         required: true 
     }
+},
+isOpen: {
+  type: Boolean,
+  default: true,
 },
 createdAt:{
     type:Date,

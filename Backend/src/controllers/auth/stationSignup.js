@@ -13,7 +13,6 @@ const stationSignup=async(req,res)=>{
             town,
             fuel,
             services,
-            rating,
             location, 
             RegNo,
             physicalAddress,
@@ -27,7 +26,6 @@ const stationSignup=async(req,res)=>{
         }=req.body;
         
         username=username.trim().toLowerCase();
-        fuel=fuel.trim().toLowerCase();
 
         if(!(username && email && password && phoneNo)){
             return res.status(400).json({message: 'All fields are required'});
@@ -58,7 +56,6 @@ const stationSignup=async(req,res)=>{
             town,
             fuel:fuelData,
             services,
-            rating,
             location,
             RegNo,
             physicalAddress,
@@ -243,6 +240,7 @@ const getNearbyStations = async (req, res) => {
           $maxDistance: 10000, // 10km
         },
       },
+        status: "Approved",
     });
 
     return res.status(200).json({ 
@@ -355,6 +353,156 @@ const deleteStationService = async (req, res) => {
     }
 };
 
+// feedback -like, dislikes, stars for a station
+// function to automatically calculate stars based on likes
+function calculateStarsFromLikes(likesCount) {
+    if (likesCount >= 400) return 5;
+    if (likesCount >= 300) return 4;
+    if (likesCount >= 200) return 3;
+    if (likesCount >= 100) return 2;
+    return 1;
+}
+
+// get the statisticts
+const getStationStats = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const station = await Station.findById(id);
+        if (!station) return res.status(404).json({ message: "Station not found" });
+
+        return res.status(200).json({
+            likes: station.likedBy.length,
+            dislikes: station.dislikedBy.length,
+            starsRating: station.starsRating,
+            success: true
+        });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+};
+
+// like station
+const likeStation = async (req, res) => {
+    const { stationId, userId } = req.params;
+
+    try {
+        const station = await Station.findById(stationId);
+        if (!station) return res.status(404).json({
+            message: "Station not found",
+            success:false
+        });
+
+        if (station.likedBy.includes(userId)) {
+            return res.status(400).json({ 
+                message: "You already liked this station",
+                success:false
+            });
+        }
+
+        // Remove from dislikes
+        station.dislikedBy = station.dislikedBy.filter(id => id.toString() !== userId);
+
+        // Add to likes
+        station.likedBy.push(userId);
+
+        // Calculate new stars rating based on likes
+        const newLikesCount = station.likedBy.length;
+        station.starsRating = calculateStarsFromLikes(newLikesCount);
+
+        await station.save();
+
+        return res.status(200).json({
+            message: "Station liked successfully",
+            likes: newLikesCount,
+            starsRating: station.starsRating,
+            success:true
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message,
+            success:false
+        });
+    }
+};
+
+
+// dislike a station
+const dislikeStation = async (req, res) => {
+    const { stationId, userId } = req.params;
+
+    try {
+        const station = await Station.findById(stationId);
+        if (!station) return res.status(404).json({
+            message: "Station not found",
+            success:false
+        });
+
+        if (station.dislikedBy.includes(userId)) {
+            return res.status(400).json({
+                message: "You already disliked this station",
+                success:false
+            });
+        }
+
+        // Remove from likes
+        station.likedBy = station.likedBy.filter(id => id.toString() !== userId);
+
+        // Add to dislikes
+        station.dislikedBy.push(userId);
+
+        // Recalculate stars rating based on reduced likes
+        const newLikesCount = station.likedBy.length;
+        station.starsRating = calculateStarsFromLikes(newLikesCount);
+
+        await station.save();
+
+        return res.status(200).json({
+            message: "Station disliked!",
+            dislikes: station.dislikedBy.length,
+            starsRating: station.starsRating,
+            success:true
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message,
+            success:true
+        });
+    }
+};
+
+
+// toggle between opening and closing a station
+const toggleStationOpenStatus = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const station = await Station.findById(id);
+    if (!station) {
+      return res.status(404).json({
+        message: "Station not found",
+        success: false,
+    });
+    }
+
+    // Toggle the isOpen status
+    station.isOpen = !station.isOpen;
+    await station.save();
+
+    return res.status(200).json({
+      message: `Station is now ${station.isOpen ? "Open" : "Closed"}`,
+      isOpen: station.isOpen,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error toggling station open status:", error.message);
+    return res.status(500).json({ 
+        message: "Server error",
+        success: false 
+    });
+  }
+};
+
 
 module.exports={
     stationSignup,
@@ -368,5 +516,9 @@ module.exports={
     getNearbyStations,
     updateStationFuel,
     addStationService,
-    deleteStationService
+    deleteStationService,
+    getStationStats,
+    likeStation,
+    dislikeStation,
+    toggleStationOpenStatus
 }
