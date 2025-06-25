@@ -159,6 +159,7 @@ export default function StationInfoScreen() {
     }
     },[orderInitiated,orderPayLoad])
 
+    console.log(station)
 
   return (
     <SafeAreaView style={styles.container} edges={['left','right']}>
@@ -228,9 +229,10 @@ export default function StationInfoScreen() {
                         {/* gas types */}
                         <View>
                             <Text style={styles.headingTxt}>Available Gas Types</Text>
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View style={styles.gasContainer}>
                                 {
-                                    station?.fuel.map((fuelType,index)=>(
+                                    station?.fuel?.map((fuelType,index)=>(
                                         <TouchableOpacity key={index} style={styles.gas}>
                                             <Text>{fuelType.type}</Text>
                                             <Text style={styles.subTxt}>Ksh {parseFloat(fuelType.price).toFixed(2)} /Ltr</Text>
@@ -238,19 +240,22 @@ export default function StationInfoScreen() {
                                     ))
                                 }
                             </View>
+                            </ScrollView>
                         </View>
                         {/* services */}
-                        <View>
+                        <View style={{width:"100%"}}>
                             <Text style={styles.headingTxt}>Services Offered</Text>
-                            <View style={styles.gasContainer}>
+                            <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={styles.servicesContainer}>
                                 {
-                                    station?.services.map((service,index)=>(
+                                    station?.services?.map((service,index)=>(
                                         <TouchableOpacity key={index} style={styles.services}>
-                                            <Text>{service.name}</Text>
+                                            <Text>{service}</Text>
                                         </TouchableOpacity>
                                     ))
                                 }
                             </View>
+                            </ScrollView>
                         </View>
                         {/* lowerInfo */}
                         <View style={styles.lowerInfoContainer}>
@@ -418,11 +423,21 @@ const styles=StyleSheet.create({
         flexDirection:'row',
         paddingTop:10,
         gap:40,
+        paddingLeft:10,
+        paddingRight:10
+    },
+        servicesContainer:{
+        flexDirection:'row',
+        paddingTop:10,
+        gap:40,
+        paddingLeft:10,
+        paddingRight:10,
+        width:"auto",
     },
     services:{
     backgroundColor:'#E3E2E2',
     padding:5,
-    width:"25%",
+    width:"auto",
     alignItems:'center',
     borderRadius:10,
     },
