@@ -1,5 +1,7 @@
 const Station = require("../models/auth/stationSignup");
 const EmergencyOrder = require("../models/emergencyOrder");
+const { generateOrderReceiptPdf } = require('./generateOrderReceipt');
+const Order=require("../models/ordersModel.js");
 
 const createEmergencyOrder = async (req, res) => {
   const {userId}=req.params;
@@ -323,6 +325,47 @@ const getEmergencyOrdersForUser = async (req, res) => {
   }
 };
 
+
+// generate order receipt
+const generateReceipt=async(req,res)=>{
+  try {
+    const {orderId}=req.params
+    let order = await Order.findById(orderId)
+      .populate('customer')
+      .populate('station');
+
+      if (!order){
+        order = await EmergencyOrder.findById(orderId)
+        .populate('user')
+        .populate('assignedStation');
+      };
+
+      if(!order){
+        return res.status(404).json({
+         message: 'Order not found',
+         success:false
+        });
+      }
+
+      const pdfBuffer = await generateOrderReceiptPdf(
+        order, 
+        order.customer || order.user,
+        order.station || order.assignedStation
+      );
+      
+      res.set({
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': `attachment; filename=order_${order._id}_receipt.pdf`,
+      });
+
+      res.send(pdfBuffer);
+        
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Failed to generate receipt' });
+    }
+}
+
 module.exports={
   createEmergencyOrder,
   getAllEmergencyRequests,
@@ -331,5 +374,6 @@ module.exports={
   reassignEmergencyOrder,
   getEmergencyOrdersByStatus,
   getEmergencyOrdersForStation,
-  getEmergencyOrdersForUser
+  getEmergencyOrdersForUser,
+  generateReceipt
 }

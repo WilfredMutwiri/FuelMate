@@ -11,9 +11,11 @@ const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation,
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
 const { adminSignin } = require("./controllers/auth/adminSignin.js");
-const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus, getEmergencyOrdersForStation, getEmergencyOrdersForUser } = require("./controllers/emergencyRequest.js");
-// const fileUpload = require("./fileUpload.js");
+const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus, getEmergencyOrdersForStation, getEmergencyOrdersForUser, generateReceipt } = require("./controllers/emergencyRequest.js");
 const router=express.Router();
+
+// generate order receipts
+router.get('/order/:orderId/receipt',generateReceipt)
 
 //auth
 router.post('/user/signup/',userSignup);
