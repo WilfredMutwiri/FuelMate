@@ -109,7 +109,7 @@ const OrderDetails=()=>{
                     <li>Station Name: <span className="demographyLi">{Order?.order?.assignedStation?.stationName}</span></li>
                     <li>Station Phone No: <span className="demographyLi">{Order?.order?.assignedStation?.phoneNo}</span></li>
                     <li>Station Location: <span className="demographyLi">{Order?.order?.assignedStation?.county} - {Order?.order?.assignedStation?.town}</span></li>
-                    <li>Station Email: <span className="demographyLi">{Order?.order?.assignedStation?.email} L</span></li>
+                    <li>Station Email: <span className="demographyLi">{Order?.order?.assignedStation?.email}</span></li>
                 </ul>
                 </div>
                 </div>
