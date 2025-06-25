@@ -12,6 +12,8 @@ const StationDetails=()=>{
     const [station,setStation]=useState(null);
     const [loading,setIsLoading]=useState(true);
     const [error,setError]=useState(null);
+    const [stationStats,setStationStats]=useState([])
+    
 
     useEffect(()=>{
         const fetchStationDetails=async()=>{
@@ -80,6 +82,31 @@ const StationDetails=()=>{
         }
     }
 
+    //fetching the station stats-likes-dislikes
+        useEffect(() => {
+            const getStationStats = async () => {
+                try {
+                    setIsLoading(true);
+                    const res = await fetch(`${SERVER_URL}/api/v1/station/${id}/stats`, {
+                        method: 'GET',
+                    });
+                    const data = await res.json();
+                    console.log("data is",data)
+                    if (res.ok) {
+                        setStationStats(data);
+                    }
+                }
+                catch (error) {
+                    console.error(error);
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+            getStationStats();
+        },[id])
+
+        console.log("station stats",stationStats.starsRating)
+
     if(loading) return (
         <div className="  w-80 mx-auto flex gap-4">
         <p>{<Spinner/>}</p>
@@ -144,9 +171,18 @@ const StationDetails=()=>{
                 <li>Station Phone No: <span className="demographyLi">{station?.station?.phoneNo}</span></li>
                 <li>Physical Address : <span className="demographyLi">{station?.station?.physicalAddress}</span></li>
                 <li>Registered At: <span className="demographyLi">{station?.station?.createdAt}</span></li>
-                <li>Station Rating: <span className="demographyLi">{station?.station?.rating}</span></li>
+                <li>Station Rating: <span className="demographyLi">{station?.station?.rating}</span>
+                    <ul>
+                        <li>Stars Rating <span className="demographyLi">{stationStats?.starsRating} out of 5</span></li>
+                        <li>Total Likes <span className="demographyLi"> {stationStats?.likes || 0}</span></li>
+                        <li>Total Dislikes<span className="demographyLi"> {stationStats?.dislikes || 0}</span></li>
+                    </ul>
+                </li>
                 <li>Station Status: <span className="demographyLi">{station?.station?.status}</span></li>
             </ul>
+            <div className="pt-16">
+                <h2>The Station is currently <span className="text-cyan-700">{station?.station?.isOpen ? "Open!" : "Closed!"}</span></h2>
+            </div>
             </div>
             </div>
             <div>
