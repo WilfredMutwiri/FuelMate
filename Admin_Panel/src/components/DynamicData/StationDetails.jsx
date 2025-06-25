@@ -111,7 +111,7 @@ const StationDetails=()=>{
                             station.station.fuel.map((f) => (
                             <li key={f._id}>
                                 <span className="demographyLi">
-                                {f.type?.toUpperCase()} - KES {f.price}
+                                {f.type?.toLowerCase()} - Ksh: {f.price}
                                 </span>
                             </li>
                         ))
@@ -128,7 +128,7 @@ const StationDetails=()=>{
                             station.station?.services?.map((s) => (
                             <li key={s._id}>
                                 <span className="demographyLi">
-                                {s.name?.toUpperCase()} - KES {s.price}
+                                {s?.toLowerCase()}
                                 </span>
                             </li>
                         ))
