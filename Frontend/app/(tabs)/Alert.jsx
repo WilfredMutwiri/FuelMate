@@ -1,4 +1,4 @@
-import {View,Text,StyleSheet, ScrollView,TextInput, TouchableOpacity} from 'react-native'
+import {View,Text,StyleSheet, ScrollView,TextInput, TouchableOpacity,Modal,TouchableWithoutFeedback} from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import useAuthStore from '../../zustand/store.jsx';
 import React,{useState,useEffect} from 'react'
@@ -8,6 +8,7 @@ import axios from 'axios'
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { KeyboardAvoidingView, Platform } from 'react-native';
+import Loader from '../../components/loader.jsx';
 
 export default function Alert(){
     const router=useRouter();
@@ -16,6 +17,10 @@ export default function Alert(){
     const [nearbyStations,setNearbyStations]=useState([]);
     const [location,setLocation]=useState(null);
     const [locationName,setLocationName]=useState(null);
+    const [modalOpen,setModalOpen]=useState(false);
+    const [sendingSmS,setSendingSmS]=useState(false);
+    const [adminNo,setAdminNo]=useState(null)
+
     
 
     const [formData,setFormData]=useState({
@@ -164,6 +169,87 @@ export default function Alert(){
         }
     }
 
+    // get admin info
+useEffect(() => {
+  const getAdminInfo = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URI}/api/v1/users/admins`);
+      const data = response.data;
+
+      if (data.success && data.adminsInfo.length > 0) {
+        let rawPhone = data.adminsInfo[0].phoneNo.toString();
+
+        // format to +254
+        if (!rawPhone.startsWith('+')) {
+          rawPhone = `+254${rawPhone.replace(/^0+/, '')}`;
+        }
+
+        console.log("Formatted admin number:", rawPhone);
+
+        setAdminNo(rawPhone);
+
+        setFormData2(prev => ({
+          ...prev,
+          phoneNo: rawPhone
+        }));
+      }
+    } catch (error) {
+      console.log("Failed to fetch admin info:", error.message);
+    }
+  };
+
+  getAdminInfo();
+}, []);
+
+
+
+    // sms formdata
+    const fullPhoneNumber = "+254770250898";
+
+    console.log("admin number is ",adminNo)
+
+    const [formData2,setFormData2]=useState({
+        message:'',
+        phoneNo:'0775720540'
+    })
+
+    const handleInputChange2 = (name, value) => {
+        setFormData2(prev => ({
+        ...prev,
+        [name]: value,
+    }));
+};
+
+// handle sms sending
+const handleSmsSending=async(req,res)=>{
+      setSendingSmS(true);
+      console.log("sending sms initiated")
+      try {
+        console.log("sending sms now!")
+        const response=await axios.post(`${SERVER_URI}/api/v1/user/send-sms/`,{
+            ...formData2
+        })
+        
+        const result=response.data;
+        if(result.status==="Success"){
+            console.log("sms sent")
+            setModalOpen(false);
+            ToastComponent("success","Message sent successfully!")
+        }else{
+            console.log("An error occured")
+
+        }
+
+      } catch (error) {
+        console.log(error)
+        ToastComponent("error",error.message)
+      }finally{
+        setSendingSmS(false)
+      }
+
+}
+
+
     return(
         <SafeAreaView style={styles.container} edges={['left','right']}>
         <KeyboardAvoidingView
@@ -235,7 +321,55 @@ export default function Alert(){
                         >
                             <Text style={styles.btnTxt}>Order Now!</Text>
                         </TouchableOpacity>
+
+                        {/* initiate sending admin offline sms */}
+                        <TouchableOpacity style={styles.submitBtn} 
+                        onPress={()=>setModalOpen(!modalOpen)}
+                        >
+                            <Text style={styles.btnTxt}>Send offline message to support</Text>
+                        </TouchableOpacity>
                     </View>
+
+                    {/* modal section */}
+
+                    <Modal
+                        visible={modalOpen}
+                        animationType='slide'
+                        transparent={true}
+                        onRequestClose={()=>setModalOpen(!modalOpen)}
+                        >
+                        <TouchableWithoutFeedback onPress={()=>setModalOpen(!modalOpen)}>
+                            <View style={styles.modalOverlay}>
+                                <View>
+                                    {
+                                        sendingSmS?(
+                                        <View style={{flexDirection:'column'}}>
+                                                <Loader/>
+                                                <Text style={{color:"#ff6d1f",textAlign:"center",paddingTop:20}}>Sending Message...Please wait!</Text>
+                                        </View>
+                                        ):(
+                                            <Text>Message sent</Text>
+                                        )
+                                    }
+                                    <Text style={styles.modalText}>Send Offline Message</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={formData2.message}
+                                        onChangeText={(text)=>handleInputChange2('message',text)}
+                                        placeholder='Hello support, I need fuel Immediately...'
+                                        multiline
+                                        numberOfLines={40}
+                                        maxLength={500}
+                                    />
+                                <TouchableOpacity style={styles.submitBtn} 
+                                onPress={handleSmsSending}
+                                >
+                                    <Text style={styles.btnTxt}>Send Message</Text>
+                                </TouchableOpacity>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                        </Modal>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -289,5 +423,31 @@ const styles=StyleSheet.create({
     btnTxt:{
         textAlign:'center',
         color:'#ffff'
-    }
+    },
+    modalOverlay: {
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    width:"90%",
+    alignSelf:"center",
+    borderRadius:10,
+    height:450,
+    padding:20,
+    marginTop:100,
+    paddingTop:40
+  },
+    modalText: {
+    fontSize: 18,
+    fontWeight: '500',
+    marginBottom: 10,
+    color:"#ffff",
+    textAlign:'center',
+    paddingTop:10
+  },
+  input:{
+    backgroundColor:"#ffff",
+    marginTop:10,
+    borderRadius:10,
+    height:180,
+    marginBottom:15,
+    textAlignVertical: 'top',
+},
 })

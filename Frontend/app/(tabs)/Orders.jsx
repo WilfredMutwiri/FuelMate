@@ -24,7 +24,6 @@ export default function Orders(){
     // get all user's normal orders
     const getOrders = async () => {
         try {
-            console.log("initiating orders fetch")
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/order/customer/${user.id}`);
             // console.log("order response",response)
@@ -45,7 +44,6 @@ export default function Orders(){
     // get all user's emergency orders
     const getEmergencyOrders = async () => {
         try {
-            console.log("initiating emergency orders fetch")
             setLoading(true);
             const response = await axios.get(`${SERVER_URI}/api/v1/order/emergency/user/${user.id}`);
             const result = response.data;
