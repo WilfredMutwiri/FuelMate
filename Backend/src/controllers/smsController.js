@@ -12,9 +12,26 @@ const sms=AfricasTalking.SMS;
 // send sms
 const sendSMS=async(req,res)=>{
     try{
-        const {phoneNo,message}=req.body;
+        let {phoneNo,message}=req.body;
+        console.log("phone number is",phoneNo)
+        if (!phoneNo || !message) {
+        console.log("Phone number and message are required.")
+        return res.status(400).json({
+            status: "failed",
+            message: "Phone number and message are required."
+            });
+        }
+        // Ensure string and proper format
+        phoneNo = phoneNo.toString().trim();
+
+        if (!phoneNo.startsWith('+')) {
+            phoneNo = '+254' + phoneNo.replace(/^0+/, '');
+        }
+
+        console.log("Sending SMS to:", phoneNo);
+
         const smsResponse=await sms.send({
-            to:phoneNo,
+            to:[phoneNo],
             message:message,
             enqueue:true
         });
