@@ -1,6 +1,7 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const User=require("../../models/auth/userSignupModel");
+const Admin=require('../../models/auth/adminModel');
 
 const userSignin=async(req,res)=>{
 
@@ -82,8 +83,37 @@ const userSignout=(req,res)=>{
     }
 }
 
+// get Admin info
+const getAdmins=async(req,res)=>{
+    try {
+        
+        const admin = await Admin.findOne().sort({ _id: 1 })
+        
+        if(!admin){
+            return res.status(404).json({
+                message:"No admin found",
+                success:false
+            });
+        }
+
+        return res.status(200).json({
+            message:"Admins Info Fetched Successfully!",
+            success:true,
+            adminsInfo:admin
+        })
+
+    } catch (error) {
+        return res.status(500).json({
+            message:"Error fetching admins",error,
+            success:false
+        })
+        
+    }
+}
+
 module.exports={
     userSignin,
     userSignout,
-    getUserInfo
+    getUserInfo,
+    getAdmins
 }

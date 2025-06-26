@@ -3,7 +3,7 @@ const Admin=require('../../models/auth/adminModel');
 
 const adminSignup=async(req,res)=>{
     try {
-        let {email,username,password}=req.body;
+        let {email,username,password,phoneNo}=req.body;
 
         email=email.trim().toLowerCase();
         username=username.trim().toLowerCase();
@@ -29,6 +29,7 @@ const adminSignup=async(req,res)=>{
             email,
             password:hashedPassword,
             username,
+            phoneNo,
             role:"admin"
         })
 

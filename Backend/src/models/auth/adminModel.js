@@ -15,6 +15,10 @@ password:{
     type:String,
     required:true
 },
+phoneNo:{
+    type:Number,
+    required:true
+},
 role:{
     type:String,
     default:"admin",

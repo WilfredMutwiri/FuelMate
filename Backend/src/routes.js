@@ -1,6 +1,6 @@
 const express=require("express");
 const { userSignup } = require("./controllers/auth/userSignup.js");
-const { userSignin, userSignout, getUserInfo } = require("./controllers/auth/userSignin.js");
+const { userSignin, userSignout, getUserInfo, getAdmins } = require("./controllers/auth/userSignin.js");
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
@@ -12,11 +12,17 @@ const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js"
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
 const { adminSignin } = require("./controllers/auth/adminSignin.js");
 const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus, getEmergencyOrdersForStation, getEmergencyOrdersForUser, generateReceipt } = require("./controllers/emergencyRequest.js");
+const { sendSMS } = require("./controllers/smsController.js");
 const router=express.Router();
+
+// sms
+router.post('/user/send-sms/',sendSMS);
 
 // generate order receipts
 router.get('/order/:orderId/receipt',generateReceipt)
 
+// get admins
+router.get('/users/admins/',getAdmins)
 //auth
 router.post('/user/signup/',userSignup);
 router.post('/user/signin/',userSignin);
