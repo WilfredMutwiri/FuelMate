@@ -6,14 +6,12 @@ import NavBar from "./components/NavBar"
 import Footer from "./components/FooterComp"
 import Landing from "./components/Landing"
 
-import EmergencyRequests from "./components/Manage_Database/EmergencyRequests"
+import EmergencyRequests from "./components/Manage_Database/EmergencyRequests";
+import AllNormalOrders from "./components/Manage_Database/AllNormalOrders";
 import ApprovedStations from "./components/Manage_Database/ApprovedStations"
 import RegisteredStations from "./components/Manage_Database/RegisteredStations"
 import PendingApprovals from "./components/Manage_Database/PendingApprovals"
-import Statistics from "./components/Manage_Database/Statistics"
 
-import TeachersSquare from "./components/Messages/TeachersSquare"
-import About from "./components/About"
 import OrderDetails from "./components/DynamicData/EmergencyOrderDetails"
 import StationDetails from "./components/DynamicData/StationDetails"
 
@@ -49,16 +47,12 @@ function App() {
         <Route path="/RejectedEmergencyRequests" element={<RejectedEmergencyRequests/>}/>
         <Route path="/PendingEmergencyRequests" element={<PendingEmergencyRequests/>}/>
         <Route path="/AcceptedEmergencyRequests" element={<AcceptedEmergencyRequests/>}/>
+        <Route path="/AllNormalOrders" element={<AllNormalOrders/>}/>
 
 
         <Route path="/ApprovedStations" element={<ApprovedStations/>}/>
         <Route path="/RegisteredStations" element={<RegisteredStations/>}/>
         <Route path="/PendingApprovals" element={<PendingApprovals/>}/>
-        <Route path="/statistics" element={<Statistics/>}/>
-
-        <Route path="/teachersSquare" element={<TeachersSquare/>}/>
-        <Route path="/about" element={<About/>}/>
-
         {/* dynamic routes */}
         <Route path="/order/:id" element={<OrderDetails/>}/>
         <Route path="/station/:id" element={<StationDetails/>}/>

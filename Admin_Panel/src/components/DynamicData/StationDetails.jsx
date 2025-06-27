@@ -13,8 +13,8 @@ const StationDetails=()=>{
     const [loading,setIsLoading]=useState(true);
     const [error,setError]=useState(null);
     const [stationStats,setStationStats]=useState([])
-    
-
+    const [deliveredOrders,setDeliveredOrders]=useState(0)
+    const [totalSales,setTotalSales]=useState(0)
     useEffect(()=>{
         const fetchStationDetails=async()=>{
             try {
@@ -82,6 +82,53 @@ const StationDetails=()=>{
         }
     }
 
+
+    // station orders
+    useEffect(() => {
+        const getDeliveredOrders = async () => {
+        if (!id) {
+        console.log("station ID not yet available");
+        return;
+        }
+    
+        try {
+            setIsLoading(true);
+            const res = await fetch(`${SERVER_URL}/api/v1/order/delivered/station/${id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setDeliveredOrders(data.totalOrders);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }};
+        getDeliveredOrders();
+    }, []);
+    
+// get total station sales
+        useEffect(() => {
+        const getStationSales = async () => {
+
+        try {
+            setIsLoading(true);
+            const res = await fetch(`${SERVER_URL}/api/v1/order/revenue/station/${id}`, {
+                method: 'GET',
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setTotalSales(data.totalAmount);
+            }
+        }
+        catch (error) {
+            console.log("an error occured",error.message);
+            ToastComponent("error",error.message)
+        }};
+        getStationSales();
+    }, []);
+
     //fetching the station stats-likes-dislikes
         useEffect(() => {
             const getStationStats = async () => {
@@ -105,7 +152,7 @@ const StationDetails=()=>{
             getStationStats();
         },[id])
 
-        console.log("station stats",stationStats.starsRating)
+        console.log("station data",station)
 
     if(loading) return (
         <div className="  w-80 mx-auto flex gap-4">
@@ -115,6 +162,8 @@ const StationDetails=()=>{
     )
     if(error) return <p className="text-red-600 text-center font-semibold">Error fetching station's details!</p>
 
+
+    
     return(
         <div>
 
@@ -178,6 +227,8 @@ const StationDetails=()=>{
                         <li>Total Dislikes<span className="demographyLi"> {stationStats?.dislikes || 0}</span></li>
                     </ul>
                 </li>
+                <li>Total Delivered Orders: <span className="demographyLi">{deliveredOrders}</span></li>
+                <li>Total Station Sales: <span className="demographyLi">{totalSales}</span></li>
                 <li>Station Status: <span className="demographyLi">{station?.station?.status}</span></li>
             </ul>
             <div className="pt-16">

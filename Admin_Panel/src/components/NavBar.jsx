@@ -32,12 +32,14 @@ export default function NavBar() {
   }
   return (
     <Navbar fluid rounded className='w-full justify-between'>
+      <a href='/admin'>
        <Navbar.Brand>
        <div className="flex w-full justify-between">
         <img className='w-auto h-20' src={logo} alt='logo'/>
         <h2 className="font-semibold text-xl my-auto -ml-8">Fuel<span className='text-cyan-700'>Mate</span></h2>
         </div>
        </Navbar.Brand>
+        </a>
         <div className="block md:order-2 mad:flex justify-between text-lg font-semibold text-pink-700  text-center">
           <div className='flex gap-2 mt-2 ml-24 md:ml-0'>
          <div>
@@ -75,11 +77,6 @@ export default function NavBar() {
          </div>
           </div>
          <Navbar.Collapse>
-          <Navbar.Link href="/landing" active> Home</Navbar.Link>
-         <Navbar.Link href="/about">About</Navbar.Link>
-         <Navbar.Link href="#">Documentation</Navbar.Link>
-         <Navbar.Link href="#">FAQ</Navbar.Link>
-         <Navbar.Link href="#">Contact</Navbar.Link>
          </Navbar.Collapse>
          <hr/>
          </Navbar>

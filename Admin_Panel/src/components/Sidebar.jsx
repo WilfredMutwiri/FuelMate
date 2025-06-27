@@ -9,7 +9,6 @@ import { MdDashboard } from "react-icons/md";
 import { MdOutlineEmergency } from "react-icons/md";
 import { FcApproval } from "react-icons/fc";
 import { RiGasStationFill } from "react-icons/ri";
-import { IoMdTrendingUp } from "react-icons/io";
 import { CiNoWaitingSign } from "react-icons/ci";
 
 
@@ -24,28 +23,13 @@ const Sidebar = () => {
         setMenuVisible(!menuVisible)
     }
         const handleSignout=async()=>{
-            // try {
-            //   const res=await fetch(SERVER_URL+'/api/auth/signout',{
-            //     method:"POST"
-            //   })
-            //   const data=await res.json();
-            //   if(!res.ok){
-            //     console.log(data.message);
-            //   }else{
-            //     dispatch(signoutSuccess());
-            //   }
-            //   Navigate('/Landing')
-            // }
-            // catch (error) {
-            //   console.log(error.message);
-            // }
-
           Navigate('/Landing')
           }
     return (
         <div>
             <div className={`flex flex-col justify-between mt-4 bg-gray-900 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
-                 <div className='p-4'>
+                 <a href='/admin'>
+                  <div className='p-4'>
                     <div className=''>
                         <img className='w-32 h-32 rounded-full mx-auto' src={logo} alt="profilePic"/>
                     </div>
@@ -53,7 +37,7 @@ const Sidebar = () => {
                     <p className='text-center text-sm italic text-white'>Your Fuel, Delivered Anywhere, Anytime
 </p>
                     </div>
-                    
+                    </a>
                     <div className='p-4 border-t-4 bg-gray-900'>
                     <ul className='flex flex-col gap-5 text-center'>
                         <Link to="/admin">
@@ -74,10 +58,6 @@ const Sidebar = () => {
 
                         <Link to="/RegisteredStations">
                           <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
-                        </Link>
-
-                        <Link to="/statistics">
-                          <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                         </Link>
 
                     </ul>

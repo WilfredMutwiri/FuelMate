@@ -6,7 +6,6 @@ import { MdDashboard } from "react-icons/md";
 import { MdOutlineEmergency } from "react-icons/md";
 import { RiGasStationFill } from "react-icons/ri";
 import { FcApproval } from "react-icons/fc";
-import { IoMdTrendingUp } from "react-icons/io";
 import { useState } from "react";
 import { Button} from "flowbite-react";
 import { Link, useNavigate } from 'react-router-dom';
@@ -62,16 +61,18 @@ export default function AdminDashboard() {
                 <div className="block md:flex w-[95%] m-auto mt-10 gap-5 md:gap-10">
                     {/* left section */}
                 <div className={`flex flex-col justify-between -mt-7 bg-gray-950 rounded-md shadow-sm shadow-pink-500 w-auto mb-5 md:mb-0 ${menuVisible ? 'block':'hidden'} h-auto`}>
+                    <a href="/admin">
                     <div className='p-4'>
                     <div className=''>
                         <img className='w-44 rounded-full mx-auto' src={logo} alt="profilePic"/>
                     </div>
                     <h2 className='text-center text-3xl text-white p-3'>FuelMate</h2>
                     <div>
-                        <p className='text-center text-sm italic text-white'>Your Fuel, Delivered Anywhere, Anytime
+                    <p className='text-center text-sm italic text-white'>Your Fuel, Delivered Anywhere, Anytime
 </p>
                     </div>
                     </div>
+                    </a>
                     <div className='p-4 border-t-4 bg-gray-950'>
                         <ul className='flex flex-col gap-5 text-center'>
                             <li onClick={()=>showSection('dashboard')} className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><MdDashboard  className="text-xl"/></span>Dashboard</li>
@@ -91,10 +92,6 @@ export default function AdminDashboard() {
                             
                             <Link to="/RegisteredStations">
                             <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><RiGasStationFill className="text-xl"/></span>Registered Stations</li>
-                            </Link>
-
-                            <Link to="/statistics">
-                            <li className='p-2 hover:bg-gray-100 rounded-md text-white hover:text-cyan-700 cursor-pointer flex gap-3'><span><IoMdTrendingUp className="text-xl"/></span>Statistics</li>
                             </Link>
                         </ul>
                         <Button className="w-full mt-4" outline onClick={handleSignout}>Exit</Button>

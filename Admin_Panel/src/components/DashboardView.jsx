@@ -51,6 +51,7 @@ export default function DashboardView() {
 const getOrdersCount=async()=>{
     const response=await fetch(`${SERVER_URL}/api/v1/order/all`);
     const data= await response.json();
+    console.log("orders data",data)
     if(response.ok){
         setOutdatedRecord(false);
         setOrdersCount(data.totalOrders);
@@ -197,7 +198,7 @@ useEffect(()=>{
                         <h3 className='text-4xl font-semibold pt-3 text-green-800 text-center'>{ordersCount || 0}</h3>
                         <h2 className='flex justify-between pt-3 gap-4'>
                         <p className={`text-xs font-semibold pt-2  ${outdatedRecord ? "text-red-700":"text-gray-700"}`}>{outdatedRecord ? "Error fetching orders!" : "Orders made via the app"}</p>
-                        <Link to="/ManageTeachers">
+                        <Link to="/AllNormalOrders">
                         <h2 className='text-sm cursor-pointer bg-white text-cyan-700 font-semibold p-2 rounded-md hover:bg-cyan-700 hover:text-white'>View</h2>
                         </Link>
                         </h2>
