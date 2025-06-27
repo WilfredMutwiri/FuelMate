@@ -28,7 +28,8 @@ const userSignin=async(req,res)=>{
         //token generation
         const token=jwt.sign({
             userId:user._id,
-            username:user.username
+            username:user.username,
+            email:user.email
         },
         process.env.JWT_SECRET,
         {expiresIn:"1h"}
@@ -41,7 +42,8 @@ const userSignin=async(req,res)=>{
             user:{
                 id:user._id,
                 username:user.username,
-                phoneNo:user.phoneNo
+                phoneNo:user.phoneNo,
+                email:user.email
             }
         })
         
