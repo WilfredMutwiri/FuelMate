@@ -239,11 +239,11 @@ const handleReceiptDownload = async (orderId) => {
                                 emergencyData?.map((order,index)=>(
                                 <View key={index._id || index} style={styles.orderContainer}>
                                     <Text style={styles.subTxt}>Order ID: {order._id}</Text>
-                                    <Text>Customer Location: {order?.location}</Text>
-                                    <Text>Customer Contact: {order?.clientPhoneNo}</Text>
+                                    <Text>Customer Name: {order?.clientName}</Text>
+                                    <Text>Customer Contact: {order?.clientPhone}</Text>
+                                    <Text>Customer Location: {order?.readableLocation}</Text>
                                     <Text>Fuel Type: {order?.fuelType}</Text>
                                     <Text>Fuel Volume: {order?.fuelVolume} L</Text>
-                                    <Text>Amount Charged : {order?.amount}</Text>     
                                     <Text style={{paddingTop:10,color:'#077E8C'}}>~emergency order~</Text>
                                     
                                     <View style={styles.StatusContainer}>
