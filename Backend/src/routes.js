@@ -5,8 +5,8 @@ const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
 const { stationSignup, getAllStations,getStationById, updateStationStatus, getAllApprovedStations, getAllNotApprovedStations, deleteStation, getNearbyStations, updateStationFuel, addStationService, deleteStationService, getStationStats, likeStation, dislikeStation, toggleStationOpenStatus} = require("./controllers/auth/stationSignup.js");
-const {fileUpload} = require("./controllers/auth/fileUpload.js");
-const {profileUpload,certUpload} = require("./middlewares/multer.js");
+const {fileUpload,certificateUpload} = require("./controllers/auth/fileUpload.js");
+const {profileUpload, certUpload} = require("./middlewares/multer.js");
 const { placeOrder, getAllOrders, getOrderById, updateOrder, getOrdersByStation, getOrdersByCustomer, getDeliveredOrdersByStation, getCanceledOrdersByStation, getApprovedOrdersByStation, getTotalAmountByStation, getTotalVolumeDeliveredByStation, getOrdersByMonth } = require("./controllers/auth/order.js");
 const { paystackInit, verifyPayment } = require("./controllers/auth/paystack.js");
 const { adminSignup } = require("./controllers/auth/adminSignup.js");
@@ -59,7 +59,7 @@ router.patch('/station/:id/delete-service', deleteStationService);
 
 // file uploads
 router.post('/upload/images/',profileUpload.single('file'),fileUpload);
-router.post('/upload/docs/',certUpload.single('file'),fileUpload);
+router.post('/upload/docs/',certUpload.single('file'),certificateUpload);
 
 // orders
 router.post('/order/create/:stationId',placeOrder);
