@@ -47,9 +47,9 @@ export default function Signin(){
         try {
             const response = await axios.post(`${SERVER_URI}/api/v1/user/signin`,formData)
             const result=response.data;
-            console.log(result.user.username)
+            console.log(result.user)
             if (result.success){
-                await login(result.user.username,result.token,result.user.id,result.user.phoneNo)
+                await login(result.user.username,result.token,result.user.id,result.user.phoneNo,result.user.email)
                 ToastComponent("success",`Welcome back! ${formData.username}`);  
                 router.push('/Home');
             }

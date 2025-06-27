@@ -23,11 +23,13 @@ import useAuthStore from '../zustand/store.jsx';
 
 export default function Recovery(){
     const {user}=useAuthStore();
+    console.log(user)
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [formData,setFormData]=useState({
-        email:''
+        email:user?.email || ''
     })
+
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
     }
@@ -40,6 +42,10 @@ export default function Recovery(){
     }
     const handleSubmit = async() => {
         try {
+            const emailToUse = formData.email || user?.email;
+            if (!emailToUse) {
+                return ToastComponent("error", "Email is required");
+            }
             const response=await axios.post(`${SERVER_URI}/api/v1/requestOTP`,formData)
             if(response.data.success){
                 ToastComponent("success","OTP sent successfully!");
@@ -48,7 +54,7 @@ export default function Recovery(){
                 ToastComponent("error",response.data.message || "An error occurred. Please try again.");
             }
         } catch (error) {
-            ToastComponent("eror",error.respose?.data?.message ||"Something went wrong. Please try again.");
+            ToastComponent("error",error.respose?.data?.message ||"Something went wrong. Please try again.");
             return res.status(500).json({message:error.message})
         }
     };
@@ -77,7 +83,7 @@ export default function Recovery(){
                                 value={formData.email}
                                 onChangeText={(text)=>handleInputChange('email',text)}
                                 style={styles.inputText}
-                                placeholder={`${user.email} `|| "Enter your email"}
+                                placeholder={`${user?.email} `|| "Enter your email"}
                                 />
                             </View>
             
