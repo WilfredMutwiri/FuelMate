@@ -132,7 +132,9 @@ useEffect(()=>{
                 <View style={styles.nearbyStationsContainer}>
                     <View style={styles.headerContainer}>
                     <Text style={styles.TitleTxt}>Nearby Filling Stations</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                    onPress={()=>router.push('/AllStations')}
+                    >
                     <Text style={styles.moreTxt}>See All</Text>
                     </TouchableOpacity>
                     </View>
@@ -176,7 +178,9 @@ useEffect(()=>{
                     {/* most popular*/}
                     <View style={styles.headerContainer}>
                     <Text style={styles.TitleTxt}>Most Popular</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={()=>router.push('/AllStations')}
+                    >
                     <Text style={styles.moreTxt}>See All</Text>
                     </TouchableOpacity>
                     </View>

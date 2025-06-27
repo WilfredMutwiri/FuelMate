@@ -59,6 +59,14 @@ export default function RootLayout() {
         <Stack.Screen name="StationRecovery2" options={{headerShown:true,title: '',}}/>
         <Stack.Screen name="StationSignup" options={{headerShown:true,title: ' ',}}/>
         <Stack.Screen name="StationSignin" options={{headerShown:true,title: ' ',}}/>
+        <Stack.Screen name="AllStations" options={
+          {
+          headerShown:true,
+          title: 'All Stations',
+          headerStyle: {backgroundColor: '#02223B'},
+          headerTintColor: '#EBF6FE',
+          }
+        }/>
       </Stack>
       <Toast/>
     </View>
