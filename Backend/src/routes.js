@@ -1,6 +1,6 @@
 const express=require("express");
 const { userSignup } = require("./controllers/auth/userSignup.js");
-const { userSignin, userSignout, getUserInfo, getAdmins } = require("./controllers/auth/userSignin.js");
+const { userSignin, userSignout, getUserInfo, getAdmins, getUserNotifications, markNotificationAsRead } = require("./controllers/auth/userSignin.js");
 const { requestOTP } = require("./controllers/auth/requestOTP.js");
 const { resetPassword } = require("./controllers/auth/resetPassword.js");
 const { stationSignin } = require("./controllers/auth/stationSignin.js");
@@ -14,6 +14,10 @@ const { adminSignin } = require("./controllers/auth/adminSignin.js");
 const { createEmergencyOrder, getAllEmergencyRequests, getEmergencyOrder, updateEmergencyOrderStatus, reassignEmergencyOrder, getEmergencyOrdersByStatus, getEmergencyOrdersForStation, getEmergencyOrdersForUser, generateReceipt } = require("./controllers/emergencyRequest.js");
 const { sendSMS } = require("./controllers/smsController.js");
 const router=express.Router();
+
+// notifications
+router.get('/user/notifications/:userId',getUserNotifications);
+router.patch('/user/notification/:notificationId/read/',markNotificationAsRead);
 
 // sms
 router.post('/user/send-sms/',sendSMS);

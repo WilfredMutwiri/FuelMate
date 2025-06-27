@@ -1,4 +1,5 @@
 const Order=require("../../models/ordersModel.js");
+const Notification = require("../../models/notifications");
 
 const placeOrder=async(req,res)=>{
     try {
@@ -27,6 +28,21 @@ const placeOrder=async(req,res)=>{
         })
 
         const placedOrder=await newOrder.save();
+
+        // notifications
+        const newNotification = await Notification.create({
+            user: customer,
+            title: "New Order Placed Successfully",
+            message: `Hi, we’ve received your order and our team is already on it! Sit tight—fuel is on the way.`
+        });
+                
+        const io = req.app.get("io");
+        
+        io.emit("notification", {
+            title: newNotification.title,
+            message: newNotification.message
+        });
+        
 
         return res.status(200).json({
             message:"Order placed successfully!",
@@ -93,6 +109,12 @@ const updateOrder=async(req,res)=>{
     }
 
     try {
+        const order = await Order.findById(id);
+        
+        if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+        }
+
         const updatedOrder=await Order.findByIdAndUpdate(
             id,
             {status:newStatus},
@@ -104,6 +126,27 @@ const updateOrder=async(req,res)=>{
                 message:"Order not found"
             })
         }
+    
+        const statusMessages = {
+        received: "We've received your order and it's now being processed.",
+        approved: "Good news! Your order has been approved and will be dispatched soon.",
+        delivered: "Your fuel has been delivered. Thank you for choosing FuelMate!",
+        canceled: "Your order has been canceled. Please contact support if this is unexpected."
+        };
+        // notification
+
+        const newNotification = await Notification.create({
+        user: order.customer,
+        title: "Order Status Updated",
+        message: statusMessages[newStatus] || "Your order status has been updated."
+        });
+                
+        const io = req.app.get("io");
+        
+        io.to(order.customer.toString()).emit("notification", {
+        title: newNotification.title,
+        message: newNotification.message
+        });
 
         return res.status(200).json({
             message:"Order updated successfully",

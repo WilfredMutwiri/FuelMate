@@ -6,11 +6,49 @@ const PORT=process.env.port||5001;
 const router=require('./src/routes')
 const app=express();
 
+const http = require("http");
+const { Server } = require("socket.io");
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use('/api/v1',router);
+
+// socket
+const socketServer = http.createServer(app);
+
+const io = new Server(socketServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+app.set("io", io);
+
+// connect
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
+
+  socket.on("hello", (data) => {
+    console.log("Client says hello:", data);
+  });
+
+  socket.emit("notification", {
+    title: "✨ Welcome Back to FuelMate",
+    message: "Your Fuel, Delivered Anywhere,Anytime.",
+  });
+
+  socket.broadcast.emit("notification", {
+    title: "New User",
+    message: `A new user has joined (ID: ${socket.id})`,
+  });
+
+  // Disconnect event
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
+});
 
 //connect to db
 const connectDB=async()=>{
@@ -38,9 +76,11 @@ mongoose.connection.on("disconnected",()=>{
 });
 
 //run server
-const server=app.listen(PORT,()=>{
+const server=socketServer.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);
 });
+
+
 
 server.on("error",(err)=>{
     console.log("Server error",err.message)

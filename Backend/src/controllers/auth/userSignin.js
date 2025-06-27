@@ -2,6 +2,7 @@ const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const User=require("../../models/auth/userSignupModel");
 const Admin=require('../../models/auth/adminModel');
+const Notification = require("../../models/notifications");
 
 const userSignin=async(req,res)=>{
 
@@ -113,9 +114,43 @@ const getAdmins=async(req,res)=>{
     }
 }
 
+// get user notifications
+const getUserNotifications=async(req,res)=>{
+    let {userId}=req.params;
+    
+    try {
+        const Notifications=await Notification.find({user:userId})
+        .sort({createdAt:-1})
+
+        res.json(Notifications);
+
+    } catch (error) {
+        return res.status(500).json({message:err.message})
+    }
+}
+
+// mark notification as read
+const markNotificationAsRead=async(req,res)=>{
+    let {notificationId}=req.params;
+    try {
+        const notification=await Notification.findById(notificationId);
+        if(!notification){
+            return res.status(404).json({message:"Notification not found!"})
+        }
+        notification.read=true;
+        await notification.save();
+        return res.json(notification);
+    } catch (error) {
+        return res.status(500).json({message:error.message})
+    }
+}
+
+
 module.exports={
     userSignin,
     userSignout,
     getUserInfo,
-    getAdmins
+    getAdmins,
+    getUserNotifications,
+    markNotificationAsRead
 }

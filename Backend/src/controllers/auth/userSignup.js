@@ -1,6 +1,7 @@
 const bcrypt=require("bcrypt");
 const jwt=require("jsonwebtoken");
 const User=require('../../models/auth/userSignupModel');
+const Notification = require("../../models/notifications");
 
 const userSignup=async(req,res)=>{
     try {
@@ -34,6 +35,20 @@ const userSignup=async(req,res)=>{
         })
 
         const createdUser=await newUser.save();
+
+        // notifications
+        const newNotification = await Notification.create({
+            user: createdUser._id,
+            title: "Account Created Successfully",
+            message:`Welcome aboard, ${username}! Your FuelMate account is all set up. Let’s get you fueled up anytime, anywhere.`
+        });
+        
+        const io = req.app.get("io");
+
+        io.emit("notification", {
+            title: newNotification.title,
+            message: newNotification.message
+        });
 
         return res.status(200).json({
             message:"Account created successfully!",

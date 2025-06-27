@@ -2,6 +2,7 @@ const Station = require("../models/auth/stationSignup");
 const EmergencyOrder = require("../models/emergencyOrder");
 const { generateOrderReceiptPdf } = require('./generateOrderReceipt');
 const Order=require("../models/ordersModel.js");
+const Notification = require("../models/notifications");
 
 const createEmergencyOrder = async (req, res) => {
   const {userId}=req.params;
@@ -73,6 +74,20 @@ const createEmergencyOrder = async (req, res) => {
       await placedOrder.save();
     }
 
+    // notifications
+    const newNotification = await Notification.create({
+        user:userId,
+        title: "New Emergency Order Placed Successfully",
+        message: `Hi, we’ve received your emergency order request and our team is already on it! Sit tight—fuel is on the way. Sorry for the emergency.`
+    });
+                
+    const io = req.app.get("io");
+        
+    io.emit("notification", {
+      title: newNotification.title,
+      message: newNotification.message
+    });
+        
     return res.status(200).json({
       message: "Emergency order placed successfully",
       success: true,
@@ -159,6 +174,51 @@ const updateEmergencyOrderStatus=async(req,res)=>{
       message:"Order not found"
     })}
 
+
+    // Notification messages
+  const statusMessages = {
+    pending: {
+      title: "Order Pending",
+      message: "Your emergency fuel request has been received and is awaiting assignment."
+    },
+    assigned: {
+      title: "Order Assigned",
+      message: "A nearby fuel station has been assigned to your order."
+    },
+    accepted: {
+      title: "Order Accepted",
+      message: "The assigned station has accepted your request and is preparing your fuel delivery."
+    },
+    rejected: {
+      title: "Order Rejected",
+      message: "Unfortunately, the assigned station was unable to accept your order. We'll look for another station soon."
+    },
+    reassigned: {
+      title: "Order Reassigned",
+      message: "Your order has been reassigned to another station to ensure timely delivery."
+    },
+    delivered: {
+      title: "Order Delivered",
+      message: "Your emergency fuel delivery has arrived. Thank you for using FuelMate!"
+    },
+    cancelled: {
+      title: "Order Cancelled",
+      message: "Your emergency order has been cancelled. If you need assistance, please contact support."
+    }
+  };
+
+  const notification = await Notification.create({
+   user: updatedOrder.user, 
+   title: statusMessages[newStatus].title,
+   message: statusMessages[newStatus].message
+ });
+
+// Send notification to the user
+const io = req.app.get("io");
+io.to(updatedOrder.user.toString()).emit("notification", {
+  title: notification.title,
+  message: notification.message
+});
     return res.status(200).json({
       message:"Order updated successfully",
       order:updatedOrder,
