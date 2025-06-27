@@ -149,9 +149,7 @@ export default function Alert(){
             if (!formData.clientLocation || !formData.clientLocation.coordinates || formData.clientLocation.coordinates.length !== 2) {
                 return ToastComponent("error", "Location not ready. Please wait a moment and try again.");
             }  
-            
-            console.log("data being sent is: ",formData)
-                
+                            
             const response=await axios.post(`${SERVER_URI}/api/v1/order/emergency/create/${user.id}`,{
                 ...formData
             })
@@ -177,9 +175,8 @@ useEffect(() => {
     try {
       const response = await axios.get(`${SERVER_URI}/api/v1/users/admins`);
       const data = response.data;
-
-      if (data.success && data.adminsInfo.length > 0) {
-        let rawPhone = data.adminsInfo[0].phoneNo.toString();
+      if (data.success) {
+        let rawPhone = data.adminsInfo.phoneNo.toString();
 
         // format to +254
         if (!rawPhone.startsWith('+')) {
@@ -192,7 +189,7 @@ useEffect(() => {
 
         setFormData2(prev => ({
           ...prev,
-          phoneNo: rawPhone
+          phoneNo:adminNo
         }));
       }
     } catch (error) {
@@ -212,7 +209,7 @@ useEffect(() => {
 
     const [formData2,setFormData2]=useState({
         message:'',
-        phoneNo:'0775720540'
+        phoneNo:adminNo
     })
 
     const handleInputChange2 = (name, value) => {
@@ -223,16 +220,17 @@ useEffect(() => {
 };
 
 // handle sms sending
-const handleSmsSending=async(req,res)=>{
-      setSendingSmS(true);
+const handleSmsSending=async()=>{
       console.log("sending sms initiated")
       try {
         console.log("sending sms now!")
+        console.log("data being sent is ",{...formData2})
         const response=await axios.post(`${SERVER_URI}/api/v1/user/send-sms/`,{
             ...formData2
         })
         
         const result=response.data;
+
         if(result.status==="Success"){
             console.log("sms sent")
             setModalOpen(false);
