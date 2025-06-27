@@ -196,7 +196,7 @@ useEffect(()=>{
                                                 <Text>{station?.username}</Text>
                                                 <View style={styles.ratingContainer}>
                                                     <FontAwesome6 name="star" size={16} color="#ff6d1f"/>
-                                                    <Text>{station?.starsRating || 1.5}</Text>
+                                                    <Text>{station?.starsRating || 0}</Text>
                                                 </View>
                                             </View>
                                                 <View>

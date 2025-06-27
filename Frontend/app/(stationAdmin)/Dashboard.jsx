@@ -342,7 +342,6 @@ export default function StationInfoScreen() {
                         <Text>Customer Contact: {order?.clientPhoneNo}</Text>
                         <Text>Fuel Type: {order?.fuelType}</Text>
                         <Text>Fuel Volume: {order?.fuelVolume} L</Text>
-                        <Text>Amount Charged : {order?.amount}</Text>
                                     
                         <View style={styles.StatusContainer}>
                             <Text>Status : <Text style={styles.subTxt}>{order?.status}</Text></Text>
