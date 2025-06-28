@@ -10,6 +10,8 @@ const useAuthStore=create(
             isUserAuthenticated:false,
             isStationAuthenticated:false,
             station:null,
+            hasUnreadNotifications: false,      
+            setHasUnreadNotifications: (value) =>set({ hasUnreadNotifications: value }),
 
             //user
             login:async(username,token,id,phoneNo,email)=>{
@@ -19,7 +21,11 @@ const useAuthStore=create(
                 set({user:{email,username},isUserAuthenticated:true})
             },
             logout:async()=>{
-                set({user:null,isUserAuthenticated:false})
+                set({
+                    user:null,
+                    isUserAuthenticated:false,
+                    hasUnreadNotifications: false,
+                })
             },
 
             // station

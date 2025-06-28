@@ -2,12 +2,36 @@ import { Tabs } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import {TouchableOpacity, View} from 'react-native'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-import { SafeAreaProvider,SafeAreaView,useSafeAreaInsets } from 'react-native-safe-area-context';
 import {useRouter} from 'expo-router';
-
+import useAuthStore from '../../zustand/store.jsx';
+import React, { useEffect } from "react";
+import axios from 'axios'
+import {SERVER_URI} from '../../constants/SERVER_URI.jsx';
 
 export default function TabsLayout() {
 const router=useRouter();
+
+const { hasUnreadNotifications, setHasUnreadNotifications, user } = useAuthStore();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const getUserNotifications = async () => {
+      try {
+        const response = await axios.get(`${SERVER_URI}/api/v1/user/notifications/${user.id}`);
+        if (response.status === 200) {
+          const unread = response.data.some((n) => n.read === false);
+          setHasUnreadNotifications(unread);
+        }
+      } catch (error) {
+        console.log("Error fetching notifications", error);
+      }
+    };
+
+    getUserNotifications(); // fetch once immediately
+    const interval = setInterval(getUserNotifications, 30000); // poll every 30 sec
+    return () => clearInterval(interval);
+  }, [user]);
 
 return (
 <View style={{flex:1}}>
@@ -40,14 +64,29 @@ return (
             ),
             headerLeft: () => (
               <TouchableOpacity
-              onPress={()=>router.push('/UserNotifications')}
+              onPress={()=>{
+                router.push('/UserNotifications')
+                setHasUnreadNotifications(false);
+              
+              }}
               style={{marginLeft:20}}
               >
-                <FontAwesome6 
-                  name="bell" 
-                  size={20} 
-                  color="#EBF6FE" 
-                />
+            <View>
+              <FontAwesome6 name="bell" size={20} color="#EBF6FE" />
+              {hasUnreadNotifications && (
+              <View
+              style={{
+              position: 'absolute',
+              top: -2,
+              right: -2,
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: 'red',
+            }}
+        />
+      )}
+    </View>
               </TouchableOpacity>
             ),
             headerRight: () => (

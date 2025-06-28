@@ -1,6 +1,8 @@
+import React, { useEffect } from "react";
 import { Stack } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import {View} from 'react-native'
+import NotificationListener from "../components/NotificationListener";
 
 export default function RootLayout() {
 
@@ -68,6 +70,7 @@ export default function RootLayout() {
           }
         }/>
       </Stack>
+      <NotificationListener />
       <Toast/>
     </View>
   );

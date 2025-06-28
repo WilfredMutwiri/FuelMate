@@ -55,9 +55,8 @@ export default function Signup(){
     const response=await axios.post(`${SERVER_URI}/api/v1/user/signup`, formData)
     const result=response.data
     if(response.data.success){
-        await signup(result.user.email,result.user.username)
+        await signup(result.user.email,result.user.username);
         ToastComponent("success","Account created successfully!")
-        console.log(user)
         router.push('/Signin')
     }
     } catch (error) {

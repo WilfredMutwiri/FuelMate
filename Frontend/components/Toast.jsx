@@ -1,4 +1,5 @@
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
+
 export default function ToastComponent(type,text1) {
     Toast.show({
         type:type,
