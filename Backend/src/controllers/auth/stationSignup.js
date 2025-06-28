@@ -3,6 +3,7 @@ const jwt=require("jsonwebtoken");
 const Station=require("../../models/auth/stationSignup");
 const Order=require("../../models/ordersModel");
 const EmergencyOrder = require("../../models/emergencyOrder");
+const Notification = require("../../models/notifications");
 
 const stationSignup=async(req,res)=>{
     try {
@@ -69,6 +70,20 @@ const stationSignup=async(req,res)=>{
         })
 
         const createdStation=await newStation.save();
+
+        // send notification
+        const newNotification = await Notification.create({
+            user:createdStation._id,
+            title: "Account Created Successfully",
+            message: `Welcome to FuelMate! Your station account has been created successfully. To start receiving orders, please update your fuel prices and ensure you’ve uploaded a valid registration certificate. Once verified, your station will be approved and ready to serve customers.`
+        });
+                        
+        const io = req.app.get("io");
+                
+        io.to(createdStation._id.toString()).emit("notification", {
+            title: newNotification.title,
+            message: newNotification.message
+        });
 
         return res.status(200).json({
             message:"Station created successfully!",
@@ -207,7 +222,34 @@ const updateStationStatus=async(req,res)=>{
             message:"Station not found"
             })
         }
-    
+
+        // send notification
+        // Determine the notification message based on status
+        let notificationTitle = "";
+        let notificationMessage = "";
+
+        if (newStatus === "Approved") {
+        notificationTitle = "Station Approved 🎉";
+        notificationMessage = `Congratulations! Your station has been approved and is now ready to start receiving orders. Welcome to the FuelMate network!`;
+        } else {
+        notificationTitle = "Station Not Approved";
+        notificationMessage = `Unfortunately, your station has been disapproved due to policy violations. Please contact support at 0745567568 to resolve the issue and reactivate your account.`;
+        }
+
+        // Create notification
+        const newNotification = await Notification.create({
+        user: id,
+        title: notificationTitle,
+        message: notificationMessage
+        });
+
+        // Emit notification
+        const io = req.app.get("io");
+        io.to(id.toString()).emit("notification", {
+        title: newNotification.title,
+        message: newNotification.message
+        });
+        
         return res.status(200).json({
             message:"Station updated successfully",
             station:updatedStation,

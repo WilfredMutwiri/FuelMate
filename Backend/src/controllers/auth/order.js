@@ -1,5 +1,6 @@
 const Order=require("../../models/ordersModel.js");
 const Notification = require("../../models/notifications");
+const Station = require("../../models/auth/stationSignup");
 
 const placeOrder=async(req,res)=>{
     try {
@@ -38,11 +39,31 @@ const placeOrder=async(req,res)=>{
                 
         const io = req.app.get("io");
         
-        io.emit("notification", {
+        io.to(customer.toString()).emit("notification", {
             title: newNotification.title,
             message: newNotification.message
         });
         
+        // send notification to station as well
+        // Load station to get the station user id
+        const stationDoc = await Station.findById(stationId);
+            if (!stationDoc) {
+            return res.status(404).json({ message: "Station not found" });
+        }
+
+        const stationNotification = await Notification.create({
+            user: stationDoc._id,
+            title: "New Order Received",
+            message: `A new order has been placed. Please review and confirm the request.`
+        });
+
+        
+        io.to(stationDoc._id.toString()).emit("notification", {
+            title: stationNotification.title,
+            message: stationNotification.message
+        });
+
+
 
         return res.status(200).json({
             message:"Order placed successfully!",

@@ -83,9 +83,21 @@ const createEmergencyOrder = async (req, res) => {
                 
     const io = req.app.get("io");
         
-    io.emit("notification", {
+    io.to(userId.toString()).emit("notification", {
       title: newNotification.title,
       message: newNotification.message
+    });
+
+    const stationNotification = await Notification.create({
+      user:nearbyStations[0]._id,
+      title: "New Emergency Order Received",
+      message: `A new emergency fuel delivery has just been assigned to you! Please review and accept the order right away to ensure the fastest possible service. If you can’t complete this urgent request, kindly decline so another station can step in immediately.`
+    });
+    
+            
+    io.to(nearbyStations[0]._id.toString()).emit("notification", {
+      title: stationNotification.title,
+      message: stationNotification.message
     });
         
     return res.status(200).json({
