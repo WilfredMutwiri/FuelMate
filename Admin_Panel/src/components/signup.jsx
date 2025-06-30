@@ -51,10 +51,10 @@ export default function signup() {
         <div className="w-full">
             <hr />
             <div className="block md:flex w-10/12 pt-10 md:pt-20 m-auto gap-6">
-            <div className='flex-1'>
+            <div className='flex-1 mt-14'>
                 <img src={signupImg} alt='signup image'/>
             </div>
-                <div className='flex-1 mt-5 md:mt-0'>
+                <div className='flex-1 md:mt-0'>
                     <h2 className='text-2xl pb-5 text-center'>Admin Registration!</h2>
                     <form className='flex flex-col gap-3' onSubmit={handleSubmit}>
                         <Label value='Username'/>
@@ -70,6 +70,14 @@ export default function signup() {
                         placeholder='mark@gmail.com'
                         type='email'
                         id='email'
+                        onChange={handleChange}
+                        required
+                        />
+                        <Label value='Phone Number'/>
+                        <TextInput 
+                        placeholder='Enter your phone number'
+                        type='number'
+                        id='phoneNo'
                         onChange={handleChange}
                         required
                         />
