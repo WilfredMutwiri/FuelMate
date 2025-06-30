@@ -46,11 +46,13 @@ const OrderDetails=()=>{
             const data = await res.json();
 
             if(!data.success){
-                show(data.message, "warning");
-
+            show(data.message, "warning");
+            console.log(data);
             }else{
                 // window.location.reload();
                 show("Order reassigned successfully!", "success");
+                await new Promise(resolve=>setTimeout(resolve,3000))
+                window.location.reload();
             }
             
         } catch (error) {
@@ -82,8 +84,8 @@ const OrderDetails=()=>{
                     <li>Customer Name: <span className="demographyLi">{Order?.order?.clientName}</span></li>
                     <li>Customer Phone No: <span className="demographyLi">{Order?.order?.clientPhone}</span></li>
                     <li>Fuel Type Requested: <span className="demographyLi">{Order?.order?.fuelType}</span></li>
-                    <li>Fuel Volume Requested: <span className="demographyLi">{Order?.order?.fuelVolume} L</span></li>
-                    <li>Current Order Status: <span className="demographyLi">{Order?.order?.status}</span></li>
+                    <li>Volume Requested: <span className="demographyLi">{Order?.order?.fuelVolume} L</span></li>
+                    <li>Order Status: <span className="demographyLi">{Order?.order?.status}</span></li>
                     <li>Urgency: <span className="demographyLi">{Order?.order?.urgency}</span></li>
                 </ul>
             </div>

@@ -305,7 +305,10 @@ const reassignEmergencyOrder = async (req, res) => {
     order.assignmentHistory.push({
       station: newStation._id,
       status: "reassigned",
-    }).sort('createdAt');
+      createdAt: new Date(),
+    });
+    
+    order.assignmentHistory.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
     await order.save();
 
