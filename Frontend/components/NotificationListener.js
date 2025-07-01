@@ -6,7 +6,7 @@ import useAuthStore from "../zustand/store";
 
 export default function NotificationListener() {
   const { setHasUnreadNotifications } = useAuthStore();
-  
+
   useEffect(() => {
     console.log("Connecting socket...");
     socket.connect();
@@ -21,7 +21,7 @@ export default function NotificationListener() {
         text1: data.title || "New Notification",
         text2: data.message,
       });
-        setHasUnreadNotifications(true);
+      setHasUnreadNotifications(true);
     });
 
     return () => {

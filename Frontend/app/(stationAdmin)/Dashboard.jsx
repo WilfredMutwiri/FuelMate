@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import graphImg from '../../assets/images/graph.png'
 import { SERVER_URI } from '../../constants/SERVER_URI.jsx';
 import Loader from '../../components/loader.jsx';
 import useAuthStore from '../../zustand/store.jsx';
