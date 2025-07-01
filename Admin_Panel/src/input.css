@@ -2,6 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.demographyLi{
-    @apply text-cyan-700
+.demographyLi {
+  @apply text-cyan-700;
 }
