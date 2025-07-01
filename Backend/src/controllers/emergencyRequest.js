@@ -1,11 +1,11 @@
 const Station = require("../models/auth/stationSignup");
 const EmergencyOrder = require("../models/emergencyOrder");
-const { generateOrderReceiptPdf } = require('./generateOrderReceipt');
-const Order=require("../models/ordersModel.js");
+const { generateOrderReceiptPdf } = require("./generateOrderReceipt");
+const Order = require("../models/ordersModel.js");
 const Notification = require("../models/notifications");
 
 const createEmergencyOrder = async (req, res) => {
-  const {userId}=req.params;
+  const { userId } = req.params;
 
   try {
     let {
@@ -16,7 +16,7 @@ const createEmergencyOrder = async (req, res) => {
       urgency,
       message,
       readableLocation,
-      clientLocation
+      clientLocation,
     } = req.body;
 
     // Normalize inputs
@@ -48,13 +48,13 @@ const createEmergencyOrder = async (req, res) => {
         $near: {
           $geometry: {
             type: "Point",
-            coordinates: clientLocation.coordinates
+            coordinates: clientLocation.coordinates,
           },
-          $maxDistance: 10000
-        }
+          $maxDistance: 10000,
+        },
       },
       status: "Approved",
-      isAvailableForEmergency: true
+      isAvailableForEmergency: true,
     }).limit(10);
 
     console.log("Nearby stations found:", nearbyStations.length);
@@ -63,12 +63,12 @@ const createEmergencyOrder = async (req, res) => {
       placedOrder.assignedStation = nearbyStations[0]._id;
 
       // Save nearby station IDs for admin visibility
-      placedOrder.nearbyStations = nearbyStations.map(station => station._id);
+      placedOrder.nearbyStations = nearbyStations.map((station) => station._id);
 
       // Add to assignmentHistory
       placedOrder.assignmentHistory.push({
         station: nearbyStations[0]._id,
-        status: "assigned"
+        status: "assigned",
       });
 
       await placedOrder.save();
@@ -76,175 +76,183 @@ const createEmergencyOrder = async (req, res) => {
 
     // notifications
     const newNotification = await Notification.create({
-        user:userId,
-        title: "New Emergency Order Placed Successfully",
-        message: `Hi, we’ve received your emergency order request and our team is already on it! Sit tight—fuel is on the way. Sorry for the emergency.`
+      user: userId,
+      title: "New Emergency Order Placed Successfully",
+      message: `Hi, we’ve received your emergency order request and our team is already on it! Sit tight—fuel is on the way. Sorry for the emergency.`,
     });
-                
+
     const io = req.app.get("io");
-        
+
     io.to(userId.toString()).emit("notification", {
       title: newNotification.title,
-      message: newNotification.message
+      message: newNotification.message,
     });
 
     const stationNotification = await Notification.create({
-      user:nearbyStations[0]._id,
+      user: nearbyStations[0]._id,
       title: "New Emergency Order Received",
-      message: `A new emergency fuel delivery has just been assigned to you! Please review and accept the order right away to ensure the fastest possible service. If you can’t complete this urgent request, kindly decline so another station can step in immediately.`
+      message: `A new emergency fuel delivery has just been assigned to you! Please review and accept the order right away to ensure the fastest possible service. If you can’t complete this urgent request, kindly decline so another station can step in immediately.`,
     });
-    
-            
+
     io.to(nearbyStations[0]._id.toString()).emit("notification", {
       title: stationNotification.title,
-      message: stationNotification.message
+      message: stationNotification.message,
     });
-        
+
     return res.status(200).json({
       message: "Emergency order placed successfully",
       success: true,
-      order: placedOrder
+      order: placedOrder,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
-
 // get all emergency requests
-const getAllEmergencyRequests=async(req,res)=>{
-
+const getAllEmergencyRequests = async (req, res) => {
   try {
-    const orders=await EmergencyOrder.find()
-    .populate('assignedStation nearbyStations assignmentHistory.station')
-    .sort({createdAt:-1})
+    const orders = await EmergencyOrder.find()
+      .populate("assignedStation nearbyStations assignmentHistory.station")
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
-      success:true,
-      totalOrders:orders.length,
-      orders
-    })
+      success: true,
+      totalOrders: orders.length,
+      orders,
+    });
   } catch (error) {
     return res.statu(500).json({
-      success:false,
-      message:"Failed to fetch emergency requests!",
-      error:error.message
-    })
+      success: false,
+      message: "Failed to fetch emergency requests!",
+      error: error.message,
+    });
   }
-}
+};
 
 // get A single emergency order
-const getEmergencyOrder=async(req,res)=>{
-  const {orderId}=req.params;
+const getEmergencyOrder = async (req, res) => {
+  const { orderId } = req.params;
 
   try {
-    const order=await EmergencyOrder.findById(orderId)
-    .populate('assignedStation nearbyStations assignmentHistory.station');
+    const order = await EmergencyOrder.findById(orderId).populate(
+      "assignedStation nearbyStations assignmentHistory.station"
+    );
 
     return res.status(200).json({
-      message:"Emergency order fetched successfully!",
-      success:true,
-      order
-    })
-
+      message: "Emergency order fetched successfully!",
+      success: true,
+      order,
+    });
   } catch (error) {
     return res.status(500).json({
-      message:"Failed to get emergency order!",
-      success:false,
-      error:error.message
-    })
+      message: "Failed to get emergency order!",
+      success: false,
+      error: error.message,
+    });
   }
-}
-
+};
 
 // update emergency order status
-const updateEmergencyOrderStatus=async(req,res)=>{
-  const {orderId}=req.params;
-  let {newStatus}=req.body;
-  const validStatus=["pending", "assigned", "accepted", "rejected", "delivered", "cancelled","reassigned"];
-  if(!validStatus.includes(newStatus)){
+const updateEmergencyOrderStatus = async (req, res) => {
+  const { orderId } = req.params;
+  let { newStatus } = req.body;
+  const validStatus = [
+    "pending",
+    "assigned",
+    "accepted",
+    "rejected",
+    "delivered",
+    "cancelled",
+    "reassigned",
+  ];
+  if (!validStatus.includes(newStatus)) {
     return res.status(400).json({
-        message:"Invalid order status",
-        sucess:false
-    })
+      message: "Invalid order status",
+      sucess: false,
+    });
   }
 
   try {
-    
-    const updatedOrder=await EmergencyOrder.findByIdAndUpdate(
+    const updatedOrder = await EmergencyOrder.findByIdAndUpdate(
       orderId,
-      {status:newStatus},
-      {new:true}
+      { status: newStatus },
+      { new: true }
     );
-    
-    if(!updatedOrder){
-      return res.status(404).json({
-      message:"Order not found"
-    })}
 
+    if (!updatedOrder) {
+      return res.status(404).json({
+        message: "Order not found",
+      });
+    }
 
     // Notification messages
-  const statusMessages = {
-    pending: {
-      title: "Order Pending",
-      message: "Your emergency fuel request has been received and is awaiting assignment."
-    },
-    assigned: {
-      title: "Order Assigned",
-      message: "A nearby fuel station has been assigned to your order."
-    },
-    accepted: {
-      title: "Order Accepted",
-      message: "The assigned station has accepted your request and is preparing your fuel delivery."
-    },
-    rejected: {
-      title: "Order Rejected",
-      message: "Unfortunately, the assigned station was unable to accept your order. We'll look for another station soon."
-    },
-    reassigned: {
-      title: "Order Reassigned",
-      message: "Your order has been reassigned to another station to ensure timely delivery."
-    },
-    delivered: {
-      title: "Order Delivered",
-      message: "Your emergency fuel delivery has arrived. Thank you for using FuelMate!"
-    },
-    cancelled: {
-      title: "Order Cancelled",
-      message: "Your emergency order has been cancelled. If you need assistance, please contact support."
-    }
-  };
+    const statusMessages = {
+      pending: {
+        title: "Order Pending",
+        message:
+          "Your emergency fuel request has been received and is awaiting assignment.",
+      },
+      assigned: {
+        title: "Order Assigned",
+        message: "A nearby fuel station has been assigned to your order.",
+      },
+      accepted: {
+        title: "Order Accepted",
+        message:
+          "The assigned station has accepted your request and is preparing your fuel delivery.",
+      },
+      rejected: {
+        title: "Order Rejected",
+        message:
+          "Unfortunately, the assigned station was unable to accept your order. We'll look for another station soon.",
+      },
+      reassigned: {
+        title: "Order Reassigned",
+        message:
+          "Your order has been reassigned to another station to ensure timely delivery.",
+      },
+      delivered: {
+        title: "Order Delivered",
+        message:
+          "Your emergency fuel delivery has arrived. Thank you for using FuelMate!",
+      },
+      cancelled: {
+        title: "Order Cancelled",
+        message:
+          "Your emergency order has been cancelled. If you need assistance, please contact support.",
+      },
+    };
 
-  const notification = await Notification.create({
-   user: updatedOrder.user, 
-   title: statusMessages[newStatus].title,
-   message: statusMessages[newStatus].message
- });
+    const notification = await Notification.create({
+      user: updatedOrder.user,
+      title: statusMessages[newStatus].title,
+      message: statusMessages[newStatus].message,
+    });
 
-// Send notification to the user
-const io = req.app.get("io");
-io.to(updatedOrder.user.toString()).emit("notification", {
-  title: notification.title,
-  message: notification.message
-});
+    // Send notification to the user
+    const io = req.app.get("io");
+    io.to(updatedOrder.user.toString()).emit("notification", {
+      title: notification.title,
+      message: notification.message,
+    });
     return res.status(200).json({
-      message:"Order updated successfully",
-      order:updatedOrder,
-      success:true
-    })
-
+      message: "Order updated successfully",
+      order: updatedOrder,
+      success: true,
+    });
   } catch (error) {
-    
-  return res.status(500).json({
-      message:"Failed to update emergency order",
-      success:false,
-      error:error.message
-  })}
-}
+    return res.status(500).json({
+      message: "Failed to update emergency order",
+      success: false,
+      error: error.message,
+    });
+  }
+};
 
 // reassign emergency order
 const reassignEmergencyOrder = async (req, res) => {
@@ -307,8 +315,10 @@ const reassignEmergencyOrder = async (req, res) => {
       status: "reassigned",
       createdAt: new Date(),
     });
-    
-    order.assignmentHistory.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+    order.assignmentHistory.sort(
+      (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+    );
 
     await order.save();
 
@@ -318,7 +328,6 @@ const reassignEmergencyOrder = async (req, res) => {
       newStation,
       order,
     });
-
   } catch (error) {
     return res.status(500).json({
       message: "Failed to reassign order",
@@ -329,27 +338,27 @@ const reassignEmergencyOrder = async (req, res) => {
 };
 
 // get emergency order by status
-const getEmergencyOrdersByStatus=async(req,res)=>{
-    const status=req.params.status;
+const getEmergencyOrdersByStatus = async (req, res) => {
+  const status = req.params.status;
 
-    try {
-        const Orders=await EmergencyOrder.find({
-          status:status
-        }).sort({createdAt:-1})
+  try {
+    const Orders = await EmergencyOrder.find({
+      status: status,
+    }).sort({ createdAt: -1 });
 
-        return res.status(200).json({
-            message:"Emergency orders fetched successfully!",
-            Orders,
-            totalOrders:Orders.length,
-            success:true
-        })
-    } catch (error) {
-        return res.status(500).json({
-            message:error.message,
-            success:false
-        })
-    }
-}
+    return res.status(200).json({
+      message: "Emergency orders fetched successfully!",
+      Orders,
+      totalOrders: Orders.length,
+      success: true,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+    });
+  }
+};
 
 // Get emergency orders assigned to a specific station
 const getEmergencyOrdersForStation = async (req, res) => {
@@ -358,19 +367,19 @@ const getEmergencyOrdersForStation = async (req, res) => {
   try {
     const orders = await EmergencyOrder.find({ assignedStation: stationId })
       .sort({ createdAt: -1 })
-      .populate('assignedStation');
+      .populate("assignedStation");
 
     res.status(200).json({
-      message: 'Emergency Orders for this station fetched successfully!',
+      message: "Emergency Orders for this station fetched successfully!",
       orders,
       total: orders.length,
-      success: true
+      success: true,
     });
   } catch (error) {
     res.status(500).json({
-      message: 'Failed to fetch orders for the station.',
+      message: "Failed to fetch orders for the station.",
       error: error.message,
-      success: false
+      success: false,
     });
   }
 };
@@ -382,66 +391,63 @@ const getEmergencyOrdersForUser = async (req, res) => {
   try {
     const orders = await EmergencyOrder.find({ user: userId })
       .sort({ createdAt: -1 })
-      .populate('assignedStation nearbyStations assignmentHistory.station');
+      .populate("assignedStation nearbyStations assignmentHistory.station");
 
     return res.status(200).json({
       message: "Emergency orders for the user fetched successfully!",
       orders,
       totalOrders: orders.length,
-      success: true
+      success: true,
     });
-
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch emergency orders for user",
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
 
-
 // generate order receipt
-const generateReceipt=async(req,res)=>{
+const generateReceipt = async (req, res) => {
   try {
-    const {orderId}=req.params
+    const { orderId } = req.params;
     let order = await Order.findById(orderId)
-      .populate('customer')
-      .populate('station');
+      .populate("customer")
+      .populate("station");
 
-      if (!order){
-        order = await EmergencyOrder.findById(orderId)
-        .populate('user')
-        .populate('assignedStation');
-      };
-
-      if(!order){
-        return res.status(404).json({
-         message: 'Order not found',
-         success:false
-        });
-      }
-
-      const pdfBuffer = await generateOrderReceiptPdf(
-        order, 
-        order.customer || order.user,
-        order.station || order.assignedStation
-      );
-      
-      res.set({
-          'Content-Type': 'application/pdf',
-          'Content-Disposition': `attachment; filename=order_${order._id}_receipt.pdf`,
-      });
-
-      res.send(pdfBuffer);
-        
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Failed to generate receipt' });
+    if (!order) {
+      order = await EmergencyOrder.findById(orderId)
+        .populate("user")
+        .populate("assignedStation");
     }
-}
 
-module.exports={
+    if (!order) {
+      return res.status(404).json({
+        message: "Order not found",
+        success: false,
+      });
+    }
+
+    const pdfBuffer = await generateOrderReceiptPdf(
+      order,
+      order.customer || order.user,
+      order.station || order.assignedStation
+    );
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=order_${order._id}_receipt.pdf`,
+    });
+
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to generate receipt" });
+  }
+};
+
+module.exports = {
   createEmergencyOrder,
   getAllEmergencyRequests,
   getEmergencyOrder,
@@ -450,5 +456,5 @@ module.exports={
   getEmergencyOrdersByStatus,
   getEmergencyOrdersForStation,
   getEmergencyOrdersForUser,
-  generateReceipt
-}
+  generateReceipt,
+};
