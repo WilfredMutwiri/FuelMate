@@ -226,13 +226,11 @@ export default function Alert() {
   }, []);
 
   // sms formdata
-  const fullPhoneNumber = "+254770250898";
 
   console.log("admin number is ", adminNo);
 
   const [formData2, setFormData2] = useState({
-    message: "",
-    phoneNo: adminNo,
+    message: ""
   });
 
   const handleInputChange2 = (name, value) => {
@@ -247,9 +245,10 @@ export default function Alert() {
     console.log("sending sms initiated");
     try {
       console.log("sending sms now!");
-      console.log("data being sent is ", { ...formData2 });
+      setSendingSmS(true)
       const response = await axios.post(`${SERVER_URI}/api/v1/user/send-sms/`, {
-        ...formData2,
+        message: formData2.message,
+        phoneNo: adminNo
       });
 
       const result = response.data;
@@ -257,6 +256,7 @@ export default function Alert() {
       if (result.status === "Success") {
         console.log("sms sent");
         setModalOpen(false);
+        setSendingSmS(false)
         ToastComponent("success", "Message sent successfully!");
       } else {
         console.log("An error occured");

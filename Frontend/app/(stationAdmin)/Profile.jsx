@@ -441,7 +441,7 @@ const styles=StyleSheet.create({
         alignItems:'center',
         justifyContent:'flex-start',
         marginBottom:20,
-        gap:25,
+        gap:10,
         borderWidth:1,
         borderColor:'#E19540',
         borderRadius:10,

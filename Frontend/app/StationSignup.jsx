@@ -82,7 +82,7 @@ export default function StationSignup() {
           setFormData((prev) => ({
             ...prev,
             county: address.region || "",
-            town: address.city || address.district || "",
+            town: address.city || address.district || address.street || "",
             location: geoLocation,
           }));
           setLocation(geoLocation);
@@ -342,6 +342,7 @@ export default function StationSignup() {
                       value={formData.RegNo}
                       onChangeText={(text) => handleInputChange("RegNo", text)}
                       style={styles.inputText}
+                      maxLength={9}   // <-- Limits to 9 characters
                       placeholder="Enter business registration number"
                     />
                   </View>
@@ -407,6 +408,7 @@ export default function StationSignup() {
                       <Text style={styles.inputLabel2}>Phone No.</Text>
                       <TextInput
                         value={formData.phoneNo}
+                        maxLength={12} 
                         onChangeText={(text) =>
                           handleInputChange("phoneNo", text)
                         }

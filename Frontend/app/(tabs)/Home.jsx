@@ -82,7 +82,7 @@ export default function Home() {
         if (addressArray.length > 0) {
           const address = addressArray[0];
           setLocationName(
-            `${address.name} | ${address.city} | ${address.region}`
+            `${address.country}|${address.street || address.city || address.district || address.street}|${address.region}`
           );
         }
 
